@@ -5,7 +5,6 @@ import com.github.immersingeducation.immersingpicker.backend.NO_GENDER
 import com.github.immersingeducation.immersingpicker.backend.NO_GROUP
 import com.github.immersingeducation.immersingpicker.backend.Student
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -52,17 +51,4 @@ class ClassNGradeTeat {
         assertEquals("已存在学号为 4 的学生，无法再次新建。", assertThrows<Throwable> { class1.addStudent(name = "s4", id = 4, gender = NO_GENDER, group = NO_GROUP, seat = Pair(1, 3)) }.message)
     }
 
-    @Test
-    fun `test select by student`() {
-        val class1 = ClassNGrade(name = "class1", students = constructStudent())
-        assertEquals(class1.students, class1.selectByStudent(4))
-        assertTrue(class1.students.containsAll(class1.selectByStudent(2)))
-    }
-
-    @Test
-    fun `test select by group`() {
-        val class1 = ClassNGrade(name = "class1", students = constructStudent())
-        assertEquals(class1.findGroups(), class1.selectByGroup(8))
-        assertTrue(class1.findGroups().keys.containsAll(class1.selectByGroup(1).keys))
-    }
 }

@@ -2,6 +2,7 @@ package com.github.immersingeducation.immersingpicker.backend
 
 import mu.KotlinLogging
 import java.util.PriorityQueue
+import java.util.Random
 
 data class ClassNGrade(
     val name: String,
@@ -11,8 +12,23 @@ data class ClassNGrade(
         val logger = KotlinLogging.logger {}
     }
 
+    val groupStudentMap = mutableMapOf<String, MutableList<Student>>()
+    val selectByStudentAndGroupPQ = PriorityQueue<Student>(compareBy { it.weight })
+
     init {
-        logger.debug("成功创建班级：$name")
+        findGroups()
+        initSBSAGPQ()
+        logger.info("成功创建班级：$name")
+    }
+
+    fun initSBSAGPQ() {
+        val random = Random()
+        students.forEach {
+            it.weight = random.nextDouble()
+            logger.trace("已为 id=${it.id} 学生赋权为 ${it.weight}")
+            selectByStudentAndGroupPQ.offer(it)
+        }
+        logger.trace("成功初始化优先队列")
     }
 
     fun checkIfIdExists(id: Int): Boolean {
@@ -49,14 +65,18 @@ data class ClassNGrade(
         if (!checkIfIdExists(id)) {
             val s = Student(name, id, gender, group, seat)
             students.add(s)
+            if (groupStudentMap[group] == null) {
+                groupStudentMap[group] = mutableListOf(s)
+            } else {
+                groupStudentMap[group]!!.add(s)
+            }
             logger.trace("成功添加学生：{}", s)
         } else {
             throw IllegalArgumentException("已存在学号为 $id 的学生，无法再次新建。")
         }
     }
 
-    fun findGroups(): Map<String, List<Student>> {
-        val groupStudentMap = mutableMapOf<String, MutableList<Student>>()
+    fun findGroups() {
         students.forEach {
             if (groupStudentMap[it.group] == null) {
                 logger.trace("查询到新的小组及其成员：${it.group}")
@@ -66,45 +86,10 @@ data class ClassNGrade(
                 groupStudentMap[it.group]!!.add(it)
             }
         }
-        return groupStudentMap
+        logger.debug("成功建立小组映射")
     }
 
-    fun selectByStudent(amount: Int): List<Student> {
-        if (amount >= students.size) {
-            logger.warn("所需的抽取数量 $amount 大于等于班级人数 ${students.size}，暂且送你一个学生名单")
-            return students
-        } else {
-            val res = mutableListOf<Student>()
-            for (i in 1..amount) {
-                val selected = students.random()
-                logger.trace("当前已抽选：$i 人；已选中：id=${selected.id}")
-                res.add(selected)
-            }
-            logger.debug("抽选完成，即将传送抽选数据")
-            return res
-        }
-    }
 
-    fun selectByGroup(amount: Int): Map<String, List<Student>> {
-        val res = mutableMapOf<String, List<Student>>()
-        val groupStudentMap = findGroups()
-        if (amount >= groupStudentMap.size) {
-            logger.warn("所需的抽取数量 $amount 大于等于班级组数 ${groupStudentMap.size}，暂且送你一个小组名单。")
-            return groupStudentMap
-        }
-        for (i in 1..amount) {
-            val group = groupStudentMap.keys.random()
-            if (group == NO_GROUP) {
-                logger.trace("未分组成员，跳过")
-                continue
-            } else {
-                logger.trace("当前已抽选 $i 组；已选中：group=$group")
-                res[group] = groupStudentMap[group] as List<Student>
-            }
-        }
-        logger.debug("抽选完成，即将传送抽选数据")
-        return res
-    }
 
     constructor(name: String): this(
         name = name,

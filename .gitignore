@@ -1,4 +1,5 @@
 app-data
+docs-for-ai
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -39,3 +40,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Trae ###
+.trae
