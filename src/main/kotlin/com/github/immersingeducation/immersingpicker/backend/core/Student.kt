@@ -1,4 +1,4 @@
-package com.github.immersingeducation.immersingpicker.backend
+package com.github.immersingeducation.immersingpicker.backend.core
 
 data class Student(
     var name: String,

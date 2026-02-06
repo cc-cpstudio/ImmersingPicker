@@ -1,10 +1,8 @@
-package com.github.immersingeducation.immersingpicker.backend
+package com.github.immersingeducation.immersingpicker.backend.core
 
 import com.github.immersingeducation.immersingpicker.backend.selectors.GroupSelector
 import com.github.immersingeducation.immersingpicker.backend.selectors.StudentSelector
 import mu.KotlinLogging
-import java.util.PriorityQueue
-import java.util.Random
 
 data class ClassNGrade(
     val name: String,
@@ -19,6 +17,8 @@ data class ClassNGrade(
 
     val studentSelector = StudentSelector(this)
     val groupSelector = GroupSelector(this)
+
+    val historyList = mutableListOf<History>()
 
     init {
         findGroups()

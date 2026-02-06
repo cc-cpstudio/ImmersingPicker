@@ -1,8 +1,8 @@
 package backend
 
-import com.github.immersingeducation.immersingpicker.backend.ClassNGrade
-import com.github.immersingeducation.immersingpicker.backend.NO_GENDER
-import com.github.immersingeducation.immersingpicker.backend.Student
+import com.github.immersingeducation.immersingpicker.backend.core.ClassNGrade
+import com.github.immersingeducation.immersingpicker.backend.core.NO_GENDER
+import com.github.immersingeducation.immersingpicker.backend.core.Student
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -21,7 +21,7 @@ class SelectorTest {
         Assertions.assertEquals("所需的抽取数量 4 不允许大于班级人数 3", assertThrows<Throwable> {
             class1.studentSelector.select(4)
         }.message)
-        Assertions.assertTrue(class1.students.containsAll(class1.studentSelector.select(2)))
+        Assertions.assertTrue(class1.students.containsAll(class1.studentSelector.select(2).students))
     }
 
     @Test
@@ -30,7 +30,15 @@ class SelectorTest {
         Assertions.assertEquals("所需的抽取数量 3 不允许大于班级组数 2", assertThrows<Throwable> {
             class1.groupSelector.select(3)
         }.message)
-        Assertions.assertTrue(class1.students.containsAll(class1.groupSelector.select(1)))
+        Assertions.assertTrue(class1.students.containsAll(class1.groupSelector.select(1).students))
+    }
+
+    @Test
+    fun `test history`() {
+        val class1 = ClassNGrade(name = "class1", students = constructStudent())
+        val his = class1.studentSelector.select(1)
+        Assertions.assertTrue(class1.students.containsAll(his.students))
+        Assertions.assertEquals(his.selector, "StudentSelector")
     }
 }
 

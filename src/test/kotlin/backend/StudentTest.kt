@@ -1,8 +1,8 @@
 package backend
 
-import com.github.immersingeducation.immersingpicker.backend.NO_GENDER
-import com.github.immersingeducation.immersingpicker.backend.NO_GROUP
-import com.github.immersingeducation.immersingpicker.backend.Student
+import com.github.immersingeducation.immersingpicker.backend.core.NO_GENDER
+import com.github.immersingeducation.immersingpicker.backend.core.NO_GROUP
+import com.github.immersingeducation.immersingpicker.backend.core.Student
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
