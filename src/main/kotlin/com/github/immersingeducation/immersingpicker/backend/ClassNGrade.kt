@@ -1,5 +1,7 @@
 package com.github.immersingeducation.immersingpicker.backend
 
+import com.github.immersingeducation.immersingpicker.backend.selectors.GroupSelector
+import com.github.immersingeducation.immersingpicker.backend.selectors.StudentSelector
 import mu.KotlinLogging
 import java.util.PriorityQueue
 import java.util.Random
@@ -13,22 +15,14 @@ data class ClassNGrade(
     }
 
     val groupStudentMap = mutableMapOf<String, MutableList<Student>>()
-    val selectByStudentAndGroupPQ = PriorityQueue<Student>(compareBy { it.weight })
+//    val selectByStudentAndGroupPQ = PriorityQueue<Student>(compareBy { it.weight })
+
+    val studentSelector = StudentSelector(this)
+    val groupSelector = GroupSelector(this)
 
     init {
         findGroups()
-        initSBSAGPQ()
         logger.info("成功创建班级：$name")
-    }
-
-    fun initSBSAGPQ() {
-        val random = Random()
-        students.forEach {
-            it.weight = random.nextDouble()
-            logger.trace("已为 id=${it.id} 学生赋权为 ${it.weight}")
-            selectByStudentAndGroupPQ.offer(it)
-        }
-        logger.trace("成功初始化优先队列")
     }
 
     fun checkIfIdExists(id: Int): Boolean {
