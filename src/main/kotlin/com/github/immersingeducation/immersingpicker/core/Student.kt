@@ -1,4 +1,4 @@
-package com.github.immersingeducation.immersingpicker.backend.core
+package com.github.immersingeducation.immersingpicker.core
 
 import java.time.LocalDateTime
 

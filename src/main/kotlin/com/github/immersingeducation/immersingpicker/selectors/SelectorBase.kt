@@ -1,10 +1,10 @@
-package com.github.immersingeducation.immersingpicker.backend.selectors
+package com.github.immersingeducation.immersingpicker.selectors
 
-import com.github.immersingeducation.immersingpicker.backend.core.ClassNGrade
-import com.github.immersingeducation.immersingpicker.backend.core.History
-import com.github.immersingeducation.immersingpicker.backend.core.MAX_AVAIL_RANGE
-import com.github.immersingeducation.immersingpicker.backend.core.MIN_SELECTION_POOL_AMOUNT
-import com.github.immersingeducation.immersingpicker.backend.core.Student
+import com.github.immersingeducation.immersingpicker.core.ClassNGrade
+import com.github.immersingeducation.immersingpicker.core.History
+import com.github.immersingeducation.immersingpicker.core.MAX_AVAIL_RANGE
+import com.github.immersingeducation.immersingpicker.core.MIN_SELECTION_POOL_AMOUNT
+import com.github.immersingeducation.immersingpicker.core.Student
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Random
@@ -20,8 +20,8 @@ abstract class SelectorBase(val clazz: ClassNGrade) {
     abstract fun selectLogic(amount: Int): History
 
     private fun calculateRange(needed: List<Student>): Int {
-        val maxE = clazz.students.maxBy { it.selectedAmount }
-        val minE = clazz.students.minBy { it.selectedAmount }
+        val maxE = needed.maxBy { it.selectedAmount }
+        val minE = needed.minBy { it.selectedAmount }
         return maxE.selectedAmount - minE.selectedAmount
     }
 

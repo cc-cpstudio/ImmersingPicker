@@ -1,4 +1,4 @@
-package com.github.immersingeducation.immersingpicker.backend.config.enums
+package com.github.immersingeducation.immersingpicker.config.enums
 
 enum class SelectedAmountWeightCalculateMode(string: String) {
     LINEAR("线性"),

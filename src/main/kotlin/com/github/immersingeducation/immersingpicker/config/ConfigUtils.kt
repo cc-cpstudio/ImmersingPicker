@@ -1,7 +1,7 @@
-package com.github.immersingeducation.immersingpicker.backend.config
+package com.github.immersingeducation.immersingpicker.config
 
-import com.github.immersingeducation.immersingpicker.backend.config.enums.SelectedAmountWeightCalculateMode
-import com.github.immersingeducation.immersingpicker.backend.tools.convertToGenericType
+import com.github.immersingeducation.immersingpicker.config.enums.SelectedAmountWeightCalculateMode
+import com.github.immersingeducation.immersingpicker.tools.convertToGenericType
 
 object ConfigUtils {
     val defConfig = mutableMapOf(

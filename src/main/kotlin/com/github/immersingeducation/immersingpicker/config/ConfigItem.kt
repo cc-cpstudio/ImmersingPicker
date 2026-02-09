@@ -1,4 +1,4 @@
-package com.github.immersingeducation.immersingpicker.backend.config
+package com.github.immersingeducation.immersingpicker.config
 
 data class ConfigItem<T> (
     val name: String,

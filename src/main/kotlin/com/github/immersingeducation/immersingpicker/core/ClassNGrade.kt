@@ -1,11 +1,8 @@
-package com.github.immersingeducation.immersingpicker.backend.core
+package com.github.immersingeducation.immersingpicker.core
 
-import com.github.immersingeducation.immersingpicker.backend.selectors.StudentSelector
+import com.github.immersingeducation.immersingpicker.selectors.StudentSelector
 import mu.KotlinLogging
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.Random
-import kotlin.math.pow
 
 data class ClassNGrade(
     val name: String,
