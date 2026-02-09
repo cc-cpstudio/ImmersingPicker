@@ -6,16 +6,21 @@ import com.github.immersingeducation.immersingpicker.backend.core.Student
 import java.util.Random
 
 abstract class SelectorBase(val clazz: ClassNGrade) {
+    companion object{
+        val random = Random()
+    }
+
     abstract val name: String
 
-    val students: MutableList<Student>
-        get() = clazz.students
-    val groupStudentMap: Map<String, List<Student>>
-        get() = clazz.groupStudentMap
-    val historyList: MutableList<History>
-        get() = clazz.historyList
+    abstract fun selectLogic(amount: Int): History
 
-    val random = Random()
-
-    abstract fun select(amount: Int): History
+    fun select(amount: Int): History {
+        clazz.calculateWeight()
+        val history = selectLogic(amount)
+        history.students.forEach {
+            it.lastSelectedTime = history.createTime
+            it.selectedAmount ++
+        }
+        return history
+    }
 }

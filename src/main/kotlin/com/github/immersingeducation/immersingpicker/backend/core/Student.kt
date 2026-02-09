@@ -1,12 +1,19 @@
 package com.github.immersingeducation.immersingpicker.backend.core
 
+import java.time.LocalDateTime
+
 data class Student(
     var name: String,
     val id: Int,
-    var gender: String,
-    var group: String,
-    var seat: Pair<Int, Int>
+    var initialWeight: Double,
+    var seatRow: Int,
+    var seatColumn: Int
 ) {
+    var lastSelectedTime: LocalDateTime? = null
+
+    var selectedAmount: Int = 0
+
+
     var weight: Double = -1.0
         set(value) {
             if (value > 0.0) {
@@ -22,15 +29,6 @@ data class Student(
         }
         if (id <= 0) {
             throw IllegalArgumentException("学号必须为正整数")
-        }
-        if (gender.length > 10) {
-            throw IllegalArgumentException("性别长度不能大于10")
-        }
-        if (group.length > 50) {
-            throw IllegalArgumentException("小组长度不能大于50")
-        }
-        if (seat.first <= 0 || seat.second <= 0) {
-            throw IllegalArgumentException("座位行列数必须为正整数")
         }
     }
 }

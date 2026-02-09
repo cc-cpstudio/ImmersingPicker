@@ -1,27 +1,26 @@
 package com.github.immersingeducation.immersingpicker.backend.core
 
-import com.github.immersingeducation.immersingpicker.backend.selectors.GroupSelector
 import com.github.immersingeducation.immersingpicker.backend.selectors.StudentSelector
 import mu.KotlinLogging
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+import java.util.Random
+import kotlin.math.pow
 
 data class ClassNGrade(
     val name: String,
-    val students: MutableList<Student>
+    val students: MutableList<Student>,
+    val historyList: MutableList<History>
 ) {
     companion object {
         val logger = KotlinLogging.logger {}
     }
 
-    val groupStudentMap = mutableMapOf<String, MutableList<Student>>()
-//    val selectByStudentAndGroupPQ = PriorityQueue<Student>(compareBy { it.weight })
+    val random = Random()
 
     val studentSelector = StudentSelector(this)
-    val groupSelector = GroupSelector(this)
-
-    val historyList = mutableListOf<History>()
 
     init {
-        findGroups()
         logger.info("成功创建班级：$name")
     }
 
@@ -41,52 +40,73 @@ data class ClassNGrade(
         return flag
     }
 
-    fun smallestUnusedId(): Int {
-        val s = students.sortedBy { it.id }
-        var id = 1
-        for (it in s) {
-            if (it.id != id) {
-                break
-            } else {
-                id ++
-            }
-        }
-        logger.trace("查找到目前最小的学号为 $id")
-        return id
-    }
-
-    fun addStudent(name: String, id: Int, gender: String, group: String, seat: Pair<Int, Int>) {
+    fun addStudent(name: String, id: Int, seat: Pair<Int, Int>) {
         if (!checkIfIdExists(id)) {
-            val s = Student(name, id, gender, group, seat)
+            val s = Student(name, id, 1.0, seat.first, seat.second)
             students.add(s)
-            if (groupStudentMap[group] == null) {
-                groupStudentMap[group] = mutableListOf(s)
-            } else {
-                groupStudentMap[group]!!.add(s)
-            }
-            logger.trace("成功添加学生：{}", s)
+            logger.trace("成功添加学生：id=${s.id}")
         } else {
             throw IllegalArgumentException("已存在学号为 $id 的学生，无法再次新建。")
         }
     }
 
-    fun findGroups() {
-        students.forEach {
-            if (groupStudentMap[it.group] == null) {
-                logger.trace("查询到新的小组及其成员：${it.group}")
-                groupStudentMap[it.group] = mutableListOf(it)
-            } else {
-                logger.trace("查询到小组 ${it.group} 的新成员")
-                groupStudentMap[it.group]!!.add(it)
-            }
+    fun removeStudent(id: Int) {
+        if (checkIfIdExists(id)) {
+            students.remove(students.find { it.id == id})
+        } else {
+            throw IllegalArgumentException("不存在学号为 $id 的学生，无法删除。")
         }
-        logger.debug("成功建立小组映射")
     }
 
+    private fun calculateRange(needed: List<Student>): Int {
+        val maxE = students.maxBy { it.selectedAmount }
+        val minE = students.minBy { it.selectedAmount }
+        return maxE.selectedAmount - minE.selectedAmount
+    }
 
+    private fun calculateAvailableSelectStudents(): MutableList<Student> {
+        val tmpStudents = students
+        var availableRange = calculateRange(tmpStudents)
+        while (availableRange > MAX_AVAIL_RANGE && tmpStudents.size >= MIN_SELECTION_POOL_AMOUNT) {
+            tmpStudents.remove(students.maxBy { it.selectedAmount })
+            availableRange = calculateRange(tmpStudents)
+        }
+        val average = students.sumOf { it.selectedAmount } / students.size
+        tmpStudents.forEach {
+            if (it.selectedAmount >= average) {
+                students.remove(it)
+            }
+        }
+        return tmpStudents
+    }
+
+    fun calculateWeight() {
+        // 权重影响因素：抽取次数，上次抽取时间与现在的间隔，
+        val available = calculateAvailableSelectStudents()
+        val average = available.sumOf { it.selectedAmount } / available.size
+        students.forEach {
+            if (it.weight <= 1.0) {
+                it.weight  = 1.0
+            }
+        }
+        students.forEach {
+            if (available.contains(it)) {
+                it.weight += (average - it.selectedAmount) * 1.7
+            } else {
+                it.weight += 0.8
+            }
+            if (it.lastSelectedTime != null && ChronoUnit.DAYS.between(LocalDateTime.now(), it.lastSelectedTime) > 3) {
+                it.weight += 1.12.pow(ChronoUnit.DAYS.between(it.lastSelectedTime, LocalDateTime.now()).toDouble())
+            } else {
+                it.weight += ChronoUnit.DAYS.between(LocalDateTime.now(), LocalDateTime.now()).toDouble() * 1.01
+            }
+            it.weight += random.nextDouble(1.0, 5.0)
+        }
+    }
 
     constructor(name: String): this(
         name = name,
-        students = mutableListOf()
+        students = mutableListOf(),
+        historyList = mutableListOf()
     )
 }

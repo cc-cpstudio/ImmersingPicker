@@ -9,6 +9,9 @@ module com.github.immersingeducation.immersingpicker {
 
     requires tornadofx;
 
+    requires io.github.microutils.kotlinlogging;
+    requires org.slf4j;
+
     opens com.github.immersingeducation.immersingpicker to javafx.fxml;
     exports com.github.immersingeducation.immersingpicker;
 }
