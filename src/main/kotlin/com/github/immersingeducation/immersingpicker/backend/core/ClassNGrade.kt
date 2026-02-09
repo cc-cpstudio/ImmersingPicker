@@ -58,52 +58,6 @@ data class ClassNGrade(
         }
     }
 
-    private fun calculateRange(needed: List<Student>): Int {
-        val maxE = students.maxBy { it.selectedAmount }
-        val minE = students.minBy { it.selectedAmount }
-        return maxE.selectedAmount - minE.selectedAmount
-    }
-
-    private fun calculateAvailableSelectStudents(): MutableList<Student> {
-        val tmpStudents = students
-        var availableRange = calculateRange(tmpStudents)
-        while (availableRange > MAX_AVAIL_RANGE && tmpStudents.size >= MIN_SELECTION_POOL_AMOUNT) {
-            tmpStudents.remove(students.maxBy { it.selectedAmount })
-            availableRange = calculateRange(tmpStudents)
-        }
-        val average = students.sumOf { it.selectedAmount } / students.size
-        tmpStudents.forEach {
-            if (it.selectedAmount >= average) {
-                students.remove(it)
-            }
-        }
-        return tmpStudents
-    }
-
-    fun calculateWeight() {
-        // 权重影响因素：抽取次数，上次抽取时间与现在的间隔，
-        val available = calculateAvailableSelectStudents()
-        val average = available.sumOf { it.selectedAmount } / available.size
-        students.forEach {
-            if (it.weight <= 1.0) {
-                it.weight  = 1.0
-            }
-        }
-        students.forEach {
-            if (available.contains(it)) {
-                it.weight += (average - it.selectedAmount) * 1.7
-            } else {
-                it.weight += 0.8
-            }
-            if (it.lastSelectedTime != null && ChronoUnit.DAYS.between(LocalDateTime.now(), it.lastSelectedTime) > 3) {
-                it.weight += 1.12.pow(ChronoUnit.DAYS.between(it.lastSelectedTime, LocalDateTime.now()).toDouble())
-            } else {
-                it.weight += ChronoUnit.DAYS.between(LocalDateTime.now(), LocalDateTime.now()).toDouble() * 1.01
-            }
-            it.weight += random.nextDouble(1.0, 5.0)
-        }
-    }
-
     constructor(name: String): this(
         name = name,
         students = mutableListOf(),
