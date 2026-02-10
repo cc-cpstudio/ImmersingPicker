@@ -112,9 +112,9 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-<!--                            <mainClass>-->
-<!--                                com.github.immersingeducation.immersingpicker/com.github.immersingeducation.immersingpicker.HelloView-->
-<!--                            </mainClass>-->
+                            <mainClass>
+                                com.github.immersingeducation.immersingpicker.MainKt
+                            </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
