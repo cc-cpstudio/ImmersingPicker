@@ -12,8 +12,8 @@ class ImmersingPicker: App(MainView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
         stage.apply {
-            width = 800.0
-            height = 600.0
+            minWidth = 800.0
+            minHeight = 600.0
         }
     }
 }
