@@ -1,6 +1,7 @@
 package com.github.immersingeducation.immersingpicker.component
 
 import com.github.immersingeducation.immersingpicker.core.Student
+import javafx.geometry.Pos
 import javafx.scene.control.Alert
 import javafx.scene.paint.Color
 import tornadofx.*
@@ -8,14 +9,15 @@ import tornadofx.*
 class Seat(val student: Student): Fragment() {
     override val root = borderpane {
         style {
-            minWidth = 30.px
-            minHeight = 18.px
-            maxWidth = 30.px
-            maxHeight = 18.px
+            minWidth = 60.px
+            minHeight = 36.px
+            maxWidth = 60.px
+            maxHeight = 36.px
             backgroundColor = multi(Color.LIGHTGRAY)
-            borderWidth = multi(box(1.px))
+            backgroundRadius = multi(box(4.px))
+            borderWidth = multi(box(2.px))
             borderColor = multi(box(Color.DARKGRAY))
-            borderRadius = multi(box(1.px))
+            borderRadius = multi(box(4.px))
         }
 
         setOnMouseClicked { event ->
@@ -31,7 +33,9 @@ class Seat(val student: Student): Fragment() {
         }
 
         center {
-            hbox(spacing = 10) {
+            hbox(spacing = 5) {
+                alignment = Pos.CENTER
+
                 label("${student.id}")
                 label(student.name)
             }

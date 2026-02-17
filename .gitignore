@@ -1,5 +1,6 @@
 app-data
 docs-for-ai-and-me
+logs
 
 target/
 !.mvn/wrapper/maven-wrapper.jar

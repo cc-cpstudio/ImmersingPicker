@@ -39,7 +39,7 @@ data class ClassNGrade(
 
     fun addStudent(name: String, id: Int, seat: Pair<Int, Int>) {
         if (!checkIfIdExists(id)) {
-            val s = Student(name, id, 1.0, seat.first, seat.second)
+            val s = Student(name, id, seat.first, seat.second)
             students.add(s)
             logger.trace("成功添加学生：id=${s.id}")
         } else {
