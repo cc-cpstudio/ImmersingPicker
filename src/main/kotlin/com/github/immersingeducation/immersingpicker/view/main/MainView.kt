@@ -1,5 +1,6 @@
 package com.github.immersingeducation.immersingpicker.view.main
 
+import com.github.immersingeducation.immersingpicker.component.SeatGrid
 import javafx.animation.FadeTransition
 import javafx.animation.SequentialTransition
 import javafx.geometry.Pos
@@ -14,10 +15,7 @@ class MainView: View("ImmersingPicker - 主界面") {
         paddingAll = 10.0
 
         center {
-            gridpane {
-                hgap = 5.0
-                vgap = 5.0
-            }
+            add(SeatGrid(TODO("添加当前班级")))
         }
 
         bottom {
@@ -31,9 +29,23 @@ class MainView: View("ImmersingPicker - 主界面") {
                     backgroundRadius = multi(box(5.px))
                 }
 
-                button("I'm Button!") {
+                button("-1") {
+                    style {
+                        minWidth = 40.px
+                        minHeight = 40.px
+                    }
+                }
+
+                button("Select!") {
                     style {
                         minWidth = 100.px
+                        minHeight = 40.px
+                    }
+                }
+
+                button("+1") {
+                    style {
+                        minWidth = 40.px
                         minHeight = 40.px
                     }
                 }
