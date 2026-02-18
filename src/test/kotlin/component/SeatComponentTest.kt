@@ -1,6 +1,5 @@
 package component
 
-import com.github.immersingeducation.immersingpicker.component.Seat
 import com.github.immersingeducation.immersingpicker.component.SeatGrid
 import com.github.immersingeducation.immersingpicker.core.ClassNGrade
 import com.github.immersingeducation.immersingpicker.core.Student
@@ -17,29 +16,11 @@ class TestApp: App(TestView::class) {
     }
 }
 
-class TestView: View() {
+class TestView : View() {
     override val root = vbox(spacing = 5.0) {
         paddingAll = 5.0
 
-//        add(Seat(
-//            Student(
-//                id = 1,
-//                name = "Alice",
-//                seatRow = 1,
-//                seatColumn = 1
-//            )
-//        ))
-//
-//        add(Seat(
-//            Student(
-//                id = 2,
-//                name = "Bob",
-//                seatRow = 1,
-//                seatColumn = 2
-//            )
-//        ))
-
-        add(SeatGrid(
+        val grid = SeatGrid(
             ClassNGrade(
                 name = "name",
                 students = mutableListOf(
@@ -70,7 +51,21 @@ class TestView: View() {
                 ),
                 historyList = mutableListOf()
             )
-        ))
+        )
+
+        add(grid)
+
+        button("Select 1") {
+            action {
+                grid.seats[0].selected = !(grid.seats[0].selected)
+            }
+        }
+
+        button("Update") {
+            action {
+                grid.refresh()
+            }
+        }
     }
 }
 

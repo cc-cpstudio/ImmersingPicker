@@ -41,4 +41,34 @@ class Seat(val student: Student): Fragment() {
             }
         }
     }
+
+    var selected: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                root.style {
+                    if (value) {
+                        minWidth = 60.px
+                        minHeight = 36.px
+                        maxWidth = 60.px
+                        maxHeight = 36.px
+                        backgroundColor = multi(Color.LIGHTGREEN)
+                        backgroundRadius = multi(box(4.px))
+                        borderWidth = multi(box(2.px))
+                        borderColor = multi(box(Color.GREEN))
+                        borderRadius = multi(box(4.px))
+                    } else {
+                        minWidth = 60.px
+                        minHeight = 36.px
+                        maxWidth = 60.px
+                        maxHeight = 36.px
+                        backgroundColor = multi(Color.LIGHTGRAY)
+                        backgroundRadius = multi(box(4.px))
+                        borderWidth = multi(box(2.px))
+                        borderColor = multi(box(Color.DARKGRAY))
+                        borderRadius = multi(box(4.px))
+                    }
+                }
+            }
+        }
 }
