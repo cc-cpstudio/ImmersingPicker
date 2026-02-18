@@ -1,13 +1,8 @@
 package com.github.immersingeducation.immersingpicker.view.main
 
 import com.github.immersingeducation.immersingpicker.component.SeatGrid
-import javafx.animation.FadeTransition
-import javafx.animation.SequentialTransition
 import javafx.geometry.Pos
-import javafx.scene.Parent
-import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
-import javafx.util.Duration
 import tornadofx.*
 
 class MainView: View("ImmersingPicker - 主界面") {
