@@ -15,7 +15,7 @@ module com.github.immersingeducation.immersingpicker {
 
     opens com.github.immersingeducation.immersingpicker to javafx.fxml;
     exports com.github.immersingeducation.immersingpicker;
-    opens com.github.immersingeducation.immersingpicker.launcher to javafx.fxml;
-    exports com.github.immersingeducation.immersingpicker.launcher;
+    opens com.github.immersingeducation.immersingpicker.launch to javafx.fxml;
+    exports com.github.immersingeducation.immersingpicker.launch;
     exports com.github.immersingeducation.immersingpicker.view.main to tornadofx;
 }

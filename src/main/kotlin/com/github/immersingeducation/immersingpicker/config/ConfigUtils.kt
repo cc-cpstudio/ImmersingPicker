@@ -67,6 +67,9 @@ object ConfigUtils {
                 if (nameOfItem == name) {
                     flag = true
                     item.value = value
+                    if (item.needRestart) {
+                        TODO("需要重启")
+                    }
                 }
             }
         }
@@ -110,11 +113,7 @@ object ConfigUtils {
 
     private fun notifyListeners(item: ConfigItem, old: Any?, new: Any?) {
         listeners[item]?.forEach {
-            notifyListener(it, old, new)
+            it.onConfigChanged(old, new)
         }
-    }
-
-    private fun notifyListener(listener: ConfigChangeListener, old: Any?, new: Any?) {
-
     }
 }

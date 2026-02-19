@@ -1,4 +1,4 @@
-package com.github.immersingeducation.immersingpicker.launcher
+package com.github.immersingeducation.immersingpicker.launch
 
 import com.github.immersingeducation.immersingpicker.view.main.MainView
 import javafx.stage.Stage
