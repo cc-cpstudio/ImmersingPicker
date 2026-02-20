@@ -1,7 +1,7 @@
 package component
 
 import com.github.immersingeducation.immersingpicker.component.SeatGrid
-import com.github.immersingeducation.immersingpicker.core.ClassNGrade
+import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.core.Student
 import javafx.stage.Stage
 import tornadofx.*
@@ -21,7 +21,7 @@ class TestView : View() {
         paddingAll = 5.0
 
         val grid = SeatGrid(
-            ClassNGrade(
+            Clazz(
                 name = "name",
                 students = mutableListOf(
                     Student(

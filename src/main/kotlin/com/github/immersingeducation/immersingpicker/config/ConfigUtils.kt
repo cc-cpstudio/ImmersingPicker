@@ -1,7 +1,7 @@
 package com.github.immersingeducation.immersingpicker.config
 
 import com.github.immersingeducation.immersingpicker.config.enums.SelectedAmountWeightCalculateMode
-import kotlinx.coroutines.*
+import com.github.immersingeducation.immersingpicker.core.Clazz
 
 object ConfigUtils {
     val defConfig = mutableMapOf(
@@ -76,6 +76,14 @@ object ConfigUtils {
         }
         if (!flag) {
             throw IllegalArgumentException("未找到配置项：$name")
+        }
+    }
+
+    fun getCurrentClass(): Clazz? {
+        return try {
+            Clazz.classes[getConfig("currentClass")?.value as Int? ?: -1] as Clazz?
+        } catch(e: IndexOutOfBoundsException) {
+            null
         }
     }
 
