@@ -1,15 +1,14 @@
 package com.github.immersingeducation.immersingpicker.view.recover
 
 import com.github.immersingeducation.immersingpicker.config.ConfigUtils
-import com.github.immersingeducation.immersingpicker.core.ClassNGrade
+import com.github.immersingeducation.immersingpicker.core.Clazz
 import javafx.scene.control.ButtonType
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Dialog
-import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.util.Callback
 
-class ClassChangeDialog: Dialog<ClassNGrade>() {
+class ClassChangeDialog: Dialog<Clazz>() {
     init {
         title = "切换班级"
         dialogPane.buttonTypes.addAll(
@@ -17,22 +16,22 @@ class ClassChangeDialog: Dialog<ClassNGrade>() {
             ButtonType.CANCEL
         )
 
-        val changeComboBox = ComboBox<ClassNGrade>().apply {
-            items.addAll(ClassNGrade.classes)
+        val changeComboBox = ComboBox<Clazz>().apply {
+            items.addAll(Clazz.classes)
             promptText = "请选择班级"
-            value = ConfigUtils.getConfig("currentClass")?.value as ClassNGrade?
+            value = ConfigUtils.getConfig("currentClass")?.value as Clazz?
 
             cellFactory = Callback {
-                object : ListCell<ClassNGrade>() {
-                    override fun updateItem(item: ClassNGrade?, empty: Boolean) {
+                object : ListCell<Clazz>() {
+                    override fun updateItem(item: Clazz?, empty: Boolean) {
                         super.updateItem(item, empty)
                         text = if (empty || item == null) { null } else { item.name }
                     }
                 }
             }
 
-            buttonCell = object : ListCell<ClassNGrade>() {
-                override fun updateItem(item: ClassNGrade?, empty: Boolean) {
+            buttonCell = object : ListCell<Clazz>() {
+                override fun updateItem(item: Clazz?, empty: Boolean) {
                     super.updateItem(item, empty)
                     text = if (empty || item == null) { null } else { item.name }
                 }

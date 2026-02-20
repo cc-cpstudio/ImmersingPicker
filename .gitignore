@@ -1,6 +1,7 @@
 app-data
 docs-for-ai-and-me
 logs
+ipicker
 
 target/
 !.mvn/wrapper/maven-wrapper.jar

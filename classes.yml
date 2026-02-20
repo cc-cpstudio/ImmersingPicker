@@ -1,0 +1,9 @@
+!!com.github.immersingeducation.immersingpicker.data.clazz.Classes
+classes:
+- historyList: []
+  name: class1
+  students:
+  - {id: 1, initialWeight: 1.0, lastSelectedTime: null, name: student1, seatColumn: 1,
+    seatRow: 1, selectedAmount: 0, weight: -1.0}
+  - {id: 2, initialWeight: 1.0, lastSelectedTime: null, name: student2, seatColumn: 2,
+    seatRow: 2, selectedAmount: 0, weight: -1.0}

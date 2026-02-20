@@ -1,6 +1,6 @@
 package com.github.immersingeducation.immersingpicker.selectors
 
-import com.github.immersingeducation.immersingpicker.core.ClassNGrade
+import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.core.History
 import com.github.immersingeducation.immersingpicker.core.MAX_AVAIL_RANGE
 import com.github.immersingeducation.immersingpicker.core.MIN_SELECTION_POOL_AMOUNT
@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Random
 import kotlin.math.pow
 
-abstract class SelectorBase(val clazz: ClassNGrade) {
+abstract class SelectorBase(val clazz: Clazz) {
     companion object{
         val random = Random()
     }

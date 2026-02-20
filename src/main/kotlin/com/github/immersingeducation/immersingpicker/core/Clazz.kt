@@ -4,17 +4,14 @@ import com.github.immersingeducation.immersingpicker.selectors.StudentSelector
 import mu.KotlinLogging
 import java.util.Random
 
-data class ClassNGrade(
+data class Clazz(
     val name: String,
     val students: MutableList<Student>,
     val historyList: MutableList<History>
 ) {
     companion object {
         val logger = KotlinLogging.logger {}
-
-        val classes = mutableListOf<ClassNGrade>()
-
-
+        val classes = mutableListOf<Clazz>()
     }
 
     val random = Random()
