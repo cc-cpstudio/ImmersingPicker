@@ -11,13 +11,17 @@ data class ClassNGrade(
 ) {
     companion object {
         val logger = KotlinLogging.logger {}
+
+        val classes = mutableListOf<ClassNGrade>()
+
+
     }
 
     val random = Random()
-
     val studentSelector = StudentSelector(this)
 
     init {
+        classes.add(this)
         logger.info("成功创建班级：$name")
     }
 

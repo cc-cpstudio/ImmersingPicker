@@ -41,7 +41,8 @@ object ConfigUtils {
         ))
     )
 
-    val config = mutableMapOf<String, ConfigGroup>()
+    lateinit var config: MutableMap<String, ConfigGroup>
+    // TODO 数据持久化
 
     val listeners = mutableMapOf<ConfigItem, MutableList<ConfigChangeListener>>()
 
