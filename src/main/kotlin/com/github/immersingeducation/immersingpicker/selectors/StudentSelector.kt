@@ -1,11 +1,11 @@
 package com.github.immersingeducation.immersingpicker.selectors
 
-import com.github.immersingeducation.immersingpicker.core.Clazz
+import com.github.immersingeducation.immersingpicker.core.ClassNGrade
 import com.github.immersingeducation.immersingpicker.core.History
 import com.github.immersingeducation.immersingpicker.core.Student
 import java.util.PriorityQueue
 
-class StudentSelector(clazz: Clazz): SelectorBase(clazz) {
+class StudentSelector(clazz: ClassNGrade): SelectorBase(clazz) {
     override val name: String = "StudentSelector"
 
     override fun selectLogic(amount: Int): History {

@@ -1,13 +1,13 @@
 package com.github.immersingeducation.immersingpicker.component
 
 import com.github.immersingeducation.immersingpicker.config.ConfigUtils
-import com.github.immersingeducation.immersingpicker.core.Clazz
+import com.github.immersingeducation.immersingpicker.core.ClassNGrade
 import com.github.immersingeducation.immersingpicker.core.Student
 import com.github.immersingeducation.immersingpicker.exception.NoAvailableClass
 import javafx.geometry.Insets
 import javafx.scene.layout.GridPane
 
-class SeatGrid(val clazz: Clazz?): GridPane() {
+class SeatGrid(val clazz: ClassNGrade?): GridPane() {
     val seats = mutableListOf<Seat>()
 
     init {
@@ -35,5 +35,5 @@ class SeatGrid(val clazz: Clazz?): GridPane() {
         }
     }
 
-    constructor(): this(ConfigUtils.getCurrentClass())
+    constructor(): this(ConfigUtils.getConfig("currentClass")?.value as ClassNGrade?)
 }

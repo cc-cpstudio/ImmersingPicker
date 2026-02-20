@@ -1,14 +1,15 @@
 package com.github.immersingeducation.immersingpicker.view.recover
 
 import com.github.immersingeducation.immersingpicker.config.ConfigUtils
-import com.github.immersingeducation.immersingpicker.core.Clazz
+import com.github.immersingeducation.immersingpicker.core.ClassNGrade
 import javafx.scene.control.ButtonType
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Dialog
+import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.util.Callback
 
-class ClassChangeDialog: Dialog<Clazz>() {
+class ClassChangeDialog: Dialog<ClassNGrade>() {
     init {
         title = "切换班级"
         dialogPane.buttonTypes.addAll(
@@ -16,22 +17,22 @@ class ClassChangeDialog: Dialog<Clazz>() {
             ButtonType.CANCEL
         )
 
-        val changeComboBox = ComboBox<Clazz>().apply {
-            items.addAll(Clazz.classes)
+        val changeComboBox = ComboBox<ClassNGrade>().apply {
+            items.addAll(ClassNGrade.classes)
             promptText = "请选择班级"
-            value = ConfigUtils.getCurrentClass()
+            value = ConfigUtils.getConfig("currentClass")?.value as ClassNGrade?
 
             cellFactory = Callback {
-                object : ListCell<Clazz>() {
-                    override fun updateItem(item: Clazz?, empty: Boolean) {
+                object : ListCell<ClassNGrade>() {
+                    override fun updateItem(item: ClassNGrade?, empty: Boolean) {
                         super.updateItem(item, empty)
                         text = if (empty || item == null) { null } else { item.name }
                     }
                 }
             }
 
-            buttonCell = object : ListCell<Clazz>() {
-                override fun updateItem(item: Clazz?, empty: Boolean) {
+            buttonCell = object : ListCell<ClassNGrade>() {
+                override fun updateItem(item: ClassNGrade?, empty: Boolean) {
                     super.updateItem(item, empty)
                     text = if (empty || item == null) { null } else { item.name }
                 }
