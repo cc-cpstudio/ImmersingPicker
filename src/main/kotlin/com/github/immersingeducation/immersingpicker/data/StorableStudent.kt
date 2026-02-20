@@ -27,5 +27,18 @@ data class StorableStudent(
                 weight = storable.weight
             }
         }
+        
+        fun serialize(student: Student): StorableStudent {
+            return StorableStudent(
+                name = student.name,
+                id = student.id,
+                seatRow = student.seatRow,
+                seatColumn = student.seatColumn,
+                initialWeight = student.initialWeight,
+                lastSelectedTime = student.lastSelectedTime ?: LocalDateTime.now(),
+                selectedAmount = student.selectedAmount,
+                weight = student.weight
+            )
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.immersingeducation.immersingpicker.launch
 
+import com.github.immersingeducation.immersingpicker.data.DataPersistence
 import com.github.immersingeducation.immersingpicker.exception.NoAvailableClass
 import com.github.immersingeducation.immersingpicker.view.main.MainView
 import com.github.immersingeducation.immersingpicker.view.recover.RecoverModeView
@@ -23,6 +24,11 @@ class ImmersingPicker: App(MainView::class) {
                 minWidth = 800.0
                 minHeight = 600.0
             }
+            
+            // 添加关闭钩子，在应用程序退出时保存数据
+            Runtime.getRuntime().addShutdownHook(Thread {
+                DataPersistence.saveClasses()
+            })
         } catch(e: NoAvailableClass) {
             launch<RecoverMode>()
         }

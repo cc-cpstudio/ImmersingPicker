@@ -16,5 +16,13 @@ data class StorableClazz(
                 historyList = storable.historyList.toMutableList()
             )
         }
+        
+        fun serialize(clazz: Clazz): StorableClazz {
+            return StorableClazz(
+                name = clazz.name,
+                students = clazz.students.map { StorableStudent.serialize(it) },
+                historyList = clazz.historyList
+            )
+        }
     }
 }
