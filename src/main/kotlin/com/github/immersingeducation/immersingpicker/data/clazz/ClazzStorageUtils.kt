@@ -5,12 +5,7 @@ import com.github.immersingeducation.immersingpicker.core.History
 import com.github.immersingeducation.immersingpicker.tools.BasicUtils
 import mu.KotlinLogging
 import org.yaml.snakeyaml.DumperOptions
-import org.yaml.snakeyaml.LoaderOptions
 import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.constructor.Constructor
-import org.yaml.snakeyaml.nodes.Tag
-import org.yaml.snakeyaml.representer.Representer
-import java.io.File
 import java.io.FileInputStream
 import java.io.FileWriter
 import java.time.LocalDateTime
@@ -44,7 +39,8 @@ object ClazzStorageUtils {
                     },
                     "historyList" to clazz.historyList
                 )
-            }
+            },
+            "current" to Clazz.currentIndex
         )
         
         val yamlString = yaml.dump(classesMap)
@@ -60,13 +56,14 @@ object ClazzStorageUtils {
         }
     }
 
-    fun loadClasses(): List<Clazz> {
+    fun loadClasses() {
         val yaml = Yaml()
         logger.trace("成功创建Yaml解析器对象")
         try {
             FileInputStream("${BasicUtils.getWorkDirPath()}/ipicker/classes.yml").use { reader ->
                 val map = yaml.load(reader) as Map<String, Any>
                 val classesList = map["classes"] as List<Map<String, Any>>
+                val currentIndex = map["current"] as? Int?
                 val storableClasses = classesList.map {
                     val name = it["name"] as String
                     val students = (it["students"] as List<Map<String, Any>>).map { student ->
@@ -83,13 +80,17 @@ object ClazzStorageUtils {
                     val historyList = emptyList<History>()
                     StorableClazz(name, students, historyList)
                 }
-                val classes = Classes(storableClasses)
-                logger.info("成功从文件加载Yaml字符串，并转为Clazz列表")
-                return TransitionUtils.classesToList(classes)
+                val classes = Classes(storableClasses, currentIndex)
+                val loadedClasses = TransitionUtils.classesToList(classes)
+                
+                // 清空现有班级列表并添加加载的班级
+                Clazz.classes.clear()
+                Clazz.classes.addAll(loadedClasses)
+                Clazz.currentIndex = currentIndex
+                logger.info("成功从文件加载Yaml字符串，并存储到Clazz.classes和Clazz.current中")
             }
         } catch (e: Exception) {
-            logger.error("加载Clazz列表时发生异常，将返回空列表", e)
-            return emptyList()
+            logger.error("加载Clazz列表时发生异常", e)
         }
     }
 }

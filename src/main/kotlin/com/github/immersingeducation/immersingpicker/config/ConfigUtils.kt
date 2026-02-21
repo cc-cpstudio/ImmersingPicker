@@ -10,11 +10,6 @@ object ConfigUtils {
                 name = "isFirstRun",
                 desc = "isFirstRun",
                 value = true
-            ),
-            "currentClass" to ConfigItem(
-                name = "currentClass",
-                desc = "currentClass",
-                value = null
             )
         )),
         "selectorCG" to ConfigGroup("抽选器设置", mapOf(

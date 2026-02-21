@@ -1,5 +1,6 @@
 package com.github.immersingeducation.immersingpicker.launch
 
+import com.github.immersingeducation.immersingpicker.data.clazz.ClazzStorageUtils
 import com.github.immersingeducation.immersingpicker.exception.NoAvailableClass
 import com.github.immersingeducation.immersingpicker.view.main.MainView
 import com.github.immersingeducation.immersingpicker.view.recover.RecoverModeView
@@ -17,6 +18,7 @@ class RecoverMode: App(RecoverModeView::class) {
 
 class ImmersingPicker: App(MainView::class) {
     override fun start(stage: Stage) {
+        ClazzStorageUtils.loadClasses()
         try {
             super.start(stage)
             stage.apply {

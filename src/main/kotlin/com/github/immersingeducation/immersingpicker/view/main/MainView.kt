@@ -12,7 +12,7 @@ class MainView: View("ImmersingPicker - 主界面") {
         paddingAll = 10.0
 
         center {
-            add(SeatGrid(ConfigUtils.getConfig("currentClass")?.value as Clazz?))
+            add(SeatGrid(Clazz.getCurrentClass()))
         }
 
         bottom {

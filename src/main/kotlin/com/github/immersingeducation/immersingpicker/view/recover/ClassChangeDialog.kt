@@ -19,7 +19,7 @@ class ClassChangeDialog: Dialog<Clazz>() {
         val changeComboBox = ComboBox<Clazz>().apply {
             items.addAll(Clazz.classes)
             promptText = "请选择班级"
-            value = ConfigUtils.getConfig("currentClass")?.value as Clazz?
+            value = Clazz.getCurrentClass()
 
             cellFactory = Callback {
                 object : ListCell<Clazz>() {

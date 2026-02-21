@@ -35,5 +35,5 @@ class SeatGrid(val clazz: Clazz?): GridPane() {
         }
     }
 
-    constructor(): this(ConfigUtils.getConfig("currentClass")?.value as Clazz?)
+    constructor(): this(Clazz.getCurrentClass())
 }

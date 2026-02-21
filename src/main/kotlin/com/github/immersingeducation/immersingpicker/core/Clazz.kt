@@ -12,6 +12,11 @@ data class Clazz(
     companion object {
         val logger = KotlinLogging.logger {}
         val classes = mutableListOf<Clazz>()
+        var currentIndex: Int? = null
+
+        fun getCurrentClass(): Clazz? {
+            return currentIndex?.let { classes[it] }
+        }
     }
 
     val random = Random()

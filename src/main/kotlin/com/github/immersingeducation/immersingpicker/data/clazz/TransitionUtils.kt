@@ -4,12 +4,16 @@ import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.core.Student
 
 object TransitionUtils {
-    fun listToClasses(classes: List<Clazz>): Classes {
-        return Classes(classes.map{ clazzToStorable(it) }.toList())
+    fun listToClasses(classes: List<Clazz>, currentIndex: Int?): Classes {
+        return Classes(classes.map{ clazzToStorable(it) }.toList(), currentIndex)
     }
 
     fun classesToList(classes: Classes): List<Clazz> {
         return classes.classes.map{ storableToClazz(it) }.toList()
+    }
+
+    fun classesToCurrentIndex(classes: Classes): Int? {
+        return classes.currentIndex
     }
 
     fun clazzToStorable(clazz: Clazz): StorableClazz {
