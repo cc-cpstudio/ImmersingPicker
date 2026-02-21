@@ -7,11 +7,12 @@ import tornadofx.*
 
 class RecoverViewStyleUtils: Stylesheet() {
     companion object {
-        val primaryButton by cssclass()
+        val normalButton by cssclass()
+        val dangerousButton by cssclass()
     }
 
     init {
-        primaryButton {
+        normalButton {
             maxWidth = Int.MAX_VALUE.px
             minHeight = 18.px
             alignment = Pos.CENTER_LEFT
@@ -27,6 +28,25 @@ class RecoverViewStyleUtils: Stylesheet() {
             and(hover) {
                 backgroundColor = multi(Color.LIGHTGRAY)
                 borderColor = multi(box(Color.GRAY))
+            }
+        }
+
+        dangerousButton {
+            maxWidth = Int.MAX_VALUE.px
+            minHeight = 18.px
+            alignment = Pos.CENTER_LEFT
+
+            fontSize = 14.px
+            fontWeight = FontWeight.LIGHT
+
+            backgroundColor = multi(Color.WHITE)
+            borderColor = multi(box(Color.LIGHTGRAY))
+            borderWidth = multi(box(1.px))
+            borderRadius = multi(box(5.px))
+
+            and(hover) {
+                backgroundColor = multi(Color.RED)
+                borderColor = multi(box(Color.DARKRED))
             }
         }
     }

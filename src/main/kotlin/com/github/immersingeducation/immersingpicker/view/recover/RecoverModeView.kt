@@ -36,7 +36,7 @@ class RecoverModeView: View() {
         }
 
         button("切换当前班级") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
 
             action {
                 ClassChangeDialog()
@@ -48,39 +48,39 @@ class RecoverModeView: View() {
         }
 
         button("继续使用 ImmersingPicker") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
         }
 
         button("以调试模式使用 ImmersingPicker") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
         }
 
         button("打开日志目录") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
         }
 
         button("备份班级数据") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
         }
 
         button("备份配置") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
         }
 
         button("恢复班级数据") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
         }
 
         button("恢复配置") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.normalButton)
         }
 
         button("重置配置") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.dangerousButton)
         }
 
         button("重置全部数据") {
-            addClass(RecoverViewStyleUtils.primaryButton)
+            addClass(RecoverViewStyleUtils.dangerousButton)
         }
     }
 }
