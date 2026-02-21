@@ -2,7 +2,7 @@ package data
 
 import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.core.Student
-import com.github.immersingeducation.immersingpicker.data.PeriodicalClazzStorageUtils
+import com.github.immersingeducation.immersingpicker.data.GlobalStorageUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
@@ -31,7 +31,7 @@ fun main() {
     
     // 测试启动定期保存任务
     println("1. 启动定期保存任务")
-    PeriodicalClazzStorageUtils.start()
+    GlobalStorageUtils.start()
     println("   任务已启动")
     
     // 等待一段时间，让任务执行几次
@@ -42,17 +42,17 @@ fun main() {
     
     // 测试停止定期保存任务
     println("3. 停止定期保存任务")
-    PeriodicalClazzStorageUtils.stop()
+    GlobalStorageUtils.stop()
     println("   任务已停止")
     
     // 再次启动任务，测试重复启动的情况
     println("4. 再次启动定期保存任务")
-    PeriodicalClazzStorageUtils.start()
+    GlobalStorageUtils.start()
     println("   任务已再次启动")
     
     // 测试任务已经运行时再开启任务的情况
     println("5. 测试任务已经运行时再开启任务的情况")
-    PeriodicalClazzStorageUtils.start()
+    GlobalStorageUtils.start()
     println("   任务已经在运行，尝试再次启动完成")
     
     // 等待一段时间
@@ -63,7 +63,7 @@ fun main() {
     
     // 最终停止任务
     println("7. 最终停止定期保存任务")
-    PeriodicalClazzStorageUtils.stop()
+    GlobalStorageUtils.stop()
     println("   任务已最终停止")
     
     println("\n测试完成：PeriodicalClazzStorageUtils")
