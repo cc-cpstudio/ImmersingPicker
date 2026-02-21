@@ -4,61 +4,27 @@ import com.github.immersingeducation.immersingpicker.config.enums.SelectedAmount
 import kotlinx.coroutines.*
 
 object ConfigUtils {
-    val defConfig = mutableMapOf(
-        "privateCG" to ConfigGroup("privateCG", mapOf(
-            "isFirstRun" to ConfigItem(
-                name = "isFirstRun",
-                desc = "isFirstRun",
-                value = true
-            )
-        )),
-        "selectorCG" to ConfigGroup("抽选器设置", mapOf(
-            "fairSelection" to ConfigItem(
-                name = "开启公平抽选？",
-                desc = "开启后将会多维度使每位学生的抽选次数均匀分配",
-                value = true
-            ),
-            "thresholdValueOfSelectionPool" to ConfigItem(
-                name = "候选池学生数量阈值",
-                desc = "候选池里学生的最小数量",
-                value = 1
-            ),
-            "selectedAmountWeightCalcMode" to ConfigItem(
-                name = "抽选次数权重计算方式",
-                desc = "更改方式后，每位学生的权重差和相对顺序可能会发生变化",
-                value = SelectedAmountWeightCalculateMode.EXPONENT
-            ),
-            "selectedAmountWeightCalcCoefficient" to ConfigItem(
-                name = "抽选次数权重计算系数",
-                desc = "更改系数后，每位学生的权重差可能会发生变化，并产生一些奇妙效果",
-                value = 1.12
-            )
-        ))
-    )
+    var defConfig: MutableMap<String, ConfigGroup>? = null
 
-    lateinit var config: MutableMap<String, ConfigGroup>
+    var config: MutableMap<String, ConfigGroup>? = null
     // TODO 数据持久化
 
     val listeners = mutableMapOf<ConfigItem, MutableList<ConfigChangeListener>>()
 
-    fun loadExistingConfig() {
-        TODO("等待数据持久化")
-    }
-
     fun getConfig(id: String): ConfigItem? {
-        config.forEach { (_, group) ->
+        config?.forEach { (_, group) ->
             group.configs.forEach { (nameOfItem, item) ->
                 if (nameOfItem == id) {
                     return item
                 }
             }
-        }
+        } ?: throw IllegalArgumentException("未加载配置文件")
         return null
     }
 
     fun setConfig(name: String, value: Any?) {
         var flag = false
-        config.forEach { (_, group) ->
+        config?.forEach { (_, group) ->
             group.configs.forEach { (nameOfItem, item) ->
                 if (nameOfItem == name) {
                     flag = true
@@ -68,7 +34,7 @@ object ConfigUtils {
                     }
                 }
             }
-        }
+        } ?: throw IllegalArgumentException("未加载配置文件")
         if (!flag) {
             throw IllegalArgumentException("未找到配置项：$name")
         }
