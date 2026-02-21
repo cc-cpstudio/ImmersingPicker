@@ -23,8 +23,3 @@ class StudentSelector(clazz: Clazz): SelectorBase(clazz) {
         )
     }
 }
-
-//fun main() {
-//    val clazz = ClassNGrade("name", mutableListOf<Student>(Student("name", 1, 1, 1), Student("nam", 2, 1, 2)), mutableListOf<History>())
-//    println(StudentSelector(clazz).select(1))
-//}

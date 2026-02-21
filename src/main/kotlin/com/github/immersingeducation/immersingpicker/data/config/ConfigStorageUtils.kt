@@ -46,7 +46,7 @@ object ConfigStorageUtils {
                     yaml.dump(configMap, writer)
                 }
             }
-            logger.trace("成功保存配置文件")
+            logger.info("成功保存配置文件：$configFile")
         } catch (e: Exception) {
             logger.error("保存配置文件时发生异常", e)
         }
@@ -83,7 +83,7 @@ object ConfigStorageUtils {
                     yaml.dump(configMap, writer)
                 }
             }
-            logger.trace("成功保存默认配置文件")
+            logger.info("成功保存默认配置文件：$configFile")
         } catch (e: Exception) {
             logger.error("保存默认配置文件时发生异常", e)
         }
@@ -146,7 +146,7 @@ object ConfigStorageUtils {
                     }
                 }
             }
-            logger.trace("成功加载配置文件")
+            logger.info("成功加载配置文件")
             ConfigUtils.config = gotten
         } catch (e: Exception) {
             logger.error("加载配置文件时发生异常", e)
@@ -154,10 +154,7 @@ object ConfigStorageUtils {
             resetToDefaultConfig()
         }
     }
-    
-    /**
-     * 重置为默认配置并保存
-     */
+
     private fun resetToDefaultConfig() {
         // 加载默认配置
         loadDefaultConfig()
@@ -167,7 +164,7 @@ object ConfigStorageUtils {
             ConfigUtils.config = ConfigUtils.defConfig
             // 保存当前配置
             saveConfig()
-            logger.trace("成功重置为默认配置并保存")
+            logger.info("成功重置为默认配置并保存")
         } else {
             logger.error("加载默认配置失败，无法重置为默认配置")
             ConfigUtils.config = null
@@ -206,7 +203,7 @@ object ConfigStorageUtils {
                     )
                 }
             }
-            logger.trace("成功加载默认配置文件")
+            logger.info("成功加载默认配置文件")
             ConfigUtils.defConfig = gotten
         } catch (e: Exception) {
             logger.error("加载默认配置文件时发生异常", e)
