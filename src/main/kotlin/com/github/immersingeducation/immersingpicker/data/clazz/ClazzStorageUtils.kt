@@ -19,14 +19,35 @@ object ClazzStorageUtils {
     val logger = KotlinLogging.logger {}
 
     fun saveClasses() {
-        val representer = Representer(DumperOptions().apply {
+        val dumperOptions = DumperOptions().apply {
             defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
-        })
-        representer.addClassTag(Classes::class.java, Tag.MAP)
-        val yaml = Yaml(representer)
+        }
+        val yaml = Yaml(dumperOptions)
         logger.trace("成功创建Yaml解析器对象")
-        val classes = TransitionUtils.listToClasses(Clazz.classes)
-        val yamlString = yaml.dump(classes)
+        
+        // 使用映射表方式构建数据结构
+        val classesMap = mapOf(
+            "classes" to Clazz.classes.map { clazz ->
+                mapOf(
+                    "name" to clazz.name,
+                    "students" to clazz.students.map { student ->
+                        mapOf(
+                            "name" to student.name,
+                            "id" to student.id,
+                            "seatRow" to student.seatRow,
+                            "seatColumn" to student.seatColumn,
+                            "initialWeight" to student.initialWeight,
+                            "lastSelectedTime" to student.lastSelectedTime,
+                            "selectedAmount" to student.selectedAmount,
+                            "weight" to student.weight
+                        )
+                    },
+                    "historyList" to clazz.historyList
+                )
+            }
+        )
+        
+        val yamlString = yaml.dump(classesMap)
         logger.debug("成功将Clazz列表转换为Yaml字符串")
         try {
             FileWriter("${BasicUtils.getWorkDirPath()}/ipicker/classes.yml").use { writer ->

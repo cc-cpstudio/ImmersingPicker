@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 // 自定义构造器，适配 SnakeYAML 2.x
-class CustomYamlConstructor(targetType: Class<*>, loaderOptions: LoaderOptions) : Constructor(targetType, loaderOptions) {
+class MyYamlConstructor(targetType: Class<*>, loaderOptions: LoaderOptions) : Constructor(targetType, loaderOptions) {
     private val dateTimeFormatters = listOf(
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     )
