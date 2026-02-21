@@ -2,7 +2,7 @@ package data
 
 import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.core.Student
-import com.github.immersingeducation.immersingpicker.data.clazz.PeriodicalClazzStorageUtils
+import com.github.immersingeducation.immersingpicker.data.PeriodicalClazzStorageUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 

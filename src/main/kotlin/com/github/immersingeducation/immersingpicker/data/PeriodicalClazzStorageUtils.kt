@@ -1,5 +1,7 @@
-package com.github.immersingeducation.immersingpicker.data.clazz
+package com.github.immersingeducation.immersingpicker.data
 
+import com.github.immersingeducation.immersingpicker.data.clazz.ClazzStorageUtils
+import com.github.immersingeducation.immersingpicker.data.config.ConfigStorageUtils
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -28,16 +30,24 @@ class PeriodicalClazzStorageUtils private constructor(
             try {
                 while (isActive) {
                     try {
-                        logger.debug("开始保存班级数据")
+                        logger.debug("开始尝试保存班级数据")
                         ClazzStorageUtils.saveClasses()
+                        logger.debug("班级数据保存完成")
                     } catch (e: Exception) {
                         logger.error("本次保存班级数据时出错", e)
                     }
-                    logger.debug("执行完毕，开始等待")
+                    try {
+                        logger.debug("开始尝试保存配置数据")
+                        ConfigStorageUtils.saveConfig()
+                        logger.debug("配置数据保存完成")
+                    } catch (e: Exception) {
+                        logger.error("本次保存配置数据时出错", e)
+                    }
+                    logger.debug("全部执行完毕，开始等待")
                     delay(1000.milliseconds)
                 }
             } catch (e: CancellationException) {
-                logger.info("保存班级数据的周期任务被取消")
+                logger.info("保存数据的周期任务被取消")
             } finally {
                 hasActiveJob.set(false)
                 logger.debug("周期任务结束")

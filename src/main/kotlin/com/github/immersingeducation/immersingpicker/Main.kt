@@ -2,7 +2,7 @@ package com.github.immersingeducation.immersingpicker
 
 import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.data.clazz.ClazzStorageUtils
-import com.github.immersingeducation.immersingpicker.data.clazz.PeriodicalClazzStorageUtils
+import com.github.immersingeducation.immersingpicker.data.PeriodicalClazzStorageUtils
 import com.github.immersingeducation.immersingpicker.launch.ImmersingPicker
 import com.github.immersingeducation.immersingpicker.launch.RecoverMode
 import com.github.immersingeducation.immersingpicker.launch.recoverReason
