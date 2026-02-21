@@ -3,7 +3,6 @@ package data
 import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.core.Student
 import com.github.immersingeducation.immersingpicker.data.clazz.ClazzStorageUtils
-import com.github.immersingeducation.immersingpicker.data.clazz.TransitionUtils
 
 fun main() {
     val clazz = Clazz(
@@ -25,4 +24,5 @@ fun main() {
         historyList = mutableListOf()
     )
     ClazzStorageUtils.saveClasses()
+    val loadedClazz = ClazzStorageUtils.loadClasses()
 }
