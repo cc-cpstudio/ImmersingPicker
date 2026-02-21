@@ -1,6 +1,5 @@
 package com.github.immersingeducation.immersingpicker.component
 
-import com.github.immersingeducation.immersingpicker.config.ConfigUtils
 import com.github.immersingeducation.immersingpicker.core.Clazz
 import com.github.immersingeducation.immersingpicker.core.Student
 import com.github.immersingeducation.immersingpicker.exception.NoAvailableClass
@@ -35,5 +34,5 @@ class SeatGrid(val clazz: Clazz?): GridPane() {
         }
     }
 
-    constructor(): this(Clazz.getCurrentClass())
+    constructor(): this(Clazz.getCurrentClazz())
 }

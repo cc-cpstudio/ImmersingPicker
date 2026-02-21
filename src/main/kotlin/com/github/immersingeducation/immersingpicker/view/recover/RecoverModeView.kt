@@ -41,9 +41,6 @@ class RecoverModeView: View() {
             action {
                 ClassChangeDialog()
                     .showAndWait()
-                    ?.ifPresent { result ->
-                        ConfigUtils.setConfig("currentClass", result)
-                    }
             }
         }
 

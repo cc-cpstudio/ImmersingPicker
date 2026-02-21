@@ -11,7 +11,7 @@ import tornadofx.*
 
 fun main(args: Array<String>) = runBlocking {
     ClazzStorageUtils.loadClasses()
-    if (Clazz.getCurrentClass() == null) {
+    if (Clazz.getCurrentClazz() == null) {
         recoverReason = "当前没有可用班级"
         launch<RecoverMode>()
     } else {

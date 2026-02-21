@@ -14,8 +14,16 @@ data class Clazz(
         val classes = mutableListOf<Clazz>()
         var currentIndex: Int? = null
 
-        fun getCurrentClass(): Clazz? {
+        fun getCurrentClazz(): Clazz? {
             return currentIndex?.let { classes[it] }
+        }
+
+        fun getClazz(index: Int): Clazz? {
+            return if (index in classes.indices) {
+                classes[index]
+            } else {
+                null
+            }
         }
     }
 

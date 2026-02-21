@@ -1,7 +1,6 @@
 package com.github.immersingeducation.immersingpicker.view.main
 
 import com.github.immersingeducation.immersingpicker.component.SeatGrid
-import com.github.immersingeducation.immersingpicker.config.ConfigUtils
 import com.github.immersingeducation.immersingpicker.core.Clazz
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
@@ -12,7 +11,7 @@ class MainView: View("ImmersingPicker - 主界面") {
         paddingAll = 10.0
 
         center {
-            add(SeatGrid(Clazz.getCurrentClass()))
+            add(SeatGrid(Clazz.getCurrentClazz()))
         }
 
         bottom {
