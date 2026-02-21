@@ -1,0 +1,86 @@
+package com.github.immersingeducation.immersingpicker.data.clazz
+
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import mu.KotlinLogging
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.milliseconds
+
+class PeriodicalClazzStorageUtils private constructor(
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
+    private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+    private val hasActiveJob = AtomicBoolean(false)
+    private var currentJob: Job? = null
+
+    fun saveClassesPeriodically() {
+        cancelCurrent()
+        hasActiveJob.set(true)
+        currentJob = coroutineScope.launch {
+            try {
+                while (isActive) {
+                    try {
+                        logger.debug("开始保存班级数据")
+                        ClazzStorageUtils.saveClasses()
+                    } catch (e: Exception) {
+                        logger.error("本次保存班级数据时出错", e)
+                    }
+                    logger.debug("执行完毕，开始等待")
+                    delay(1000.milliseconds)
+                }
+            } catch (e: CancellationException) {
+                logger.info("保存班级数据的周期任务被取消")
+            } finally {
+                hasActiveJob.set(false)
+                logger.debug("周期任务结束")
+            }
+        }
+    }
+
+    fun cancelCurrent() {
+        if (currentJob?.isActive == true) {
+            currentJob?.cancel()
+        }
+        currentJob = null
+    }
+
+    fun destroy() {
+        cancelCurrent()
+        coroutineScope.cancel()
+        logger.debug("周期任务已被销毁")
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
+
+        private var utilsObject: PeriodicalClazzStorageUtils? = null
+        private val isTaskRunning = AtomicBoolean(false)
+
+        fun start() {
+            if (!isTaskRunning.get()) {
+                utilsObject = PeriodicalClazzStorageUtils()
+                utilsObject?.saveClassesPeriodically()
+                logger.debug("周期任务已启动")
+                isTaskRunning.set(true)
+            }
+        }
+
+        fun stop() {
+            if (isTaskRunning.get()) {
+                utilsObject?.cancelCurrent()
+                utilsObject?.destroy()
+                utilsObject = null
+                logger.debug("周期任务已停止")
+                isTaskRunning.set(false)
+            }
+        }
+    }
+}
