@@ -11,6 +11,12 @@ import java.time.temporal.ChronoUnit
 import java.util.Random
 import kotlin.math.pow
 
+/**
+ * 选择器抽象基类，用于定义选择器的基本行为和属性
+ * @param clazz 班级对象，用于操作班级中的学生和历史记录
+ * @author CC想当百大
+ * @since v1.0.0.a
+ */
 abstract class SelectorBase(val clazz: Clazz) {
     companion object{
         val random = Random()
@@ -19,8 +25,22 @@ abstract class SelectorBase(val clazz: Clazz) {
 
     abstract val name: String
 
+    /**
+     * 选择逻辑，根据班级中的学生和历史记录选择指定数量的学生
+     * @param amount 要选择的学生数量
+     * @return 历史记录对象，包含选择的学生和时间
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     abstract fun selectLogic(amount: Int): History
 
+    /**
+     * 计算极差，用于确定选择学生的范围
+     * @param needed 班级中需要选择的学生列表
+     * @return 极差，即选择学生的范围
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     private fun calculateRange(needed: List<Student>): Int {
         val maxE = needed.maxBy { it.selectedAmount }
         val minE = needed.minBy { it.selectedAmount }
@@ -28,6 +48,12 @@ abstract class SelectorBase(val clazz: Clazz) {
         return maxE.selectedAmount - minE.selectedAmount
     }
 
+    /**
+     * 计算可用选择学生列表，根据班级中的学生和历史记录筛选出可选择的学生
+     * @return 可用选择学生列表
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     private fun calculateAvailableSelectStudents(): MutableList<Student> {
         logger.debug("开始计算可用选择学生")
         val tmpStudents = clazz.students
@@ -53,6 +79,11 @@ abstract class SelectorBase(val clazz: Clazz) {
         return tmpStudents
     }
 
+    /**
+     * 计算学生权重，根据班级中的学生和历史记录计算每个学生的权重
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun calculateWeight() {
         logger.debug("开始计算学生权重")
         // 权重影响因素：抽取次数，上次抽取时间与现在的间隔，
@@ -98,6 +129,13 @@ abstract class SelectorBase(val clazz: Clazz) {
         logger.debug("权重计算完成")
     }
 
+    /**
+     * 选择学生，根据班级中的学生和历史记录选择指定数量的学生
+     * @param amount 需要选择的学生数量
+     * @return 选择的学生历史记录
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun select(amount: Int): History {
         logger.debug("开始选择学生，需要选择 $amount 人")
         try {

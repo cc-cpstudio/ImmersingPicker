@@ -6,6 +6,12 @@ import javafx.scene.control.Alert
 import javafx.scene.paint.Color
 import tornadofx.*
 
+/**
+ * 座位组件，用于以座位形式显示学生信息
+ * @param student 座位组件对应的学生对象
+ * @author CC想当百大
+ * @since v1.0.0.a
+ */
 class Seat(val student: Student): Fragment() {
     override val root = borderpane {
         style {
@@ -42,6 +48,9 @@ class Seat(val student: Student): Fragment() {
         }
     }
 
+    /**
+     * 座位是否被选中，更改时会同步更新座位的样式
+     */
     var selected: Boolean = false
         set(value) {
             if (field != value) {

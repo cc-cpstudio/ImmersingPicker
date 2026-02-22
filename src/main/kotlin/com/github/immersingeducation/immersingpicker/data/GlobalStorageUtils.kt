@@ -16,6 +16,11 @@ import mu.KotlinLogging
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * 全局存储工具类，用于管理全局数据的存储和加载
+ * @author CC想当百大
+ * @since v1.0.0.a
+ */
 class GlobalStorageUtils private constructor(
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
@@ -23,6 +28,11 @@ class GlobalStorageUtils private constructor(
     private val hasActiveJob = AtomicBoolean(false)
     private var currentJob: Job? = null
 
+    /**
+     * 周期性保存班级数据和配置数据
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun saveClassesPeriodically() {
         cancelCurrent()
         hasActiveJob.set(true)
@@ -65,6 +75,11 @@ class GlobalStorageUtils private constructor(
         }
     }
 
+    /**
+     * 取消当前正在执行的周期性保存任务
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun cancelCurrent() {
         if (currentJob?.isActive == true) {
             currentJob?.cancel()
@@ -72,6 +87,11 @@ class GlobalStorageUtils private constructor(
         currentJob = null
     }
 
+    /**
+     * 销毁全局存储工具类，取消所有正在执行的任务
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun destroy() {
         cancelCurrent()
         coroutineScope.cancel()
@@ -84,6 +104,11 @@ class GlobalStorageUtils private constructor(
         private var utilsObject: GlobalStorageUtils? = null
         private val isTaskRunning = AtomicBoolean(false)
 
+        /**
+         * 启动全局存储工具类，开始周期性保存班级数据和配置数据
+         * @author CC想当百大
+         * @since v1.0.0.a
+         */
         fun start() {
             if (!isTaskRunning.get()) {
                 utilsObject = GlobalStorageUtils()
@@ -93,6 +118,11 @@ class GlobalStorageUtils private constructor(
             }
         }
 
+        /**
+         * 停止全局存储工具类，取消所有正在执行的任务
+         * @author CC想当百大
+         * @since v1.0.0.a
+         */
         fun stop() {
             if (isTaskRunning.get()) {
                 utilsObject?.cancelCurrent()
@@ -103,6 +133,11 @@ class GlobalStorageUtils private constructor(
             }
         }
 
+        /**
+         * 加载全局数据，包括班级数据和配置数据
+         * @author CC想当百大
+         * @since v1.0.0.a
+         */
         fun loadData() {
             logger.info("进入 loadData 函数")
             ClazzStorageUtils.loadClasses()

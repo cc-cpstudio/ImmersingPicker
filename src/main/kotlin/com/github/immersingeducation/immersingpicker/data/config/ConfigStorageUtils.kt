@@ -12,9 +12,19 @@ import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 
+/**
+ * 配置文件存储工具类
+ * @author CC想当百大
+ * @since v1.0.0.a
+ */
 object ConfigStorageUtils {
     val logger = KotlinLogging.logger { }
 
+    /**
+     * 保存配置文件到磁盘
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun saveConfig() {
         val configs = ConfigUtils.config ?: throw IllegalArgumentException("未加载配置文件")
         val yaml = Yaml()
@@ -52,6 +62,11 @@ object ConfigStorageUtils {
         }
     }
 
+    /**
+     * 保存默认配置文件到磁盘
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun saveDefaultConfig() {
         val configs = ConfigUtils.defConfig ?: throw IllegalArgumentException("未加载配置文件")
         val yaml = Yaml()
@@ -89,6 +104,11 @@ object ConfigStorageUtils {
         }
     }
 
+    /**
+     * 从磁盘加载配置文件
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun loadConfig() {
         val yaml = Yaml()
         logger.trace("成功创建Yaml解析器对象")
@@ -155,6 +175,11 @@ object ConfigStorageUtils {
         }
     }
 
+    /**
+     * 重置为默认配置并保存
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     private fun resetToDefaultConfig() {
         // 加载默认配置
         loadDefaultConfig()
@@ -167,10 +192,14 @@ object ConfigStorageUtils {
             logger.info("成功重置为默认配置并保存")
         } else {
             logger.error("加载默认配置失败，无法重置为默认配置")
-            ConfigUtils.config = null
         }
     }
 
+    /**
+     * 从默认配置文件加载配置
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun loadDefaultConfig() {
         val yaml = Yaml()
         logger.trace("成功创建Yaml解析器对象")
@@ -207,7 +236,6 @@ object ConfigStorageUtils {
             ConfigUtils.defConfig = gotten
         } catch (e: Exception) {
             logger.error("加载默认配置文件时发生异常", e)
-            ConfigUtils.defConfig = null
         }
     }
 }

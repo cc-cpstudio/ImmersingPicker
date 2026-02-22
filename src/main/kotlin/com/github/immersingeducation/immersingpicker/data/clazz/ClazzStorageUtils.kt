@@ -10,9 +10,19 @@ import java.io.FileInputStream
 import java.io.FileWriter
 import java.time.LocalDateTime
 
+/**
+ * 班级存储工具类，用于将班级列表保存到文件和从文件加载班级列表
+ * @author CC想当百大
+ * @since v1.0.0.a
+ */
 object ClazzStorageUtils {
     val logger = KotlinLogging.logger {}
 
+    /**
+     * 保存班级列表到文件
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun saveClasses() {
         val dumperOptions = DumperOptions().apply {
             defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
@@ -56,6 +66,11 @@ object ClazzStorageUtils {
         }
     }
 
+    /**
+     * 从文件加载班级列表
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun loadClasses() {
         val yaml = Yaml()
         logger.trace("成功创建Yaml解析器对象")

@@ -7,6 +7,12 @@ import javafx.geometry.Insets
 import javafx.scene.layout.GridPane
 import mu.KotlinLogging
 
+/**
+ * 座位网格组件，用于按每位学生的座位行列数显示所有 Seat 组件
+ * @param clazz 班级对象，用于获取班级中的所有学生
+ * @author CC想当百大
+ * @since v1.0.0.a
+ */
 class SeatGrid(val clazz: Clazz?): GridPane() {
     val seats = mutableListOf<Seat>()
 
@@ -24,6 +30,12 @@ class SeatGrid(val clazz: Clazz?): GridPane() {
         logger.debug("成功创建 SeatGrid")
     }
 
+    /**
+     * 添加学生到座位网格中，根据学生的座位行列数显示对应座位
+     * @param student 要添加的学生对象
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     private fun addStudent(student: Student) {
         if (student.seatRow >= 0 && student.seatColumn > 0) {
             val s = Seat(student)
@@ -35,6 +47,11 @@ class SeatGrid(val clazz: Clazz?): GridPane() {
         }
     }
 
+    /**
+     * 刷新座位网格，根据班级中的学生列表重新添加座位组件
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
     fun refresh() {
         children.clear()
         seats.clear()
