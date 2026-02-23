@@ -1,0 +1,39 @@
+classes:
+  - name: "class1"
+    students:
+      - name: "student1"
+        id: 1
+        seatRow: 1
+        seatColumn: 1
+        initialWeight: 1.0
+        lastSelectedTime: 2026-02-20T00:00:00
+        selectedAmount: 0
+        weight: 0.0
+      - name: "student2"
+        id: 2
+        seatRow: 2
+        seatColumn: 1
+        initialWeight: 1.0
+        lastSelectedTime: null
+        selectedAmount: 0
+        weight: 0.0
+    historyList: []
+  - name: "class2"
+    students:
+      - name: "student1"
+        id: 1
+        seatRow: 1
+        seatColumn: 1
+        initialWeight: 1.0
+        lastSelectedTime: 2026-02-20T00:00:00
+        selectedAmount: 0
+        weight: 0.0
+      - name: "student2"
+        id: 2
+        seatRow: 2
+        seatColumn: 1
+        initialWeight: 1.0
+        lastSelectedTime: 2026-02-20T00:00:00
+        selectedAmount: 0
+        weight: 0.0
+    historyList: []

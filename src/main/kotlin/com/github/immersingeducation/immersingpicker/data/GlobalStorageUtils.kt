@@ -1,5 +1,6 @@
 package com.github.immersingeducation.immersingpicker.data
 
+import com.github.immersingeducation.immersingpicker.config.ConfigUtils
 import com.github.immersingeducation.immersingpicker.data.clazz.ClazzStorageUtils
 import com.github.immersingeducation.immersingpicker.data.config.ConfigStorageUtils
 import kotlinx.coroutines.CancellationException
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * 全局存储工具类，用于管理全局数据的存储和加载
@@ -64,7 +66,7 @@ class GlobalStorageUtils private constructor(
                     }
 
                     logger.debug("全部执行完毕，开始等待")
-                    delay(1000.milliseconds)
+                    delay((ConfigUtils.getConfig("dataSavingInterval")?.value as Int? ?: 300).toLong().seconds)
                 }
             } catch (e: CancellationException) {
                 logger.info("保存数据的周期任务被取消")
@@ -113,7 +115,7 @@ class GlobalStorageUtils private constructor(
             if (!isTaskRunning.get()) {
                 utilsObject = GlobalStorageUtils()
                 utilsObject?.saveClassesPeriodically()
-                logger.debug("周期任务已启动")
+                logger.debug("周期任务已启动，时间间隔：${(ConfigUtils.getConfig("dataSavingInterval")?.value as Int? ?: 300).toLong()}秒")
                 isTaskRunning.set(true)
             }
         }

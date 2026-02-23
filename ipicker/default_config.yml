@@ -1,0 +1,18 @@
+privateCG:
+  name: privateCG
+  configs:
+    isFirstRun: {name: isFirstRun, desc: isFirstRun, value: true, needRestart: false}
+selectorCG:
+  name: 抽选器配置
+  configs:
+    fairSelection: {name: 开启公平抽选？, desc: 开启后将会多维度使每位学生的抽选次数均匀分配, value: true, needRestart: false}
+    thresholdValueOfSelectionPool: {name: 候选池学生数量阈值, desc: 候选池里学生的最小数量, value: 1,
+      needRestart: false}
+    selectedAmountWeightCalcMode: {name: 抽选次数权重计算方式, desc: 更改方式后，每位学生的权重差和相对顺序可能会发生变化,
+      value: 指数, needRestart: false}
+    selectedAmountWeightCalcCoefficient: {name: 抽选次数权重计算系数, desc: 更改系数后，每位学生的权重差可能会发生变化，并产生一些奇妙效果,
+      value: 1.12, needRestart: false}
+DataCG:
+  name: 数据配置
+  configs:
+    dataSavingInterval: {name: 数据保存间隔, desc: 触发数据保存的时间间隔，单位：秒, value: 300, needRestart: false}
