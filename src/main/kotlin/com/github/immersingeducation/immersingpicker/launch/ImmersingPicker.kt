@@ -1,8 +1,9 @@
 package com.github.immersingeducation.immersingpicker.launch
 
+import com.dustinredmond.fxtrayicon.FXTrayIcon
 import com.github.immersingeducation.immersingpicker.view.main.MainView
 import com.github.immersingeducation.immersingpicker.view.recover.RecoverModeView
-import com.github.immersingeducation.immersingpicker.view.tray.TrayIconManager
+import javafx.application.Platform
 import javafx.scene.control.Alert
 import javafx.stage.Stage
 import tornadofx.*
@@ -25,8 +26,6 @@ class RecoverMode: App(RecoverModeView::class) {
 }
 
 class ImmersingPicker: App(MainView::class) {
-    private lateinit var trayIconManager: TrayIconManager
-
     override fun start(stage: Stage) {
         super.start(stage)
         stage.apply {
@@ -34,12 +33,19 @@ class ImmersingPicker: App(MainView::class) {
             minHeight = 600.0
         }
 
-        trayIconManager = TrayIconManager(stage)
-        trayIconManager.initTray()
+        val trayIcon = FXTrayIcon.Builder(stage, javaClass.getResource("/icon.png"))
+            .menuItem("显示主窗口") { _ ->
+                Platform.runLater {
+                    stage.show()
+                    stage.toFront()
+                }
+            }
+            .menuItem("重新启动") { _ ->
 
-        stage.setOnCloseRequest {
-            it.consume()
-            stage.hide()
-        }
+            }
+            .menuItem("退出") { _ ->
+
+            }
+            .show().build()
     }
 }
