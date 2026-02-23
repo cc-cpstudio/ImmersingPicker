@@ -15,10 +15,10 @@ import tornadofx.*
 class Seat(val student: Student): Fragment() {
     override val root = borderpane {
         style {
-            minWidth = 60.px
-            minHeight = 36.px
-            maxWidth = 60.px
-            maxHeight = 36.px
+            minWidth = 80.px
+            minHeight = 48.px
+            maxWidth = 80.px
+            maxHeight = 48.px
             backgroundColor = multi(Color.LIGHTGRAY)
             backgroundRadius = multi(box(4.px))
             borderWidth = multi(box(2.px))
@@ -41,7 +41,6 @@ class Seat(val student: Student): Fragment() {
         center {
             hbox(spacing = 5) {
                 alignment = Pos.CENTER
-
                 label("${student.id}")
                 label(student.name)
             }
@@ -57,20 +56,20 @@ class Seat(val student: Student): Fragment() {
                 field = value
                 root.style {
                     if (value) {
-                        minWidth = 60.px
-                        minHeight = 36.px
-                        maxWidth = 60.px
-                        maxHeight = 36.px
+                        minWidth = 80.px
+                        minHeight = 48.px
+                        maxWidth = 80.px
+                        maxHeight = 48.px
                         backgroundColor = multi(Color.LIGHTGREEN)
                         backgroundRadius = multi(box(4.px))
                         borderWidth = multi(box(2.px))
                         borderColor = multi(box(Color.GREEN))
                         borderRadius = multi(box(4.px))
                     } else {
-                        minWidth = 60.px
-                        minHeight = 36.px
-                        maxWidth = 60.px
-                        maxHeight = 36.px
+                        minWidth = 80.px
+                        minHeight = 48.px
+                        maxWidth = 80.px
+                        maxHeight = 48.px
                         backgroundColor = multi(Color.LIGHTGRAY)
                         backgroundRadius = multi(box(4.px))
                         borderWidth = multi(box(2.px))
