@@ -1,7 +1,5 @@
 package com.github.immersingeducation.immersingpicker.config
 
-import com.github.immersingeducation.immersingpicker.config.enums.SelectedAmountWeightCalculateMode
-import kotlinx.coroutines.*
 import mu.KotlinLogging
 
 /**
@@ -45,6 +43,17 @@ object ConfigUtils {
             logger.error(e) { "获取配置项 $id 时发生未知错误" }
             return null
         }
+    }
+
+    /**
+     * 获取指定ID的配置项的值
+     * @param id 配置项的ID
+     * @return 配置项的值，如果未找到配置项则返回null
+     * @author CC想当百大
+     * @since v1.0.0.a
+     */
+    fun getConfigValue(id: String): Any? {
+        return getConfig(id)?.value
     }
 
     /**

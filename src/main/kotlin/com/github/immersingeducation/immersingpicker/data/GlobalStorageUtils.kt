@@ -66,7 +66,7 @@ class GlobalStorageUtils private constructor(
                     }
 
                     logger.debug("全部执行完毕，开始等待")
-                    delay((ConfigUtils.getConfig("dataSavingInterval")?.value as Int? ?: 300).toLong().seconds)
+                    delay((ConfigUtils.getConfigValue("dataSavingInterval") as? Int? ?: 300).toLong().seconds)
                 }
             } catch (e: CancellationException) {
                 logger.info("保存数据的周期任务被取消")
@@ -115,7 +115,7 @@ class GlobalStorageUtils private constructor(
             if (!isTaskRunning.get()) {
                 utilsObject = GlobalStorageUtils()
                 utilsObject?.saveClassesPeriodically()
-                logger.debug("周期任务已启动，时间间隔：${(ConfigUtils.getConfig("dataSavingInterval")?.value as Int? ?: 300).toLong()}秒")
+                logger.debug("周期任务已启动，时间间隔：${(ConfigUtils.getConfigValue("dataSavingInterval") as? Int? ?: 300).toLong()}秒")
                 isTaskRunning.set(true)
             }
         }

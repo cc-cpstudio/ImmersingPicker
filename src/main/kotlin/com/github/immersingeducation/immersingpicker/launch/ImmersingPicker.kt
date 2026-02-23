@@ -2,6 +2,7 @@ package com.github.immersingeducation.immersingpicker.launch
 
 import com.github.immersingeducation.immersingpicker.view.main.MainView
 import com.github.immersingeducation.immersingpicker.view.recover.RecoverModeView
+import com.github.immersingeducation.immersingpicker.view.tray.TrayIconManager
 import javafx.scene.control.Alert
 import javafx.stage.Stage
 import tornadofx.*
@@ -24,11 +25,21 @@ class RecoverMode: App(RecoverModeView::class) {
 }
 
 class ImmersingPicker: App(MainView::class) {
+    private lateinit var trayIconManager: TrayIconManager
+
     override fun start(stage: Stage) {
         super.start(stage)
         stage.apply {
             minWidth = 800.0
             minHeight = 600.0
+        }
+
+        trayIconManager = TrayIconManager(stage)
+        trayIconManager.initTray()
+
+        stage.setOnCloseRequest {
+            it.consume()
+            stage.hide()
         }
     }
 }
