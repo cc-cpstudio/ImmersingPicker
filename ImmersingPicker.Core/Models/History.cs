@@ -1,0 +1,15 @@
+﻿namespace ImmersingPicker.Core;
+
+public class History
+{
+    public DateTime CreateTime { get; set; }
+    public string Selector { get; set; }
+    public List<Student> Students { get; set; }
+
+    public History(DateTime createTime, string selector, List<Student> students)
+    {
+        CreateTime = createTime;
+        Selector = selector;
+        Students = students;
+    }
+}
