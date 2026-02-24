@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Windowing;
+using ImmersingPicker.Views;
 
 namespace ImmersingPicker;
 

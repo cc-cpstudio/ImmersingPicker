@@ -24,6 +24,13 @@ public class Clazz
         return null;
     }
 
+    public Clazz()
+    {
+        Name = "Nameless-Clazz";
+        Students = new List<Student>();
+        Histories = new List<History>();
+    }
+
     public Clazz(string name)
     {
         Name = name;

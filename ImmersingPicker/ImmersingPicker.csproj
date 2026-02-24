@@ -19,4 +19,16 @@
         </PackageReference>
         <PackageReference Include="FluentAvaloniaUI" Version="2.4.1" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Remove="Views\MainPages\HomePage.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ImmersingPicker.Core\ImmersingPicker.Core.csproj" />
+    </ItemGroup>
 </Project>
