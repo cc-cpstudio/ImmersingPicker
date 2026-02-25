@@ -18,7 +18,7 @@ public partial class MainWindow : AppWindow
         TitleBar.ExtendsContentIntoTitleBar = false;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 
-        Services.NavigationService.Initialize(ContentFrame);
+        Services.MainWindowNavigationService.Initialize(ContentFrame);
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
@@ -31,10 +31,15 @@ public partial class MainWindow : AppWindow
         if (e.SelectedItem is not NavigationViewItem { Tag: string tag }) return;
         var viewType = tag switch
         {
-            "Home" => Services.NavigationService.ViewType.Home,
-            "History" => Services.NavigationService.ViewType.History,
+            "Home" => Services.MainWindowNavigationService.ViewType.Home,
+            "History" => Services.MainWindowNavigationService.ViewType.History,
+            "Settings" => Services.MainWindowNavigationService.ViewType.Settings,
             _ => throw new ArgumentException("Invalid view type")
         };
-        Services.NavigationService.NavigateTo(viewType);
+        Services.MainWindowNavigationService.NavigateTo(viewType);
+        if (viewType == Services.MainWindowNavigationService.ViewType.Settings)
+        {
+            MainNavView.SelectedItem = HomePageItem;
+        }
     }
 }

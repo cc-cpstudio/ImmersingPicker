@@ -2,23 +2,33 @@
 
 namespace ImmersingPicker.Core.Abstractions.Picker;
 
-public abstract class PickerBase(Clazz clazz)
+public abstract class PickerBase
 {
     public abstract string Name { get; set; }
+    public abstract bool NeedStore { get; set; }
 
     protected readonly Random _random = new();
 
-    protected Clazz _clazz = clazz;
+    protected Clazz _clazz;
 
-    public abstract History PickLogic(int amount);
+    public PickerBase(Clazz clazz)
+    {
+        _clazz = clazz;
+        _clazz.Pickers.Add(Name, this);
+    }
+
+    protected abstract History PickLogic(int amount);
 
     public History Pick(int amount)
     {
         History history = PickLogic(amount);
+        if (!NeedStore) return history;
+
+        _clazz.Histories.Add(history);
         foreach (Student student in history.Students)
         {
             student.LastSelectedTime = history.CreateTime;
-            student.SelectedAmount ++;
+            student.SelectedAmount++;
         }
 
         return history;

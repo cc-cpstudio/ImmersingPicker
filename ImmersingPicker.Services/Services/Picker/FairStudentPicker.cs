@@ -3,13 +3,13 @@ using ImmersingPicker.Core.Abstractions;
 using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Core.Exceptions;
 using ImmersingPicker.Core.Models;
-using ImmersingPicker.Services.Services.Settings;
 
 namespace ImmersingPicker.Services.Services.Picker;
 
-public class StudentFairPicker(Clazz clazz) : PickerBase(clazz)
+public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
 {
-    public override string Name { get; set; } = "StudentPicker";
+    public override string Name { get; set; } = "FairStudentPicker";
+    public override bool NeedStore { get; set; } = true;
 
     private int CalculateRange(List<Student> needed)
     {
@@ -24,8 +24,7 @@ public class StudentFairPicker(Clazz clazz) : PickerBase(clazz)
     {
         List<Student> tmpStudents = _clazz.Students;
         int availableRange = CalculateRange(tmpStudents);
-        while (availableRange > SettingsService.Current.PickerSettingsGroup.MaxAvailableRange.Value &&
-               tmpStudents.Count >= SettingsService.Current.PickerSettingsGroup.MinSelectionPoolAmount.Value)
+        while (availableRange > 1 && tmpStudents.Count >= 1)
         {
             tmpStudents.Remove(tmpStudents.MaxBy(s => s.SelectedAmount));
             availableRange = CalculateRange(tmpStudents);
@@ -47,31 +46,26 @@ public class StudentFairPicker(Clazz clazz) : PickerBase(clazz)
         foreach (Student student in _clazz.Students)
         {
             student.Weight += available.Contains(student)
-                ? Math.Pow(student.SelectedAmount - average,
-                    SettingsService.Current.PickerSettingsGroup.WeighCoefficientOfSelectedAmount.Value)
-                : SettingsService.Current.PickerSettingsGroup.WeighCoefficientOfSelectedAmount
-                    .Value;
+                ? Math.Pow(student.SelectedAmount - average, 1)
+                : 1;
 
             if (student.LastSelectedTime != null)
             {
                 TimeSpan? span = DateTime.Now - student.LastSelectedTime;
-                student.Weight += span.GetValueOrDefault().Days > SettingsService.Current.PickerSettingsGroup.IntervalDays.Value
-                    ? Math.Pow(SettingsService.Current.PickerSettingsGroup.WeighCoefficientOfSelectedTime.Value, span.GetValueOrDefault().Days)
-                    : SettingsService.Current.PickerSettingsGroup.WeighCoefficientOfSelectedTime.Value;
+                student.Weight += span.GetValueOrDefault().Days > 1
+                    ? Math.Pow(1, span.GetValueOrDefault().Days)
+                    : 1;
             }
             else
             {
-                student.Weight += SettingsService.Current.PickerSettingsGroup.WeighCoefficientOfNullSelectedTime.Value;
+                student.Weight += 1;
             }
 
-            student.Weight += Convert.ToDouble(_random.Next(
-                                  SettingsService.Current.PickerSettingsGroup.RandomWeighCoefficientLowerBound.Value,
-                                  SettingsService.Current.PickerSettingsGroup.RandomWeighCoefficientUpperBound.Value)) +
-                              _random.NextDouble();
+            student.Weight += Convert.ToDouble(_random.Next(1, 1)) + _random.NextDouble();
         }
     }
 
-    public override History PickLogic(int amount)
+    protected override History PickLogic(int amount)
     {
         PriorityQueue<Student, double> pq = new(
             Comparer<double>.Create((x, y) => y.CompareTo(x))

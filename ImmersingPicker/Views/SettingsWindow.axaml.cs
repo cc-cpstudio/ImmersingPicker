@@ -1,0 +1,30 @@
+﻿using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using FluentAvalonia.UI.Controls;
+using FluentAvalonia.UI.Windowing;
+
+namespace ImmersingPicker.Views;
+
+public partial class SettingsWindow : AppWindow
+{
+    public SettingsWindow()
+    {
+        InitializeComponent();
+        Services.SettingsWindowNavigationService.Initialize(ContentFrame);
+    }
+
+    private void MainNavView_OnSelectionChanged(object? sender, NavigationViewSelectionChangedEventArgs e)
+    {
+        if (e.SelectedItem is not NavigationViewItem { Tag: string tag }) return;
+        var viewType = tag switch
+        {
+            "BasicSettings" => Services.SettingsWindowNavigationService.ViewType.BasicSettings,
+            "PickerSettings" => Services.SettingsWindowNavigationService.ViewType.PickerSettings,
+            "About" => Services.SettingsWindowNavigationService.ViewType.About,
+            _ => throw new ArgumentException("Invalid view type")
+        };
+        Services.SettingsWindowNavigationService.NavigateTo(viewType);
+    }
+}

@@ -4,7 +4,7 @@ using FluentAvalonia.UI.Controls;
 
 namespace ImmersingPicker.Services;
 
-public class NavigationService
+public class SettingsWindowNavigationService
 {
     private static Frame? _mainContentFrame;
 
@@ -15,11 +15,7 @@ public class NavigationService
 
     public static void NavigateTo(Type viewType)
     {
-        if (_mainContentFrame == null)
-        {
-
-        }
-        else
+        if (_mainContentFrame != null)
         {
             if (Activator.CreateInstance(viewType) is UserControl view)
             {
@@ -32,8 +28,9 @@ public class NavigationService
     {
         Type targetType = viewType switch
         {
-            ViewType.Home => typeof(Views.MainPages.HomePage),
-            ViewType.History => typeof(Views.MainPages.HistoryPage),
+            ViewType.BasicSettings => typeof(Views.SettingsPages.BasicSettingsPage),
+            ViewType.PickerSettings => typeof(Views.SettingsPages.PickerSettingsPage),
+            ViewType.About => typeof(Views.SettingsPages.AboutPage),
             _ => throw new ArgumentException("Invalid view type")
         };
         NavigateTo(targetType);
@@ -41,6 +38,8 @@ public class NavigationService
 
     public enum ViewType
     {
-        Home, History
+        BasicSettings,
+        PickerSettings,
+        About
     }
 }
