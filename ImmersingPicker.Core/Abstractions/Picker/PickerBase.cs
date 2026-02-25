@@ -1,4 +1,6 @@
-﻿namespace ImmersingPicker.Core.Abstractions.Picker;
+﻿using ImmersingPicker.Core.Models;
+
+namespace ImmersingPicker.Core.Abstractions.Picker;
 
 public abstract class PickerBase(Clazz clazz)
 {

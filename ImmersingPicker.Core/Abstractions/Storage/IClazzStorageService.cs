@@ -1,4 +1,6 @@
-﻿namespace ImmersingPicker.Core.Abstractions.Storage;
+﻿using ImmersingPicker.Core.Models;
+
+namespace ImmersingPicker.Core.Abstractions.Storage;
 
 public interface IClazzStorageService
 {

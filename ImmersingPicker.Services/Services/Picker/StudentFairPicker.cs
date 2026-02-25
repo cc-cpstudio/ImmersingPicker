@@ -2,6 +2,7 @@
 using ImmersingPicker.Core.Abstractions;
 using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Core.Exceptions;
+using ImmersingPicker.Core.Models;
 using ImmersingPicker.Services.Services.Settings;
 
 namespace ImmersingPicker.Services.Services.Picker;

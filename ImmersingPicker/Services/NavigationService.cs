@@ -33,6 +33,7 @@ public class NavigationService
         Type targetType = viewType switch
         {
             ViewType.Home => typeof(Views.MainPages.HomePage),
+            ViewType.History => typeof(Views.MainPages.HistoryPage),
             _ => throw new ArgumentException("Invalid view type")
         };
         NavigateTo(targetType);

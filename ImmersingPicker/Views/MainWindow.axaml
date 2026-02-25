@@ -6,15 +6,17 @@
         xmlns:wnd="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ImmersingPicker.Views.MainWindow"
+        Loaded="MainWindow_Loaded"
         Title="Immersing Picker - 主界面"
         Width="800" Height="600">
         <fa:NavigationView x:Name="MainNavView"
                            PaneDisplayMode="LeftCompact"
                            IsBackButtonVisible="False"
+                           IsSettingsVisible="False"
                            SelectionChanged="MainNavView_OnSelectionChanged">
                 <fa:NavigationView.MenuItems>
-                        <fa:NavigationViewItem Content="首页" Tag="Home"/>
-                        <fa:NavigationViewItem Content="历史记录" Tag="History"/>
+                        <fa:NavigationViewItem x:Name="HomePageItem" Content="首页" Tag="Home"/>
+                        <fa:NavigationViewItem x:Name="HistoryPageItem" Content="历史记录" Tag="History"/>
                 </fa:NavigationView.MenuItems>
                 <fa:NavigationView.FooterMenuItems/>
                 <fa:Frame x:Name="ContentFrame" Margin="20" />

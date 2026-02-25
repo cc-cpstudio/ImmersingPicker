@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="450"
+             x:Class="ImmersingPicker.Views.MainPages.HistoryPage">
+    <StackPanel>
+        <TextBlock Text="历史记录页面" FontSize="24" FontWeight="Bold" Margin="0,20,0,10"/>
+        <TextBlock Text="这里显示抽选历史记录" FontSize="16" Margin="0,0,0,20"/>
+    </StackPanel>
+</UserControl>

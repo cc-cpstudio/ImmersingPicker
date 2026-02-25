@@ -26,6 +26,9 @@
         <SubType>Code</SubType>
       </Compile>
       <Compile Remove="Views\MainPages\HomePage.cs" />
+      <Compile Update="Views\MainPages\HistoryPage.axaml.cs">
+        <DependentUpon>HistoryPage.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

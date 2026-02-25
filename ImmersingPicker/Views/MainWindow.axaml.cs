@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using FluentAvalonia.UI.Controls;
@@ -9,8 +10,6 @@ namespace ImmersingPicker.Views;
 
 public partial class MainWindow : AppWindow
 {
-    private static int _clickAmount;
-
     public MainWindow()
     {
         InitializeComponent();
@@ -18,30 +17,24 @@ public partial class MainWindow : AppWindow
         TitleBar.Height = 36;
         TitleBar.ExtendsContentIntoTitleBar = false;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+
+        Services.NavigationService.Initialize(ContentFrame);
     }
 
-    static MainWindow()
+    private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
-        _clickAmount = 0;
+        MainNavView.SelectedItem = HomePageItem;
     }
 
-    private void Button_OnClick(object? sender, RoutedEventArgs e)
+    private void MainNavView_OnSelectionChanged(object? sender, NavigationViewSelectionChangedEventArgs? e)
     {
-        Debug.WriteLine("Click!" + _clickAmount);
-        _clickAmount ++;
-    }
-
-    private void MainNavView_OnSelectionChanged(object? sender, NavigationViewSelectionChangedEventArgs e)
-    {
-        if (e.SelectedItem is NavigationViewItem { Tag: string tag })
+        if (e.SelectedItem is not NavigationViewItem { Tag: string tag }) return;
+        var viewType = tag switch
         {
-            var viewType = tag switch
-            {
-                "Home" => Services.NavigationService.ViewType.Home,
-                "History" => Services.NavigationService.ViewType.History,
-                _ => throw new ArgumentException("Invalid view type")
-            };
-            Services.NavigationService.NavigateTo(viewType);
-        }
+            "Home" => Services.NavigationService.ViewType.Home,
+            "History" => Services.NavigationService.ViewType.History,
+            _ => throw new ArgumentException("Invalid view type")
+        };
+        Services.NavigationService.NavigateTo(viewType);
     }
 }
