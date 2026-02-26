@@ -1,34 +1,35 @@
-﻿using ImmersingPicker.Core;
+using ImmersingPicker.Core;
 using ImmersingPicker.Core.Abstractions.Storage;
 using ImmersingPicker.Core.Models;
 using ImmersingPicker.Services.Helper;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
+using System.IO;
+using System.Text.Json;
 
 namespace ImmersingPicker.Services.Services.Storage;
 
 public class ClassStorageService : IClazzStorageService
 {
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true
+    };
+
     public void SaveClasses(List<Clazz> classes)
     {
-        var serializer = new SerializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .Build();
-        string yamlContent = serializer.Serialize(new StorableClasses
+        var storableClasses = new StorableClasses
         {
             Classes = Clazz.Classes,
             CurrentClassIndex = Clazz.CurrentClassIndex
-        });
-        File.WriteAllText(ApplicationDataDirPathGetter.GetClassesFilePath(), yamlContent);
+        };
+        string jsonContent = JsonSerializer.Serialize(storableClasses, _jsonOptions);
+        File.WriteAllText(ApplicationDataDirPathGetter.GetClassesFilePath(), jsonContent);
     }
 
     public void LoadClasses()
     {
-        var deserializer = new DeserializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .IgnoreUnmatchedProperties()
-            .Build();
-        StorableClasses deserialized = deserializer.Deserialize<StorableClasses>(ApplicationDataDirPathGetter.GetClassesFilePath());
+        string jsonContent = File.ReadAllText(ApplicationDataDirPathGetter.GetClassesFilePath());
+        StorableClasses deserialized = JsonSerializer.Deserialize<StorableClasses>(jsonContent, _jsonOptions);
         Clazz.Classes = deserialized.Classes;
         Clazz.CurrentClassIndex = deserialized.CurrentClassIndex;
     }

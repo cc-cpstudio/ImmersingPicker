@@ -84,7 +84,7 @@ public class Clazz
                         2),
                 ],
             [])];
-        Classes = new List<Clazz>();
+        // Classes = new List<Clazz>();
         _currentClassIndex = 0;
     }
 
