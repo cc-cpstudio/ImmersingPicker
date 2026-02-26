@@ -33,6 +33,11 @@ public class MainWindowNavigationService
             OpenSettingsWindow();
             return;
         }
+        if (viewType == ViewType.Editor)
+        {
+            OpenEditorWindow();
+            return;
+        }
 
         Type targetType = viewType switch
         {
@@ -49,8 +54,15 @@ public class MainWindowNavigationService
         settingsWindow.Show();
     }
 
+    public static void OpenEditorWindow()
+    {
+        var editorWindow = new EditorWindow();
+        editorWindow.Show();
+    }
+
     public enum ViewType
     {
-        Home, History, Settings
+        Home, History, Settings,
+        Editor
     }
 }

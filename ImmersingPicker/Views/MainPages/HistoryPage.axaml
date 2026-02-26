@@ -7,7 +7,6 @@
              d:DesignHeight="450"
              x:Class="ImmersingPicker.Views.MainPages.HistoryPage">
     <StackPanel>
-        <TextBlock Text="历史记录页面" FontSize="24" FontWeight="Bold" Margin="0,20,0,10"/>
-        <TextBlock Text="这里显示抽选历史记录" FontSize="16" Margin="0,0,0,20"/>
+        <TextBlock x:Name="TitleText" Text="历史记录页面" FontSize="24" FontWeight="Bold" Margin="0,20,0,10"/>
     </StackPanel>
 </UserControl>

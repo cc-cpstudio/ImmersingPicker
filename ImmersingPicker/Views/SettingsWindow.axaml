@@ -6,7 +6,8 @@
         xmlns:wnd="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ImmersingPicker.Views.SettingsWindow"
-        Title="Immersing Picker - 设置">
+        Title="Immersing Picker - 设置"
+        Width="800" Height="600">
         <fa:NavigationView x:Name="MainNavView"
                            PaneDisplayMode="LeftCompact"
                            IsBackButtonVisible="False"

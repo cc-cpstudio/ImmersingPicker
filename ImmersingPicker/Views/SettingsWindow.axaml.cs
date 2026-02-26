@@ -12,6 +12,11 @@ public partial class SettingsWindow : AppWindow
     public SettingsWindow()
     {
         InitializeComponent();
+
+        TitleBar.Height = 36;
+        TitleBar.ExtendsContentIntoTitleBar = false;
+        TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+
         Services.SettingsWindowNavigationService.Initialize(ContentFrame);
     }
 

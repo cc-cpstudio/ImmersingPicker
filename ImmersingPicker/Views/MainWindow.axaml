@@ -20,8 +20,9 @@
                         <fa:NavigationViewItem x:Name="HistoryPageItem" Content="历史记录" Tag="History"/>
                 </fa:NavigationView.MenuItems>
                 <fa:NavigationView.FooterMenuItems>
+                        <fa:NavigationViewItem x:Name="EditorItem" Content="编辑" Tag="Editor"/>
                         <fa:NavigationViewItem x:Name="SettingsItem" Content="设置" Tag="Settings"/>
                 </fa:NavigationView.FooterMenuItems>
-                <fa:Frame x:Name="ContentFrame" Margin="20"/>
+                <fa:Frame x:Name="ContentFrame"/>
         </fa:NavigationView>
 </wnd:AppWindow>

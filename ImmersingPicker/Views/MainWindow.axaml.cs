@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Windowing;
+using ImmersingPicker.Services;
 
 namespace ImmersingPicker.Views;
 
@@ -18,7 +19,7 @@ public partial class MainWindow : AppWindow
         TitleBar.ExtendsContentIntoTitleBar = false;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 
-        Services.MainWindowNavigationService.Initialize(ContentFrame);
+        MainWindowNavigationService.Initialize(ContentFrame);
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
@@ -28,16 +29,17 @@ public partial class MainWindow : AppWindow
 
     private void MainNavView_OnSelectionChanged(object? sender, NavigationViewSelectionChangedEventArgs? e)
     {
-        if (e.SelectedItem is not NavigationViewItem { Tag: string tag }) return;
+        if (e is not { SelectedItem: NavigationViewItem { Tag: string tag } }) return;
         var viewType = tag switch
         {
-            "Home" => Services.MainWindowNavigationService.ViewType.Home,
-            "History" => Services.MainWindowNavigationService.ViewType.History,
-            "Settings" => Services.MainWindowNavigationService.ViewType.Settings,
+            "Home" => MainWindowNavigationService.ViewType.Home,
+            "History" => MainWindowNavigationService.ViewType.History,
+            "Editor" => MainWindowNavigationService.ViewType.Editor,
+            "Settings" => MainWindowNavigationService.ViewType.Settings,
             _ => throw new ArgumentException("Invalid view type")
         };
-        Services.MainWindowNavigationService.NavigateTo(viewType);
-        if (viewType == Services.MainWindowNavigationService.ViewType.Settings)
+        MainWindowNavigationService.NavigateTo(viewType);
+        if (viewType is MainWindowNavigationService.ViewType.Settings or MainWindowNavigationService.ViewType.Editor)
         {
             MainNavView.SelectedItem = HomePageItem;
         }
