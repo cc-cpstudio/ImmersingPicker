@@ -50,8 +50,9 @@ public class Student
         return $"Student(id={Id},name={Name})";
     }
 
-    public static bool operator ==(Student left, Student right)
+    public static bool operator ==(Student? left, Student? right)
     {
+        if (left is null || right is null) return false;
         return left.Id == right.Id && left.Name == right.Name;
     }
 

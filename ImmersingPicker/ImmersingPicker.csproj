@@ -32,6 +32,9 @@
       <Compile Update="Views\SettingsPages\AboutPage.axaml.cs">
         <DependentUpon>AboutPage.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Controls\StudentEditTableView.axaml.cs">
+        <DependentUpon>StudentEditTableView.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
