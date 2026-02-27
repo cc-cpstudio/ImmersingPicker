@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -7,12 +9,17 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Controls.Primitives;
 using FluentAvalonia.UI.Controls;
 using ImmersingPicker.Core;
+using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Services.Services.Storage;
+using ImmersingPicker.Services.Services.Picker;
 
 namespace ImmersingPicker.Views.EditorPages;
 
 public partial class EditPage : UserControl
 {
+    public bool IsModified { get; set; } = false;
+
     public EditPage()
     {
         InitializeComponent();
@@ -35,6 +42,7 @@ public partial class EditPage : UserControl
             if (StudentTableView == null)
             {
                 StudentTableView = new Controls.StudentEditTableView(Clazz.Classes[0]);
+                StudentTableView.DataChanged += OnStudentTableDataChanged;
             }
             else
             {
@@ -111,8 +119,27 @@ public partial class EditPage : UserControl
                 }
                 else
                 {
-                    new Clazz(textBox.Text);
+                    // 创建Picker实例
+                    var fairPicker = new FairStudentPicker(null!);
+                    var plainPicker = new PlainStudentPicker(null!);
+                    
+                    // 使用新构造函数创建班级并添加Picker
+                    var newClazz = new Clazz(
+                        textBox.Text,
+                        new List<Student>(),
+                        new List<History>(),
+                        new KeyValuePair<string, PickerBase>(fairPicker.Name, fairPicker),
+                        new KeyValuePair<string, PickerBase>(plainPicker.Name, plainPicker)
+                    );
+                    
+                    // 如果之前没有班级，自动切换到新班级
+                    if (Clazz.Classes.Count == 1)
+                    {
+                        Clazz.CurrentClassIndex = 0;
+                    }
+                    
                     InitializeClazzComboBox();
+                    await AutoSave();
                 }
             }
         }
@@ -177,7 +204,59 @@ public partial class EditPage : UserControl
             {
                 var student = new Student(nameTextBox.Text, id, row, column);
                 StudentTableView.AddStudent(student);
+                await AutoSave();
             }
         }
+    }
+
+    private async Task AutoSave()
+    {
+        try
+        {
+            var storageService = new ClassStorageService();
+            storageService.SaveClasses(Clazz.Classes);
+            IsModified = false;
+            
+            // 触发班级变化事件，以便HomePage刷新
+            Clazz.OnCurrentClassChanged();
+        }
+        catch (Exception)
+        {
+            // 显示保存失败提示
+            var parentWindow = TopLevel.GetTopLevel(this) as Window;
+            if (parentWindow != null)
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "保存失败",
+                    Content = "保存数据时发生错误。",
+                    CloseButtonText = "确定"
+                };
+                await dialog.ShowAsync(parentWindow);
+            }
+        }
+    }
+
+    private async void SaveButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await AutoSave();
+        
+        // 显示保存成功提示
+        var parentWindow = TopLevel.GetTopLevel(this) as Window;
+        if (parentWindow != null)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "保存成功",
+                Content = "班级数据已保存。",
+                CloseButtonText = "确定"
+            };
+            await dialog.ShowAsync(parentWindow);
+        }
+    }
+
+    private async void OnStudentTableDataChanged()
+    {
+        await AutoSave();
     }
 }

@@ -16,6 +16,8 @@ public partial class StudentEditTableView : UserControl
 {
     private Clazz? _currentClazz;
     
+    public event Action? DataChanged;
+    
     public StudentEditTableView()
     {
         InitializeComponent();
@@ -71,13 +73,18 @@ public partial class StudentEditTableView : UserControl
             {
                 _currentClazz.RemoveStudent(student.Id);
                 UpdateStudentList();
+                DataChanged?.Invoke();
             }
         }
     }
     
     public void AddStudent(Student student)
     {
-        _currentClazz.AddStudent(student.Name, student.Id, (student.SeatRow, student.SeatColumn));
-        UpdateStudentList();
+        if (_currentClazz != null)
+        {
+            _currentClazz.AddStudent(student.Name, student.Id, (student.SeatRow, student.SeatColumn));
+            UpdateStudentList();
+            DataChanged?.Invoke();
+        }
     }
 }

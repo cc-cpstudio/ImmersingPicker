@@ -17,7 +17,7 @@
                         <fa:FAComboBox x:Name="ClazzComboBox" Width="100" SelectionChanged="ClazzComboBox_OnSelectionChanged"/>
                         <Button Content="新的班级" Width="100" Click="CreateClazzButton_OnClick"/>
                         <Button x:Name="CreateStudentButton" Content="新的学生" Width="100" Click="CreateStudentButton_OnClick"/>
-                        <Button Content="保存" Width="100"/>
+                        <Button x:Name="SaveButton" Content="保存" Width="100" Click="SaveButton_OnClick"/>
                 </StackPanel>
                 
                 <controls:StudentEditTableView x:Name="StudentTableView" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0"

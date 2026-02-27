@@ -20,6 +20,9 @@ public partial class MainWindow : AppWindow
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 
         MainWindowNavigationService.Initialize(ContentFrame);
+        
+        // 添加关闭事件处理
+        Closing += MainWindow_Closing;
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
@@ -43,5 +46,13 @@ public partial class MainWindow : AppWindow
         {
             MainNavView.SelectedItem = HomePageItem;
         }
+    }
+    
+    private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        // 取消关闭操作
+        e.Cancel = true;
+        // 隐藏窗口
+        Hide();
     }
 }

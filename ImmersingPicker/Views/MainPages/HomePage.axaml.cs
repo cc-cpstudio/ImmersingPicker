@@ -44,7 +44,20 @@ public partial class HomePage : UserControl
     {
         InitializeComponent();
         Clazz.CurrentClassChanged += Reset;
+        ClazzComboBox.SelectionChanged += ClazzComboBox_OnSelectionChanged;
         Reset();
+    }
+
+    private void ClazzComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox comboBox && comboBox.SelectedItem is Clazz selectedClazz)
+        {
+            int index = Clazz.Classes.IndexOf(selectedClazz);
+            if (index != -1)
+            {
+                Clazz.CurrentClassIndex = index;
+            }
+        }
     }
 
     private void MinusButton_OnClick(object? sender, RoutedEventArgs e)
@@ -102,5 +115,18 @@ public partial class HomePage : UserControl
         _clazz = Clazz.GetCurrentClazz();
         _amountForPicking = 1;
         PickButton.Content = $"共{_amountForPicking}人  开始抽选！";
+        
+        // 更新班级下拉框
+        ClazzComboBox.Items.Clear();
+        foreach (var clazz in Clazz.Classes)
+        {
+            ClazzComboBox.Items.Add(clazz);
+        }
+        
+        // 选择当前班级
+        if (_clazz != null)
+        {
+            ClazzComboBox.SelectedItem = _clazz;
+        }
     }
 }

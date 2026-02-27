@@ -1,7 +1,6 @@
 ﻿using System;
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
-using ImmersingPicker.Abstractions;
 using ImmersingPicker.Views;
 
 namespace ImmersingPicker.Services;

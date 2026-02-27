@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:suspending="clr-namespace:ImmersingPicker.Views.suspendingWindow"
+        xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        mc:Ignorable="d" d:DesignWidth="60" d:DesignHeight="120"
+        x:Class="ImmersingPicker.Views.SuspendingWindow"
+        Title="SuspendingWindow"
+        Width="60" Height="120"
+        SystemDecorations="None"
+        Topmost="True"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        TransparencyLevelHint="Transparent"
+        ShowInTaskbar="False"
+        CanResize="False">
+    <Border CornerRadius="30"
+            Background="#CC000000"
+            ClipToBounds="True"
+            Width="60" Height="120">
+        <StackPanel Orientation="Vertical"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="10">
+            <suspending:MovingControlButton x:Name="MovingBtn"/>
+            <Button x:Name="OpenMainWindowBtn"
+                    Width="36" Height="36"
+                    CornerRadius="18"
+                    Background="#33FFFFFF"
+                    PointerPressed="OpenMainWindowBtn_PointerPressed">
+                <!-- <fa:SymbolIcon Symbol="OpenInNewWindow" FontSize="18" Foreground="White"/> -->
+            </Button>
+        </StackPanel>
+    </Border>
+</Window>

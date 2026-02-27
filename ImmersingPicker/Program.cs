@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using System;
 
 namespace ImmersingPicker;
@@ -10,8 +11,15 @@ class Program
     // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args) {
-        BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        var appBuilder = BuildAvaloniaApp();
+        
+        appBuilder.StartWithClassicDesktopLifetime(args);
+        
+        // 应用程序退出时的处理
+        if (appBuilder.Instance is App app)
+        {
+            app.Shutdown();
+        }
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

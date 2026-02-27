@@ -35,10 +35,20 @@
       <Compile Update="Controls\StudentEditTableView.axaml.cs">
         <DependentUpon>StudentEditTableView.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Views\SuspendingWindow.axaml.cs">
+        <DependentUpon>SuspendingWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\SuspendingWindow\MovingControlButton.axaml.cs">
+        <DependentUpon>MovingControlButton.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\ImmersingPicker.Core\ImmersingPicker.Core.csproj" />
       <ProjectReference Include="..\ImmersingPicker.Services\ImmersingPicker.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 </Project>

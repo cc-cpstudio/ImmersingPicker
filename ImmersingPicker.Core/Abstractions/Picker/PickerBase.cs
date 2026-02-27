@@ -14,7 +14,10 @@ public abstract class PickerBase
     public PickerBase(Clazz clazz)
     {
         _clazz = clazz;
-        _clazz.Pickers.Add(Name, this);
+        if (clazz != null)
+        {
+            _clazz.Pickers.Add(Name, this);
+        }
     }
 
     protected abstract History PickLogic(int amount);

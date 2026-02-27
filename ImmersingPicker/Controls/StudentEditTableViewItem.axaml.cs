@@ -19,7 +19,7 @@ public partial class StudentEditTableViewItem : UserControl
         set => SetValue(StudentProperty, value);
     }
     
-    public event Action<Student> DeleteRequested;
+    public event Action<Student>? DeleteRequested;
     
     public StudentEditTableViewItem()
     {
