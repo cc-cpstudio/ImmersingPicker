@@ -11,13 +11,17 @@ public partial class MovingControlButton : UserControl
     private bool _isDragging;
     private Point _startPoint;
     private Window? _parentWindow;
+    private Border? _borderControl;
 
     public event EventHandler? PositionChanged;
 
     public MovingControlButton()
     {
         InitializeComponent();
+        _borderControl = this.FindControl<Border>("Border");
     }
+
+    public Border? BorderControl => _borderControl;
 
     public void SetParentWindow(Window window)
     {

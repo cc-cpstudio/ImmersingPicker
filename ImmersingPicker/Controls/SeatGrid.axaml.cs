@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -160,5 +161,32 @@ public partial class SeatGrid : UserControl
         {
             Deselect(student);
         }
+    }
+
+    public async Task<List<Student>> PickAsync(int amount = 1)
+    {
+        if (_clazz == null) return new List<Student>();
+
+        // 执行抽选动画
+        for (int i = 0; i < 10; i++)
+        {
+            DeselectAll();
+            foreach (Student student in _clazz.Pickers["PlainStudentPicker"].Pick(amount).Students)
+            {
+                Select(student);
+            }
+
+            await Task.Delay(100);
+        }
+
+        // 最终抽选结果
+        DeselectAll();
+        var picked = _clazz.Pickers["FairStudentPicker"].Pick(amount).Students;
+        foreach (Student student in picked)
+        {
+            Select(student);
+        }
+
+        return picked;
     }
 }

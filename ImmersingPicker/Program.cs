@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using System;
+using ClassIsland.Shared.IPC;
 
 namespace ImmersingPicker;
 
@@ -10,7 +11,10 @@ class Program
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args) {
+    public static void Main(string[] args)
+    {
+        ClassIslandTest();
+
         var appBuilder = BuildAvaloniaApp();
         
         appBuilder.StartWithClassicDesktopLifetime(args);
@@ -20,6 +24,13 @@ class Program
         {
             app.Shutdown();
         }
+    }
+
+    public static void ClassIslandTest()
+    {
+        var client = new IpcClient();
+        client.Connect();
+        Console.WriteLine("Successfully connect to ClassIsland");
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
