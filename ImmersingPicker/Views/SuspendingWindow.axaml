@@ -9,7 +9,7 @@
         Width="56" Height="168"
         SystemDecorations="None"
         Topmost="True"
-        Background="Transparent"
+        Background="#CCDDDDDD"
         ExtendClientAreaToDecorationsHint="True"
         TransparencyLevelHint="Transparent"
         ShowInTaskbar="False"
@@ -22,14 +22,14 @@
             <Button x:Name="OpenMainWindowBtn"
                     Width="36" Height="36"
                     CornerRadius="18"
-                    Background="#33FFFFFF"
+                    Background="#232323"
                     PointerPressed="OpenMainWindowBtn_PointerPressed">
                 <!-- <fa:SymbolIcon Symbol="OpenInNewWindow" FontSize="18" Foreground="White"/> -->
             </Button>
             <Button x:Name="QuickPickBtn"
                     Width="36" Height="36"
                     CornerRadius="18"
-                    Background="#33FFFFFF"
+                    Background="#232323"
                     PointerPressed="QuickPickBtn_PointerPressed">
                 <!-- <fa:SymbolIcon Symbol="Shuffle" FontSize="18" Foreground="White"/> -->
             </Button>

@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using System;
-using ClassIsland.Shared.IPC;
 
 namespace ImmersingPicker;
 
@@ -13,8 +12,6 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        ClassIslandTest();
-
         var appBuilder = BuildAvaloniaApp();
         
         appBuilder.StartWithClassicDesktopLifetime(args);
@@ -24,13 +21,6 @@ class Program
         {
             app.Shutdown();
         }
-    }
-
-    public static void ClassIslandTest()
-    {
-        var client = new IpcClient();
-        client.Connect();
-        Console.WriteLine("Successfully connect to ClassIsland");
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

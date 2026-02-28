@@ -16,8 +16,23 @@ namespace ImmersingPicker.Views;
 public partial class SuspendingWindow : Window
 {
     private const int BoundaryMargin = 5;
+    private const int EdgeThreshold = 10;
+    private const int AutoHideDelayMs = 2000;
+    
     private readonly string _positionFilePath;
     private Timer? _brightnessCheckTimer;
+    private Timer? _edgeDetectionTimer;
+    private EdgeIndicatorWindow? _edgeIndicator;
+    private bool _isHidden;
+    private bool _isAnimating;
+    private bool _isAtLeftEdge;
+    private DateTime _edgeEnterTime;
+    private bool _isWaitingForAutoHide;
+    private double _hiddenX;
+    private double _visibleX;
+    private double _storedY;
+
+    public event EventHandler? DragEnded;
 
     public SuspendingWindow()
     {
@@ -28,16 +43,17 @@ public partial class SuspendingWindow : Window
         
         MovingBtn.SetParentWindow(this);
         MovingBtn.PositionChanged += OnPositionChanged;
+        MovingBtn.DragStarted += OnDragStarted;
+        MovingBtn.DragEnded += OnDragEnded;
         
         OpenMainWindowBtn.Click += OpenMainWindowBtn_Click;
         QuickPickBtn.Click += QuickPickBtn_Click;
         
         LoadPosition();
         
-        // 初始化亮度检测定时器
         InitializeBrightnessCheckTimer();
+        InitializeEdgeDetectionTimer();
         
-        // 初始检测一次
         UpdateButtonColors();
     }
 
@@ -78,8 +94,17 @@ public partial class SuspendingWindow : Window
     private void OnPositionChanged(object? sender, EventArgs e)
     {
         SavePosition();
-        // 位置改变时也更新按钮颜色
         UpdateButtonColors();
+    }
+
+    private void OnDragStarted(object? sender, EventArgs e)
+    {
+        _isWaitingForAutoHide = false;
+    }
+
+    private void OnDragEnded(object? sender, EventArgs e)
+    {
+        DragEnded?.Invoke(this, EventArgs.Empty);
     }
 
     public void ConstrainToScreen(double proposedX, double proposedY, out double constrainedX, out double constrainedY)
@@ -98,6 +123,160 @@ public partial class SuspendingWindow : Window
 
         constrainedX = Math.Max(workingArea.X + BoundaryMargin, Math.Min(proposedX, workingArea.X + workingArea.Width - windowWidth - BoundaryMargin));
         constrainedY = Math.Max(workingArea.Y + BoundaryMargin, Math.Min(proposedY, workingArea.Y + workingArea.Height - windowHeight - BoundaryMargin));
+    }
+
+    private void InitializeEdgeDetectionTimer()
+    {
+        _edgeDetectionTimer = new Timer(100);
+        _edgeDetectionTimer.Elapsed += OnEdgeDetectionTimerElapsed;
+        _edgeDetectionTimer.Start();
+    }
+
+    private void OnEdgeDetectionTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        Dispatcher.UIThread.Post(CheckEdgeAndAutoHide);
+    }
+
+    private void CheckEdgeAndAutoHide()
+    {
+        if (_isAnimating || _isHidden) return;
+
+        var screen = Screens.ScreenFromWindow(this);
+        if (screen == null) return;
+
+        var workingArea = screen.WorkingArea;
+        var currentX = Position.X;
+        var currentY = Position.Y;
+
+        bool atLeftEdge = currentX <= workingArea.X + EdgeThreshold;
+        bool atRightEdge = currentX + Width >= workingArea.X + workingArea.Width - EdgeThreshold;
+        bool atEdge = atLeftEdge || atRightEdge;
+
+        if (atEdge)
+        {
+            if (!_isWaitingForAutoHide)
+            {
+                _isAtLeftEdge = atLeftEdge;
+                _storedY = currentY;
+                _isWaitingForAutoHide = true;
+                _edgeEnterTime = DateTime.Now;
+            }
+            else
+            {
+                var elapsed = (DateTime.Now - _edgeEnterTime).TotalMilliseconds;
+                if (elapsed >= AutoHideDelayMs)
+                {
+                    _isWaitingForAutoHide = false;
+                    _ = HideToEdgeAsync();
+                }
+            }
+        }
+        else
+        {
+            _isWaitingForAutoHide = false;
+        }
+    }
+
+    private async System.Threading.Tasks.Task HideToEdgeAsync()
+    {
+        if (_isAnimating) return;
+
+        _isAnimating = true;
+
+        var screen = Screens.ScreenFromWindow(this);
+        if (screen == null)
+        {
+            _isAnimating = false;
+            return;
+        }
+
+        var workingArea = screen.WorkingArea;
+        _visibleX = Position.X;
+        _storedY = Position.Y;
+
+        CreateEdgeIndicator();
+
+        _hiddenX = _isAtLeftEdge 
+            ? workingArea.X - Width + 5
+            : workingArea.X + workingArea.Width - 5;
+
+        await AnimateWindowPositionAsync(_hiddenX, _storedY, 300);
+
+        Hide();
+        _isHidden = true;
+        _isAnimating = false;
+
+        if (_edgeIndicator != null)
+        {
+            var indicatorX = _isAtLeftEdge 
+                ? workingArea.X + BoundaryMargin
+                : workingArea.X + workingArea.Width - 40 - BoundaryMargin;
+            var indicatorY = _storedY + (Height - 40) / 2;
+
+            _edgeIndicator.SetPosition(indicatorX, indicatorY, _isAtLeftEdge);
+            _edgeIndicator.SetDarkMode(IsDarkBackgroundAt(indicatorX + 20, indicatorY + 20));
+            _edgeIndicator.ShowIndicator();
+        }
+    }
+
+    private void CreateEdgeIndicator()
+    {
+        if (_edgeIndicator != null) return;
+
+        _edgeIndicator = new EdgeIndicatorWindow();
+        _edgeIndicator.SetParentWindow(this);
+        _edgeIndicator.Show();
+        _edgeIndicator.Hide();
+    }
+
+    public async System.Threading.Tasks.Task ShowFromEdgeAsync()
+    {
+        if (_isAnimating || !_isHidden) return;
+
+        _isAnimating = true;
+
+        if (_edgeIndicator != null)
+        {
+            _edgeIndicator.Hide();
+        }
+
+        Show();
+        
+        Position = new PixelPoint((int)_hiddenX, (int)_storedY);
+        
+        await AnimateWindowPositionAsync(_visibleX, _storedY, 300);
+
+        _isHidden = false;
+        _isAnimating = false;
+        _isWaitingForAutoHide = false;
+    }
+
+    private async System.Threading.Tasks.Task AnimateWindowPositionAsync(double targetX, double targetY, int durationMs)
+    {
+        var startX = Position.X;
+        var startY = Position.Y;
+        var startTime = DateTime.Now;
+        var endTime = startTime.AddMilliseconds(durationMs);
+
+        while (DateTime.Now < endTime)
+        {
+            var progress = (DateTime.Now - startTime).TotalMilliseconds / durationMs;
+            progress = EaseOutCubic(Math.Min(progress, 1.0));
+
+            var currentX = startX + (targetX - startX) * progress;
+            var currentY = startY + (targetY - startY) * progress;
+
+            Position = new PixelPoint((int)currentX, (int)currentY);
+
+            await System.Threading.Tasks.Task.Delay(16);
+        }
+
+        Position = new PixelPoint((int)targetX, (int)targetY);
+    }
+
+    private double EaseOutCubic(double t)
+    {
+        return 1 - Math.Pow(1 - t, 3);
     }
 
     private void LoadPosition()
@@ -145,28 +324,27 @@ public partial class SuspendingWindow : Window
 
     private void InitializeBrightnessCheckTimer()
     {
-        _brightnessCheckTimer = new Timer(1000); // 每秒检查一次
-        _brightnessCheckTimer.Elapsed += (sender, e) =>
-        {
-            Dispatcher.UIThread.InvokeAsync(UpdateButtonColors);
-        };
+        _brightnessCheckTimer = new Timer(1000);
+        _brightnessCheckTimer.Elapsed += OnBrightnessCheckTimerElapsed;
         _brightnessCheckTimer.Start();
+    }
+
+    private void OnBrightnessCheckTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        Dispatcher.UIThread.Post(UpdateButtonColors);
     }
 
     private void UpdateButtonColors()
     {
         try
         {
-            // 获取浮窗中心位置
             var centerX = Position.X + Width / 2;
             var centerY = Position.Y + Height / 2;
             
-            // 检测该位置的亮度
             bool isDarkBackground = IsDarkBackgroundAt(centerX, centerY);
             
             if (isDarkBackground)
             {
-                // 暗色背景，使用亮色按钮
                 if (MovingBtn.BorderControl != null)
                 {
                     MovingBtn.BorderControl.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 255, 255, 255));
@@ -174,7 +352,6 @@ public partial class SuspendingWindow : Window
                 OpenMainWindowBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 255, 255, 255));
                 QuickPickBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 255, 255, 255));
                 
-                // 设置白色图标
                 if (MovingBtn.BorderControl != null)
                 {
                     foreach (var child in MovingBtn.BorderControl.GetVisualChildren())
@@ -188,7 +365,6 @@ public partial class SuspendingWindow : Window
             }
             else
             {
-                // 亮色背景，使用暗色按钮
                 if (MovingBtn.BorderControl != null)
                 {
                     MovingBtn.BorderControl.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 0, 0, 0));
@@ -196,7 +372,6 @@ public partial class SuspendingWindow : Window
                 OpenMainWindowBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 0, 0, 0));
                 QuickPickBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 0, 0, 0));
                 
-                // 设置黑色图标
                 if (MovingBtn.BorderControl != null)
                 {
                     foreach (var child in MovingBtn.BorderControl.GetVisualChildren())
@@ -211,7 +386,6 @@ public partial class SuspendingWindow : Window
         }
         catch
         {
-            // 出错时使用默认颜色
         }
     }
 
@@ -219,18 +393,12 @@ public partial class SuspendingWindow : Window
     {
         try
         {
-            // 简化实现：基于窗口位置的亮度检测
-            // 实际应用中可以使用屏幕捕获API获取精确颜色
-            
-            // 计算屏幕亮度值 (0-255)
             int brightness = CalculateScreenBrightness();
-            
-            // 亮度阈值：低于128认为是暗色背景
             return brightness < 128;
         }
         catch
         {
-            return true; // 默认返回暗色背景
+            return true;
         }
     }
 
@@ -238,24 +406,42 @@ public partial class SuspendingWindow : Window
     {
         try
         {
-            // 这里使用系统主题来判断
-            // 实际应用中可以使用Windows API或其他方法获取屏幕亮度
-            
-            // 检查系统是否使用暗色主题
             var theme = Avalonia.Application.Current?.RequestedThemeVariant;
             if (theme == Avalonia.Styling.ThemeVariant.Dark)
             {
-                return 80; // 暗色主题，返回较低亮度值
+                return 80;
             }
             else
             {
-                return 200; // 亮色主题，返回较高亮度值
+                return 200;
             }
         }
         catch
         {
-            return 128; // 默认中等亮度
+            return 128;
         }
+    }
+
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        if (_edgeIndicator != null)
+        {
+            _edgeIndicator.Close();
+        }
+        
+        if (_brightnessCheckTimer != null)
+        {
+            _brightnessCheckTimer.Stop();
+            _brightnessCheckTimer.Dispose();
+        }
+        
+        if (_edgeDetectionTimer != null)
+        {
+            _edgeDetectionTimer.Stop();
+            _edgeDetectionTimer.Dispose();
+        }
+        
+        base.OnClosing(e);
     }
 }
 

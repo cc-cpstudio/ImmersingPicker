@@ -14,6 +14,8 @@ public partial class MovingControlButton : UserControl
     private Border? _borderControl;
 
     public event EventHandler? PositionChanged;
+    public event EventHandler? DragStarted;
+    public event EventHandler? DragEnded;
 
     public MovingControlButton()
     {
@@ -36,6 +38,8 @@ public partial class MovingControlButton : UserControl
         _startPoint = e.GetPosition(_parentWindow);
         e.Pointer.Capture((IInputElement)sender!);
         e.Handled = true;
+        
+        DragStarted?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
@@ -66,5 +70,6 @@ public partial class MovingControlButton : UserControl
         _isDragging = false;
         e.Pointer.Capture(null);
         PositionChanged?.Invoke(this, EventArgs.Empty);
+        DragEnded?.Invoke(this, EventArgs.Empty);
     }
 }
