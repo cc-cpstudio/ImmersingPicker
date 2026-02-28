@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmersingPicker.Core", "Imm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmersingPicker.Services", "ImmersingPicker.Services\ImmersingPicker.Services.csproj", "{C43AD744-0EB9-48CB-9981-3D31AE719BD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmersingPicker.Test", "ImmersingPicker.Test\ImmersingPicker.Test.csproj", "{B9E58C15-DEF5-4365-9CB0-9895694B3963}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{C43AD744-0EB9-48CB-9981-3D31AE719BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C43AD744-0EB9-48CB-9981-3D31AE719BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C43AD744-0EB9-48CB-9981-3D31AE719BD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9E58C15-DEF5-4365-9CB0-9895694B3963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9E58C15-DEF5-4365-9CB0-9895694B3963}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9E58C15-DEF5-4365-9CB0-9895694B3963}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9E58C15-DEF5-4365-9CB0-9895694B3963}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
