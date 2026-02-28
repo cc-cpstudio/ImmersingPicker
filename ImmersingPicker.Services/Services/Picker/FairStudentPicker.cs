@@ -122,9 +122,11 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
             {
                 student.Weight += 5; // 从未被选中的学生给予较高权重
             }
+
+            student.Weight *= 4;
             
             // 随机因子，增加随机性
-            student.Weight += _random.NextDouble();
+            student.Weight += _random.NextDouble()*3;
         }
     }
 

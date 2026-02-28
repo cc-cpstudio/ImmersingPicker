@@ -343,15 +343,17 @@ public partial class SuspendingWindow : Window
             
             bool isDarkBackground = IsDarkBackgroundAt(centerX, centerY);
             
+            // 所有按钮背景设为透明
+            if (MovingBtn.BorderControl != null)
+            {
+                MovingBtn.BorderControl.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(0, 0, 0, 0));
+            }
+            OpenMainWindowBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(0, 0, 0, 0));
+            QuickPickBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(0, 0, 0, 0));
+            
+            // 根据背景颜色设置文本颜色
             if (isDarkBackground)
             {
-                if (MovingBtn.BorderControl != null)
-                {
-                    MovingBtn.BorderControl.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 255, 255, 255));
-                }
-                OpenMainWindowBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 255, 255, 255));
-                QuickPickBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 255, 255, 255));
-                
                 if (MovingBtn.BorderControl != null)
                 {
                     foreach (var child in MovingBtn.BorderControl.GetVisualChildren())
@@ -365,13 +367,6 @@ public partial class SuspendingWindow : Window
             }
             else
             {
-                if (MovingBtn.BorderControl != null)
-                {
-                    MovingBtn.BorderControl.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 0, 0, 0));
-                }
-                OpenMainWindowBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 0, 0, 0));
-                QuickPickBtn.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(51, 0, 0, 0));
-                
                 if (MovingBtn.BorderControl != null)
                 {
                     foreach (var child in MovingBtn.BorderControl.GetVisualChildren())

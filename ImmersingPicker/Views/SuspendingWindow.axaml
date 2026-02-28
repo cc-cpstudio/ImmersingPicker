@@ -9,7 +9,7 @@
         Width="56" Height="168"
         SystemDecorations="None"
         Topmost="True"
-        Background="#CCDDDDDD"
+        Background="#CC232323"
         ExtendClientAreaToDecorationsHint="True"
         TransparencyLevelHint="Transparent"
         ShowInTaskbar="False"
@@ -21,15 +21,15 @@
             <suspending:MovingControlButton x:Name="MovingBtn"/>
             <Button x:Name="OpenMainWindowBtn"
                     Width="36" Height="36"
-                    CornerRadius="18"
-                    Background="#232323"
+                    CornerRadius="5"
+                    Background="Transparent"
                     PointerPressed="OpenMainWindowBtn_PointerPressed">
                 <!-- <fa:SymbolIcon Symbol="OpenInNewWindow" FontSize="18" Foreground="White"/> -->
             </Button>
             <Button x:Name="QuickPickBtn"
                     Width="36" Height="36"
-                    CornerRadius="18"
-                    Background="#232323"
+                    CornerRadius="5"
+                    Background="Transparent"
                     PointerPressed="QuickPickBtn_PointerPressed">
                 <!-- <fa:SymbolIcon Symbol="Shuffle" FontSize="18" Foreground="White"/> -->
             </Button>

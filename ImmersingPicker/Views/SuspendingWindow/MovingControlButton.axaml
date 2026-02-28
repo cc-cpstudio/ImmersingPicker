@@ -6,8 +6,8 @@
              x:Class="ImmersingPicker.Views.suspendingWindow.MovingControlButton"
              Width="36" Height="36">
     <Border x:Name="Border"
-            CornerRadius="18"
-            Background="#232323"
+            CornerRadius="8"
+            Background="Transparent"
             PointerPressed="OnPointerPressed"
             PointerMoved="OnPointerMoved"
             PointerReleased="OnPointerReleased"
