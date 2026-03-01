@@ -54,5 +54,16 @@ public partial class MainWindow : AppWindow
         e.Cancel = true;
         // 隐藏窗口
         Hide();
+        
+        // 保存数据
+        try
+        {
+            var storageService = new ImmersingPicker.Services.Services.Storage.ClassStorageService();
+            storageService.SaveClasses(ImmersingPicker.Core.Models.Clazz.Classes);
+        }
+        catch (Exception)
+        {
+            // 这里可以添加日志记录
+        }
     }
 }

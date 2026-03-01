@@ -19,14 +19,11 @@ public class ClassStorageService : IClazzStorageService
     {
         // 创建一个临时列表，用于存储不包含Pickers的班级对象
         var classesToSave = new List<Clazz>();
-        foreach (var clazz in Clazz.Classes)
+        // 创建classes列表的副本，避免在遍历过程中集合被修改
+        var classesCopy = classes.ToList();
+        foreach (var clazz in classesCopy)
         {
-            var classToSave = new Clazz
-            {
-                Name = clazz.Name,
-                Students = clazz.Students,
-                Histories = clazz.Histories
-            };
+            var classToSave = new Clazz(clazz.Name, clazz.Students, clazz.Histories, false);
             classesToSave.Add(classToSave);
         }
         
@@ -36,7 +33,10 @@ public class ClassStorageService : IClazzStorageService
             CurrentClassIndex = Clazz.CurrentClassIndex
         };
         string jsonContent = JsonSerializer.Serialize(storableClasses, _jsonOptions);
-        File.WriteAllText(ApplicationDataDirPathGetter.GetClassesFilePath(), jsonContent);
+        string filePath = ApplicationDataDirPathGetter.GetClassesFilePath();
+        // 确保目录存在
+        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+        File.WriteAllText(filePath, jsonContent);
     }
 
     public void LoadClasses()

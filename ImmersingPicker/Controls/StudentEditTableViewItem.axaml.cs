@@ -25,6 +25,20 @@ public partial class StudentEditTableViewItem : UserControl
     {
         InitializeComponent();
         DataContext = this;
+        
+        // 查找并获取初始权重的TextBox
+        var initialWeightTextBox = this.FindControl<TextBox>("InitialWeightTextBox");
+        if (initialWeightTextBox != null)
+        {
+            initialWeightTextBox.LostFocus += (sender, e) =>
+            {
+                if (double.TryParse(initialWeightTextBox.Text, out double value))
+                {
+                    Student.InitialWeight = Math.Round(value, 2);
+                    initialWeightTextBox.Text = Student.InitialWeight.ToString("0.00");
+                }
+            };
+        }
     }
     
     private void DeleteButton_OnClick(object? sender, RoutedEventArgs e)

@@ -2,14 +2,22 @@
 
 public class Student
 {
-    public string Name { get; init; }
-    public int Id { get; init; }
+    public string Name { get; set; }
+    public int Id { get; set; }
     public int SeatRow { get; set; }
     public int SeatColumn { get; set; }
     public double InitialWeight { get; set; } = 1.0;
     public DateTime? LastSelectedTime { get; set; } = null;
     public int SelectedAmount { get; set; } = 0;
     public double Weight { get; set; } = 0.0;
+
+    public Student()
+    {
+        Name = string.Empty;
+        Id = 0;
+        SeatRow = 0;
+        SeatColumn = 0;
+    }
 
     public Student(string name, int id, int seatRow, int seatColumn)
     {

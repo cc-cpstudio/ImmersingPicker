@@ -27,7 +27,7 @@ public abstract class PickerBase
         History history = PickLogic(amount);
         if (!NeedStore) return history;
 
-        _clazz.Histories.Add(history);
+        _clazz.AddHistory(history);
         foreach (Student student in history.Students)
         {
             student.LastSelectedTime = history.CreateTime;

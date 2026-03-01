@@ -16,14 +16,14 @@
                  Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         <TextBox Grid.Column="3" Text="{Binding Student.SeatColumn}" VerticalAlignment="Center" Margin="5"
                  Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        <TextBox Grid.Column="4" Text="{Binding Student.InitialWeight}" VerticalAlignment="Center" Margin="5"
+        <TextBox x:Name="InitialWeightTextBox" Grid.Column="4" Text="{Binding Student.InitialWeight, StringFormat='0.00'}" VerticalAlignment="Center" Margin="5"
                  Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         <TextBlock Grid.Column="5" Text="{Binding Student.LastSelectedTime, StringFormat='yyyy-MM-dd HH:mm'}"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         <TextBlock Grid.Column="6" Text="{Binding Student.SelectedAmount}" VerticalAlignment="Center"
                    HorizontalAlignment="Center" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-        <TextBlock Grid.Column="7" Text="{Binding Student.Weight}" VerticalAlignment="Center"
+        <TextBlock Grid.Column="7" Text="{Binding Student.Weight, StringFormat='0.00'}" VerticalAlignment="Center"
                    HorizontalAlignment="Center" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         <Button Grid.Column="8" Content="删除" Click="DeleteButton_OnClick" VerticalAlignment="Center"
                 HorizontalAlignment="Center" Width="60" />

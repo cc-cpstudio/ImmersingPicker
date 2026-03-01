@@ -15,6 +15,7 @@ public class Clazz
     }
 
     public event Action? StudentListChanged;
+    public event Action? HistoriesChanged;
     public static event Action? CurrentClassChanged;
 
     private static int _currentClassIndex = -1;
@@ -123,14 +124,17 @@ public class Clazz
         Classes.Add(this);
     }
 
-    public Clazz(string name, List<Student> students, List<History> histories)
+    public Clazz(string name, List<Student> students, List<History> histories, bool addToClasses = true)
     {
         Name = name;
         Students = students;
         Histories = histories;
         Pickers = new Dictionary<string, PickerBase>();
 
-        Classes.Add(this);
+        if (addToClasses)
+        {
+            Classes.Add(this);
+        }
     }
 
     public Clazz(string name, List<Student> students, List<History> histories, params KeyValuePair<string, PickerBase>[] pickers)
@@ -215,7 +219,13 @@ public class Clazz
     {
         if (!Pickers.ContainsKey(picker)) return null;
         History history = Pickers[picker].Pick(amount);
-        Histories.Add(history);
+        AddHistory(history);
         return history;
+    }
+
+    public void AddHistory(History history)
+    {
+        Histories.Add(history);
+        HistoriesChanged?.Invoke();
     }
 }
