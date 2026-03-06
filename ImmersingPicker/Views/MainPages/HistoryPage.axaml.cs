@@ -1,21 +1,28 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
 using ImmersingPicker.Core.Models;
 using ImmersingPicker.Controls;
 using FluentAvalonia.UI.Controls;
+using ImmersingPicker.Core;
 
 namespace ImmersingPicker.Views.MainPages;
 
 public partial class HistoryPage : UserControl
 {
     private Clazz? _clazz;
+    private FilterCriteria? _currentFilter;
+    private FilterDialog? _filterDialog;
 
     public HistoryPage()
     {
         InitializeComponent();
         Clazz.CurrentClassChanged += OnCurrentClassChanged;
         ClearHistoryButton.Click += OnClearHistoryButtonClick;
+        FilterButton.Click += OnFilterButtonClick;
+        ResetFilterButton.Click += OnResetFilterButtonClick;
+        ClearFilterButton.Click += OnResetFilterButtonClick;
         _clazz = Clazz.GetCurrentClazz();
         if (_clazz != null)
         {
@@ -54,8 +61,14 @@ public partial class HistoryPage : UserControl
 
         HistoryItemsContainer.Children.Clear();
 
-        // 按时间倒序排序历史记录
-        var sortedHistories = _clazz.Histories.OrderByDescending(h => h.CreateTime);
+        var histories = _clazz.Histories.AsEnumerable();
+
+        if (_currentFilter != null && _currentFilter.HasAnyFilter())
+        {
+            histories = ApplyFilter(histories);
+        }
+
+        var sortedHistories = histories.OrderByDescending(h => h.CreateTime);
 
         if (sortedHistories.Any())
         {
@@ -68,10 +81,11 @@ public partial class HistoryPage : UserControl
         }
         else
         {
-            // 显示暂无历史记录的提示
             var noHistoryText = new TextBlock
             {
-                Text = "暂无历史记录",
+                Text = _currentFilter != null && _currentFilter.HasAnyFilter() 
+                    ? "没有符合筛选条件的历史记录" 
+                    : "暂无历史记录",
                 FontWeight = Avalonia.Media.FontWeight.Bold,
                 FontSize = 32,
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
@@ -79,6 +93,97 @@ public partial class HistoryPage : UserControl
                 Margin = new Avalonia.Thickness(0, 100, 0, 0)
             };
             HistoryItemsContainer.Children.Add(noHistoryText);
+        }
+    }
+
+    private IEnumerable<History> ApplyFilter(IEnumerable<History> histories)
+    {
+        if (_currentFilter == null) return histories;
+
+        var filtered = histories;
+
+        if (_currentFilter.StartDate.HasValue)
+        {
+            var startDateTime = _currentFilter.StartDate.Value;
+            filtered = filtered.Where(h => h.CreateTime >= startDateTime);
+        }
+
+        if (_currentFilter.EndDate.HasValue)
+        {
+            var endDateTime = _currentFilter.EndDate.Value;
+            filtered = filtered.Where(h => h.CreateTime <= endDateTime);
+        }
+
+        if (_currentFilter.MinCount > 0)
+        {
+            filtered = filtered.Where(h => h.Students.Count >= _currentFilter.MinCount);
+        }
+
+        if (_currentFilter.MaxCount > 0)
+        {
+            filtered = filtered.Where(h => h.Students.Count <= _currentFilter.MaxCount);
+        }
+
+        if (_currentFilter.SelectedStudents.Count > 0)
+        {
+            filtered = filtered.Where(h => 
+                h.Students.Any(s => _currentFilter.SelectedStudents.Any(ss => ss.Id == s.Id)));
+        }
+
+        return filtered;
+    }
+
+    private async void OnFilterButtonClick(object? sender, EventArgs e)
+    {
+        if (_clazz == null) return;
+
+        _filterDialog = new FilterDialog(_clazz.Students);
+
+        if (_currentFilter != null && _currentFilter.HasAnyFilter())
+        {
+            _filterDialog.SetFilterCriteria(_currentFilter);
+        }
+
+        var dialog = new ContentDialog
+        {
+            Title = "筛选历史记录",
+            Content = _filterDialog,
+            PrimaryButtonText = "确定",
+            CloseButtonText = "取消"
+        };
+
+        var result = await dialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
+        {
+            _currentFilter = _filterDialog.GetFilterCriteria();
+            UpdateFilterSummary();
+            LoadHistories();
+        }
+    }
+
+    private void OnResetFilterButtonClick(object? sender, EventArgs e)
+    {
+        _currentFilter = null;
+        _filterDialog?.ResetFilter();
+        UpdateFilterSummary();
+        LoadHistories();
+    }
+
+    private void UpdateFilterSummary()
+    {
+        var hasFilter = _currentFilter != null && _currentFilter.HasAnyFilter();
+        
+        ResetFilterButton.IsEnabled = hasFilter;
+        FilterSummaryBorder.IsVisible = hasFilter;
+
+        if (hasFilter && _currentFilter != null)
+        {
+            FilterSummaryText.Text = _currentFilter.GetSummary();
+        }
+        else
+        {
+            FilterSummaryText.Text = string.Empty;
         }
     }
     
@@ -93,7 +198,7 @@ public partial class HistoryPage : UserControl
                         $"抽选器：{history.Selector}\n\n" +
                         $"抽选到的学生：\n{studentsList}";
         
-        var dialog = new FluentAvalonia.UI.Controls.ContentDialog
+        var dialog = new ContentDialog
         {
             Title = "抽选历史详情",
             Content = content,
@@ -107,7 +212,7 @@ public partial class HistoryPage : UserControl
     {
         if (_clazz == null) return;
         
-        var dialog = new FluentAvalonia.UI.Controls.ContentDialog
+        var dialog = new ContentDialog
         {
             Title = "清空历史记录",
             Content = "请选择要执行的操作：",
@@ -118,11 +223,10 @@ public partial class HistoryPage : UserControl
         
         var result = await dialog.ShowAsync();
         
-        if (result == FluentAvalonia.UI.Controls.ContentDialogResult.Primary || 
-            result == FluentAvalonia.UI.Controls.ContentDialogResult.Secondary)
+        if (result == ContentDialogResult.Primary || 
+            result == ContentDialogResult.Secondary)
         {
-            // 弹出挽留提示
-            var confirmDialog = new FluentAvalonia.UI.Controls.ContentDialog
+            var confirmDialog = new ContentDialog
             {
                 Title = "确认操作",
                 Content = "确定要执行此操作吗？此操作不可恢复。",
@@ -132,17 +236,14 @@ public partial class HistoryPage : UserControl
             
             var confirmResult = await confirmDialog.ShowAsync();
             
-            if (confirmResult == FluentAvalonia.UI.Controls.ContentDialogResult.Primary)
+            if (confirmResult == ContentDialogResult.Primary)
             {
-                // 执行操作
-                if (result == FluentAvalonia.UI.Controls.ContentDialogResult.Primary)
+                if (result == ContentDialogResult.Primary)
                 {
-                    // 清空历史记录
                     _clazz.Histories.Clear();
                 }
                 else
                 {
-                    // 清空历史记录并重置权重
                     _clazz.Histories.Clear();
                     foreach (var student in _clazz.Students)
                     {
@@ -150,24 +251,20 @@ public partial class HistoryPage : UserControl
                     }
                 }
                 
-                // 保存数据
                 bool success = false;
                 try
                 {
                     var storageService = new ImmersingPicker.Services.Services.Storage.ClassStorageService();
-                    storageService.SaveClasses(ImmersingPicker.Core.Models.Clazz.Classes);
+                    storageService.SaveClasses(Clazz.Classes);
                     success = true;
                 }
                 catch (Exception ex)
                 {
-                    // 这里可以添加日志记录
                 }
                 
-                // 刷新历史记录页面
                 LoadHistories();
                 
-                // 弹出提示
-                var successDialog = new FluentAvalonia.UI.Controls.ContentDialog
+                var successDialog = new ContentDialog
                 {
                     Title = success ? "操作成功" : "操作失败",
                     Content = success ? "历史记录已成功清空" : "清空历史记录时发生错误",

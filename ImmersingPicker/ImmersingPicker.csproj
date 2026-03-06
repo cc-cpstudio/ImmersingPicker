@@ -44,6 +44,9 @@
       <Compile Update="Views\SuspendingWindow\EdgeIndicator.axaml.cs">
         <DependentUpon>EdgeIndicator.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Controls\FilterDialog.axaml.cs">
+        <DependentUpon>FilterDialog.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
