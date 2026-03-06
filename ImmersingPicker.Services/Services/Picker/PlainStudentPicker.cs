@@ -26,7 +26,8 @@ public class PlainStudentPicker(Clazz clazz) : PickerBase(clazz)
 
     protected override History PickLogic(int amount)
     {
-        List<Student> shuffled = Shuffle(_clazz.Students), result = new List<Student>();
+        List<Student> shuffled = Shuffle(_clazz.Students);
+        List<Student> result = new List<Student>();
         for (int i = 0; i < amount; i++)
         {
             result.Add(shuffled[i]);
