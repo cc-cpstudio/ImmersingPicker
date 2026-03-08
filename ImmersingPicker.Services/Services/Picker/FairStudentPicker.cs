@@ -1,165 +1,89 @@
 ﻿using ImmersingPicker.Core;
+using ImmersingPicker.Core.Abstractions;
 using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Core.Exceptions;
 using ImmersingPicker.Core.Models;
+using Serilog;
 
 namespace ImmersingPicker.Services.Services.Picker;
 
-/// <summary>
-/// 公平学生选择器，基于权重计算实现公平抽取
-/// </summary>
 public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
 {
-    /// <summary>
-    /// 选择器名称
-    /// </summary>
     public override string Name { get; set; } = "FairStudentPicker";
-    
-    /// <summary>
-    /// 是否需要存储历史记录
-    /// </summary>
     public override bool NeedStore { get; set; } = true;
 
-    /// <summary>
-    /// 计算学生选中次数的范围
-    /// </summary>
-    /// <param name="students">学生列表</param>
-    /// <returns>选中次数的范围（最大值 - 最小值）</returns>
-    /// <exception cref="NoAvailableStudentException">当学生列表为空时抛出</exception>
-    private int CalculateRange(List<Student> students)
+    private int CalculateRange(List<Student> needed)
     {
-        if (students.Count == 0)
-        {
-            throw new NoAvailableStudentException();
-        }
-        
-        Student maxSelectedStudent = students.MaxBy(s => s.SelectedAmount)
+        Student maxE = needed.MaxBy(s => s.SelectedAmount)
             ?? throw new NoAvailableStudentException();
-        Student minSelectedStudent = students.MinBy(s => s.SelectedAmount)
+        Student minE = needed.MinBy(s => s.SelectedAmount)
             ?? throw new NoAvailableStudentException();
-        
-        return maxSelectedStudent.SelectedAmount - minSelectedStudent.SelectedAmount;
+        return maxE.SelectedAmount - minE.SelectedAmount;
     }
 
-    /// <summary>
-    /// 计算可用于抽取的学生列表
-    /// </summary>
-    /// <returns>可用于抽取的学生列表</returns>
     private List<Student> CalculateAvailablePickStudents()
     {
-        // 创建学生列表的副本，避免修改原始列表
-        List<Student> availableStudents = new List<Student>(_clazz.Students);
-        
-        // 确保至少有一个学生
-        if (availableStudents.Count == 0)
+        List<Student> tmpStudents = _clazz.Students;
+        int availableRange = CalculateRange(tmpStudents);
+        while (availableRange > 1 && tmpStudents.Count >= 1)
         {
-            return availableStudents;
-        }
-        
-        // 计算选中次数的范围
-        int selectionRange = CalculateRange(availableStudents);
-        
-        // 移除选中次数过多的学生，直到范围小于等于1或只剩一个学生
-        while (selectionRange > 1 && availableStudents.Count > 1)
-        {
-            var maxSelectedStudent = availableStudents.MaxBy(s => s.SelectedAmount);
-            if (maxSelectedStudent != null)
-            {
-                availableStudents.Remove(maxSelectedStudent);
-                selectionRange = CalculateRange(availableStudents);
-            }
-            else
-            {
-                break;
-            }
+            tmpStudents.Remove(tmpStudents.MaxBy(s => s.SelectedAmount));
+            availableRange = CalculateRange(tmpStudents);
         }
 
-        // 计算所有学生的平均选中次数
-        double averageSelectionCount = _clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(_clazz.Students.Count);
-        
-        // 移除选中次数高于平均值的学生
-        availableStudents.RemoveAll(s => s.SelectedAmount > averageSelectionCount);
-        
-        // 如果筛选后为空，返回选中次数最少的学生
-        if (availableStudents.Count == 0)
-        {
-            var minSelectedStudent = _clazz.Students.MinBy(s => s.SelectedAmount);
-            if (minSelectedStudent != null)
-            {
-                availableStudents.Add(minSelectedStudent);
-            }
-        }
-        
-        return availableStudents;
+        double average = _clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(_clazz.Students.Count);
+        tmpStudents.RemoveAll(s => s.SelectedAmount > average);
+        return tmpStudents;
     }
 
-    /// <summary>
-    /// 计算每个学生的权重
-    /// </summary>
     private void CalculateWeight()
     {
-        // 计算所有学生的平均选中次数
-        double averageSelectionCount = _clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(_clazz.Students.Count);
-        
+        List<Student> available = CalculateAvailablePickStudents();
+        double average = _clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(_clazz.Students.Count);
         foreach (Student student in _clazz.Students)
         {
-            // 重置权重为初始权重
-            student.Weight = student.InitialWeight;
-            
-            // 基于选中次数的权重调整
-            // 选中次数越少，权重越高
-            double selectionWeight = averageSelectionCount - student.SelectedAmount + 1; // +1 确保权重为正
-            student.Weight += selectionWeight;
-            
-            // 基于时间间隔的权重调整
+            student.Weight = student.Weight <= student.InitialWeight ? student.InitialWeight : Math.Log(student.Weight);
+        }
+        foreach (Student student in _clazz.Students)
+        {
+            student.Weight += available.Contains(student)
+                ? Math.Pow(student.SelectedAmount - average, 1)
+                : 1;
+
             if (student.LastSelectedTime != null)
             {
-                TimeSpan timeSinceLastSelection = DateTime.Now - student.LastSelectedTime.Value;
-                int daysSinceLastSelection = timeSinceLastSelection.Days;
-                student.Weight += daysSinceLastSelection > 0 ? daysSinceLastSelection : 1;
+                TimeSpan? span = DateTime.Now - student.LastSelectedTime;
+                student.Weight += span.GetValueOrDefault().Days > 1
+                    ? Math.Pow(1, span.GetValueOrDefault().Days)
+                    : 1;
             }
             else
             {
-                student.Weight += 5; // 从未被选中的学生给予较高权重
+                student.Weight += 1;
             }
-            
-            // 随机因子，增加随机性
-            student.Weight += _random.NextDouble();
+
+            student.Weight += Convert.ToDouble(_random.Next(1, 1)) + _random.NextDouble();
         }
     }
 
-    /// <summary>
-    /// 执行抽取逻辑
-    /// </summary>
-    /// <param name="amount">要抽取的学生数量</param>
-    /// <returns>抽取结果</returns>
     protected override History PickLogic(int amount)
     {
-        // 计算每个学生的权重
-        CalculateWeight();
-        
-        // 创建优先队列，按权重降序排列
-        PriorityQueue<Student, double> priorityQueue = new(
+        PriorityQueue<Student, double> pq = new(
             Comparer<double>.Create((x, y) => y.CompareTo(x))
         );
-        
-        // 将所有学生加入优先队列
-        foreach (Student student in _clazz.Students)
+        foreach (Student student in _clazz.Students.OrderBy(_ => _random.Next()).ToList())
         {
-            priorityQueue.Enqueue(student, student.Weight);
+            pq.Enqueue(student, student.Weight);
         }
 
-        // 抽取指定数量的学生
-        List<Student> pickedStudents = new();
-        for (int i = 0; i < amount && priorityQueue.Count > 0; i++)
+        List<Student> picked = new();
+        for (int i = 0; i < amount; i++)
         {
-            pickedStudents.Add(priorityQueue.Dequeue());
+            picked.Add(pq.Dequeue());
         }
 
-        // 按学生ID排序
-        pickedStudents.Sort((s1, s2) => s1.Id.CompareTo(s2.Id));
+        picked.Sort((s1, s2) => s1.Id.CompareTo(s2.Id));
 
-        // 创建历史记录
-        return new History(DateTime.Now, Name, pickedStudents);
+        return new History(DateTime.Now, Name, picked);
     }
 }
