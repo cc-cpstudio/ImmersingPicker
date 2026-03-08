@@ -47,6 +47,9 @@
       <Compile Update="Controls\FilterDialog.axaml.cs">
         <DependentUpon>FilterDialog.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Controls\EditableSeatGrid.axaml.cs">
+        <DependentUpon>EditableSeatGrid.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

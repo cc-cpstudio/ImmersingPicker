@@ -2,6 +2,7 @@
 using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Core.Exceptions;
 using ImmersingPicker.Core.Models;
+using Serilog;
 
 namespace ImmersingPicker.Services.Services.Picker;
 
@@ -137,31 +138,49 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
     /// <returns>抽取结果</returns>
     protected override History PickLogic(int amount)
     {
-        // 计算每个学生的权重
-        CalculateWeight();
+        Log.Information("开始执行公平抽取，班级: {ClassName}, 抽取数量: {Amount}", _clazz.Name, amount);
         
-        // 创建优先队列，按权重降序排列
-        PriorityQueue<Student, double> priorityQueue = new(
-            Comparer<double>.Create((x, y) => y.CompareTo(x))
-        );
-        
-        // 将所有学生加入优先队列
-        foreach (Student student in _clazz.Students)
+        try
         {
-            priorityQueue.Enqueue(student, student.Weight);
-        }
+            // 计算每个学生的权重
+            CalculateWeight();
+            Log.Information("权重计算完成，班级共有{Count}个学生", _clazz.Students.Count);
+            
+            // 创建优先队列，按权重降序排列
+            PriorityQueue<Student, double> priorityQueue = new(
+                Comparer<double>.Create((x, y) => y.CompareTo(x))
+            );
+            
+            // 将所有学生加入优先队列
+            foreach (Student student in _clazz.Students)
+            {
+                priorityQueue.Enqueue(student, student.Weight);
+                Log.Debug("学生 {StudentName} 权重: {Weight}", student.Name, student.Weight);
+            }
 
-        // 抽取指定数量的学生
-        List<Student> pickedStudents = new();
-        for (int i = 0; i < amount && priorityQueue.Count > 0; i++)
+            // 抽取指定数量的学生
+            List<Student> pickedStudents = new();
+            for (int i = 0; i < amount && priorityQueue.Count > 0; i++)
+            {
+                pickedStudents.Add(priorityQueue.Dequeue());
+            }
+
+            // 按学生ID排序
+            pickedStudents.Sort((s1, s2) => s1.Id.CompareTo(s2.Id));
+            
+            // 记录抽取结果
+            string pickedStudentNames = string.Join(", ", pickedStudents.Select(s => s.Name));
+            Log.Information("抽取完成，结果: {PickedStudents}", pickedStudentNames);
+
+            // 创建历史记录
+            var history = new History(DateTime.Now, Name, pickedStudents);
+            Log.Information("创建历史记录成功");
+            return history;
+        }
+        catch (Exception ex)
         {
-            pickedStudents.Add(priorityQueue.Dequeue());
+            Log.Error(ex, "公平抽取过程中发生错误");
+            throw;
         }
-
-        // 按学生ID排序
-        pickedStudents.Sort((s1, s2) => s1.Id.CompareTo(s2.Id));
-
-        // 创建历史记录
-        return new History(DateTime.Now, Name, pickedStudents);
     }
 }

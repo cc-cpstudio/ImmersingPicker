@@ -24,4 +24,9 @@ public class ApplicationDataDirPathGetter
     {
         return Path.Combine(Get(), "Settings.json");
     }
+
+    public static string GetLogFilePath()
+    {
+        return Path.Combine(Get(), "Logs\\");
+    }
 }

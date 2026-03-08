@@ -14,6 +14,7 @@ using System.Timers;
 using Avalonia.Controls.Primitives;
 using Avalonia.Platform.Storage;
 using ImmersingPicker.Services;
+using Serilog;
 
 namespace ImmersingPicker;
 
@@ -21,7 +22,6 @@ public partial class App : Application
 {
     private Timer? _autoSaveTimer;
     private MainWindow? _mainWindow;
-    private SuspendingWindow? _suspendingWindow;
 
     public override void Initialize()
     {
@@ -30,17 +30,37 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Log.Information("应用程序框架初始化完成，开始加载数据");
         // 加载班级数据
         try
         {
-            var storageService = new ClassStorageService();
+            Log.Information("开始加载班级数据");
+            Log.Verbose("获取ClassStorageService实例");
+            var storageService = ClassStorageService.Instance;
             storageService.LoadClasses();
+            Log.Information("班级数据加载完成");
+            Log.Verbose("班级数量: {Count}", Clazz.Classes.Count);
         }
         catch (Exception ex)
         {
             // 如果加载失败，使用默认数据
-            // 这里可以添加日志记录
-            Console.WriteLine(ex);
+            Log.Error(ex, "加载班级数据失败");
+            Log.Warning("使用默认班级数据");
+        }
+
+        try
+        {
+            Log.Information("开始加载应用设置");
+            Log.Verbose("获取SettingsStorageService实例");
+            var storageService = SettingsStorageService.Instance;
+            storageService.LoadSettings();
+            Log.Information("应用设置加载完成");
+            Log.Verbose("当前主题: {Theme}", AppSettings.Instance.AppTheme);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "加载应用设置失败");
+            Log.Warning("使用默认应用设置");
         }
 
         // 为每个Clazz创建对应的Picker实例（如果还没有的话）
@@ -60,10 +80,9 @@ public partial class App : Application
         {
             _mainWindow = new MainWindow();
             desktop.MainWindow = _mainWindow;
-            
-            _suspendingWindow = new SuspendingWindow();
-            _suspendingWindow.Show();
         }
+
+        var a = AppSettings.Instance.AppTheme;
 
         // 初始化自动保存定时器
         InitializeAutoSaveTimer();
@@ -73,42 +92,89 @@ public partial class App : Application
 
     private void InitializeAutoSaveTimer()
     {
+        Log.Information("初始化自动保存定时器");
+        Log.Verbose("设置定时器间隔为300秒");
         _autoSaveTimer = new Timer(300000); // 300秒
+        Log.Verbose("添加定时器事件处理");
         _autoSaveTimer.Elapsed += AutoSaveTimer_Elapsed;
+        Log.Verbose("设置定时器自动重置");
         _autoSaveTimer.AutoReset = true;
+        Log.Verbose("启动定时器");
         _autoSaveTimer.Start();
+        Log.Information("自动保存定时器初始化完成");
     }
 
     private void AutoSaveTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         try
         {
-            var storageService = new ClassStorageService();
+            Log.Information("开始自动保存班级数据");
+            var storageService = ClassStorageService.Instance;
             storageService.SaveClasses(Clazz.Classes);
+            Log.Information("班级数据自动保存完成");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // 这里可以添加日志记录
+            Log.Error(ex, "自动保存班级数据失败");
+        }
+
+        try
+        {
+            Log.Information("开始自动保存应用设置");
+            var storageService = SettingsStorageService.Instance;
+            storageService.SaveSettings();
+            Log.Information("应用设置自动保存完成");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "自动保存应用设置失败");
         }
     }
 
     // 应用程序关闭时的清理操作
     public void Shutdown()
     {
+        Log.Information("开始应用程序关闭清理操作");
+        
         // 停止定时器
-        _autoSaveTimer?.Stop();
-        _autoSaveTimer?.Dispose();
+        Log.Information("停止自动保存定时器");
+        try
+        {
+            _autoSaveTimer?.Stop();
+            _autoSaveTimer?.Dispose();
+            Log.Verbose("定时器已停止并释放");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "停止定时器失败");
+        }
 
         // 退出时保存数据
         try
         {
-            var storageService = new ClassStorageService();
+            Log.Information("开始保存班级数据");
+            var storageService = ClassStorageService.Instance;
             storageService.SaveClasses(Clazz.Classes);
+            Log.Information("班级数据保存完成");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // 这里可以添加日志记录
+            Log.Error(ex, "保存班级数据失败，可能导致数据丢失");
         }
+
+        try
+        {
+            Log.Information("开始保存应用设置");
+            var storageService = SettingsStorageService.Instance;
+            storageService.SaveSettings();
+            Log.Information("应用设置保存完成");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "保存应用设置失败，可能导致设置丢失");
+        }
+        
+        Log.Information("应用程序关闭清理操作完成");
     }
 
     // 托盘图标事件处理方法

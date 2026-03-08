@@ -1,6 +1,12 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using ImmersingPicker.Services.Helper;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace ImmersingPicker;
 
@@ -12,6 +18,33 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        var logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+        Directory.CreateDirectory(logDirectory);
+        var logFileName = $"log-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt";
+        var logFilePath = Path.Combine(logDirectory, logFileName);
+
+        Log.Logger = new LoggerConfiguration()
+#if DEBUG
+            .MinimumLevel.Verbose()
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss}] [{Level}] [{SourceContext}] {Message}{NewLine}{Exception}",
+                theme: AnsiConsoleTheme.Code
+            )
+#elif RELEASE
+            .MinimumLevel.Information()
+#else
+#endif
+            .WriteTo.File(
+                path: logFilePath,
+                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss}] [{Level}] [{SourceContext}] {Message}{NewLine}{Exception}",
+                rollingInterval: RollingInterval.Day,
+                fileSizeLimitBytes: 5 * 1024 * 1024, // 5MB
+                rollOnFileSizeLimit: true,
+                shared: true,
+                encoding: Encoding.UTF8
+            )
+            .CreateLogger();
+
         var appBuilder = BuildAvaloniaApp();
         
         appBuilder.StartWithClassicDesktopLifetime(args);

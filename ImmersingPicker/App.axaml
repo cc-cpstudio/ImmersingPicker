@@ -26,6 +26,6 @@
         </Application.Styles>
 
         <Application.Resources>
-                <FontFamily x:Key="FluentSystemIcons">avares://ImmersingPicker/Assets/Fonts/FluentSystemIcons-Resizable.ttf#Fluent System Icons</FontFamily>
+                <FontFamily x:Key="FluentSystemIcons">avares://ImmersingPicker/Assets/Fonts/FluentSystemIcons-Resizable.ttf#FluentSystemIcons</FontFamily>
         </Application.Resources>
 </Application>

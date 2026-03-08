@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:ipicker="clr-namespace:ImmersingPicker.Helpers"
         xmlns:wnd="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ImmersingPicker.Views.SettingsWindow"
@@ -14,9 +15,9 @@
                            IsSettingsVisible="False"
                            SelectionChanged="MainNavView_OnSelectionChanged">
                 <fa:NavigationView.MenuItems>
-                        <fa:NavigationViewItem x:Name="BasicSettingsItem" Content="基础设置" Tag="BasicSettings"/>
-                        <fa:NavigationViewItem x:Name="PickerSettingsItem" Content="抽选器设置" Tag="PickerSettings"/>
-                        <fa:NavigationViewItem x:Name="AboutItem" Content="关于" Tag="About"/>
+                        <fa:NavigationViewItem x:Name="BasicSettingsItem" Content="基础设置" Tag="BasicSettings" IconSource="{ipicker:FluentIconSource &#xEF36;}"/>
+                        <fa:NavigationViewItem x:Name="PickerSettingsItem" Content="抽选器设置" Tag="PickerSettings" IconSource="{ipicker:FluentIconSource &#xECC0;}"/>
+                        <fa:NavigationViewItem x:Name="AboutItem" Content="关于" Tag="About" IconSource="{ipicker:FluentIconSource &#xE22B;}"/>
                 </fa:NavigationView.MenuItems>
                 <fa:Frame x:Name="ContentFrame" Margin="20"/>
         </fa:NavigationView>

@@ -6,43 +6,68 @@ using ImmersingPicker.Core.Models;
 using ImmersingPicker.Controls;
 using FluentAvalonia.UI.Controls;
 using ImmersingPicker.Core;
+using Serilog;
 
 namespace ImmersingPicker.Views.MainPages;
 
 public partial class HistoryPage : UserControl
 {
+    private static readonly ILogger _logger = Log.ForContext<HistoryPage>();
     private Clazz? _clazz;
     private FilterCriteria? _currentFilter;
     private FilterDialog? _filterDialog;
 
     public HistoryPage()
     {
+        _logger.Information("初始化HistoryPage");
         InitializeComponent();
+        _logger.Verbose("添加班级变更事件处理");
         Clazz.CurrentClassChanged += OnCurrentClassChanged;
+        _logger.Verbose("添加按钮点击事件处理");
         ClearHistoryButton.Click += OnClearHistoryButtonClick;
         FilterButton.Click += OnFilterButtonClick;
         ResetFilterButton.Click += OnResetFilterButtonClick;
         ClearFilterButton.Click += OnResetFilterButtonClick;
+        _logger.Verbose("获取当前班级");
         _clazz = Clazz.GetCurrentClazz();
         if (_clazz != null)
         {
+            _logger.Information("当前班级: {ClassName}", _clazz.Name);
+            _logger.Verbose("添加历史记录变更事件处理");
             _clazz.HistoriesChanged += OnHistoriesChanged;
             TitleText.Text = $"班级 {_clazz.Name} 的历史记录";
+            _logger.Verbose("加载历史记录");
             LoadHistories();
         }
+        else
+        {
+            _logger.Warning("当前班级为null");
+        }
+        _logger.Information("HistoryPage初始化完成");
     }
 
     public void RefreshClazz()
     {
+        _logger.Information("刷新班级信息");
         if (_clazz != null)
         {
+            _logger.Verbose("移除历史记录变更事件处理");
             _clazz.HistoriesChanged -= OnHistoriesChanged;
         }
+        _logger.Verbose("获取当前班级");
         _clazz = Clazz.GetCurrentClazz();
-        if (_clazz == null) return;
+        if (_clazz == null)
+        {
+            _logger.Warning("当前班级为null，无法刷新");
+            return;
+        }
+        _logger.Information("当前班级: {ClassName}", _clazz.Name);
+        _logger.Verbose("添加历史记录变更事件处理");
         _clazz.HistoriesChanged += OnHistoriesChanged;
         TitleText.Text = $"班级 {_clazz.Name} 的历史记录";
+        _logger.Verbose("加载历史记录");
         LoadHistories();
+        _logger.Information("班级信息刷新完成");
     }
 
     private void OnHistoriesChanged()
@@ -57,23 +82,34 @@ public partial class HistoryPage : UserControl
 
     private void LoadHistories()
     {
-        if (_clazz == null) return;
+        _logger.Information("加载历史记录");
+        if (_clazz == null)
+        {
+            _logger.Warning("当前班级为null，无法加载历史记录");
+            return;
+        }
 
+        _logger.Verbose("清空历史记录容器");
         HistoryItemsContainer.Children.Clear();
 
         var histories = _clazz.Histories.AsEnumerable();
+        _logger.Debug("原始历史记录数量: {Count}", histories.Count());
 
         if (_currentFilter != null && _currentFilter.HasAnyFilter())
         {
+            _logger.Information("应用筛选条件");
             histories = ApplyFilter(histories);
+            _logger.Debug("筛选后历史记录数量: {Count}", histories.Count());
         }
 
         var sortedHistories = histories.OrderByDescending(h => h.CreateTime);
 
         if (sortedHistories.Any())
         {
+            _logger.Information("显示历史记录，共{Count}条", sortedHistories.Count());
             foreach (var history in sortedHistories)
             {
+                _logger.Verbose("添加历史记录项: {Time}", history.CreateTime);
                 var historyItem = new HistoryItem(history);
                 historyItem.Clicked += OnHistoryItemClicked;
                 HistoryItemsContainer.Children.Add(historyItem);
@@ -81,6 +117,7 @@ public partial class HistoryPage : UserControl
         }
         else
         {
+            _logger.Information("没有历史记录可显示");
             var noHistoryText = new TextBlock
             {
                 Text = _currentFilter != null && _currentFilter.HasAnyFilter() 
@@ -94,6 +131,7 @@ public partial class HistoryPage : UserControl
             };
             HistoryItemsContainer.Children.Add(noHistoryText);
         }
+        _logger.Information("历史记录加载完成");
     }
 
     private IEnumerable<History> ApplyFilter(IEnumerable<History> histories)
@@ -210,8 +248,14 @@ public partial class HistoryPage : UserControl
     
     private async void OnClearHistoryButtonClick(object? sender, EventArgs e)
     {
-        if (_clazz == null) return;
+        _logger.Information("清空历史记录按钮点击");
+        if (_clazz == null)
+        {
+            _logger.Warning("当前班级为null，无法清空历史记录");
+            return;
+        }
         
+        _logger.Information("显示清空历史记录操作选择对话框");
         var dialog = new ContentDialog
         {
             Title = "清空历史记录",
@@ -226,6 +270,7 @@ public partial class HistoryPage : UserControl
         if (result == ContentDialogResult.Primary || 
             result == ContentDialogResult.Secondary)
         {
+            _logger.Information("用户选择了{Operation}操作", result == ContentDialogResult.Primary ? "清空历史记录" : "清空历史记录并重置权重");
             var confirmDialog = new ContentDialog
             {
                 Title = "确认操作",
@@ -238,41 +283,65 @@ public partial class HistoryPage : UserControl
             
             if (confirmResult == ContentDialogResult.Primary)
             {
-                if (result == ContentDialogResult.Primary)
-                {
-                    _clazz.Histories.Clear();
-                }
-                else
-                {
-                    _clazz.Histories.Clear();
-                    foreach (var student in _clazz.Students)
-                    {
-                        student.resetHistories();
-                    }
-                }
-                
-                bool success = false;
+                _logger.Information("用户确认执行操作");
                 try
                 {
-                    var storageService = new ImmersingPicker.Services.Services.Storage.ClassStorageService();
-                    storageService.SaveClasses(Clazz.Classes);
-                    success = true;
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        _logger.Information("执行清空历史记录操作");
+                        _clazz.Histories.Clear();
+                    }
+                    else
+                    {
+                        _logger.Information("执行清空历史记录并重置权重操作");
+                        _clazz.Histories.Clear();
+                        foreach (var student in _clazz.Students)
+                        {
+                            _logger.Verbose("重置学生{Name}的历史记录", student.Name);
+                            student.resetHistories();
+                        }
+                    }
+                    
+                    bool success = false;
+                    try
+                    {
+                        _logger.Verbose("保存班级数据");
+                        var storageService = new ImmersingPicker.Services.Services.Storage.ClassStorageService();
+                        storageService.SaveClasses(Clazz.Classes);
+                        success = true;
+                        _logger.Information("班级数据保存成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex, "保存班级数据失败");
+                    }
+                    
+                    _logger.Verbose("重新加载历史记录");
+                    LoadHistories();
+                    
+                    var successDialog = new ContentDialog
+                    {
+                        Title = success ? "操作成功" : "操作失败",
+                        Content = success ? "历史记录已成功清空" : "清空历史记录时发生错误",
+                        CloseButtonText = "确定"
+                    };
+                    
+                    await successDialog.ShowAsync();
+                    _logger.Information("操作完成，结果: {Result}", success ? "成功" : "失败");
                 }
                 catch (Exception ex)
                 {
+                    _logger.Error(ex, "执行清空历史记录操作失败");
                 }
-                
-                LoadHistories();
-                
-                var successDialog = new ContentDialog
-                {
-                    Title = success ? "操作成功" : "操作失败",
-                    Content = success ? "历史记录已成功清空" : "清空历史记录时发生错误",
-                    CloseButtonText = "确定"
-                };
-                
-                await successDialog.ShowAsync();
             }
+            else
+            {
+                _logger.Information("用户取消执行操作");
+            }
+        }
+        else
+        {
+            _logger.Information("用户取消操作");
         }
     }
 }

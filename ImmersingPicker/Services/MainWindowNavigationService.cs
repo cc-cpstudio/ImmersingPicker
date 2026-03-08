@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
 using ImmersingPicker.Views;
+using Serilog;
 
 namespace ImmersingPicker.Services;
 
@@ -11,52 +12,103 @@ public class MainWindowNavigationService
 
     public static void Initialize(Frame mainFrame)
     {
+        Log.Information("初始化主窗口导航服务");
+        Log.Verbose("设置主内容框架");
         _mainContentFrame = mainFrame;
+        Log.Information("主窗口导航服务初始化完成");
     }
 
     public static void NavigateTo(Type viewType)
     {
+        Log.Information("导航到视图: {ViewType}", viewType.Name);
         if (_mainContentFrame != null)
         {
-            if (Activator.CreateInstance(viewType) is UserControl view)
+            try
             {
-                _mainContentFrame.Content = view;
+                Log.Verbose("创建视图实例");
+                if (Activator.CreateInstance(viewType) is UserControl view)
+                {
+                    Log.Verbose("设置视图为框架内容");
+                    _mainContentFrame.Content = view;
+                    Log.Information("导航成功");
+                }
+                else
+                {
+                    Log.Warning("无法创建视图实例: {ViewType}", viewType.Name);
+                }
             }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "导航失败");
+            }
+        }
+        else
+        {
+            Log.Error("主内容框架未初始化");
         }
     }
 
     public static void NavigateTo(ViewType viewType)
     {
+        Log.Information("导航到视图类型: {ViewType}", viewType);
         if (viewType == ViewType.Settings)
         {
+            Log.Verbose("打开设置窗口");
             OpenSettingsWindow();
             return;
         }
         if (viewType == ViewType.Editor)
         {
+            Log.Verbose("打开编辑器窗口");
             OpenEditorWindow();
             return;
         }
 
-        Type targetType = viewType switch
+        try
         {
-            ViewType.Home => typeof(Views.MainPages.HomePage),
-            ViewType.History => typeof(Views.MainPages.HistoryPage),
-            _ => throw new ArgumentException("Invalid view type")
-        };
-        NavigateTo(targetType);
+            Type targetType = viewType switch
+            {
+                ViewType.Home => typeof(Views.MainPages.HomePage),
+                ViewType.History => typeof(Views.MainPages.HistoryPage),
+                _ => throw new ArgumentException("Invalid view type")
+            };
+            Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
+            NavigateTo(targetType);
+        }
+        catch (ArgumentException ex)
+        {
+            Log.Error(ex, "无效的视图类型: {ViewType}", viewType);
+        }
     }
 
     public static void OpenSettingsWindow()
     {
-        var settingsWindow = new SettingsWindow();
-        settingsWindow.Show();
+        Log.Information("打开设置窗口");
+        try
+        {
+            var settingsWindow = new SettingsWindow();
+            settingsWindow.Show();
+            Log.Information("设置窗口打开成功");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "打开设置窗口失败");
+        }
     }
 
     public static void OpenEditorWindow()
     {
-        var editorWindow = new EditorWindow();
-        editorWindow.Show();
+        Log.Information("打开编辑器窗口");
+        try
+        {
+            var editorWindow = new EditorWindow();
+            editorWindow.Show();
+            Log.Information("编辑器窗口打开成功");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "打开编辑器窗口失败");
+        }
     }
 
     public enum ViewType

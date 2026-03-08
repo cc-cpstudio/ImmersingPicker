@@ -6,6 +6,7 @@ using Avalonia.Media;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Windowing;
 using ImmersingPicker.Services;
+using Serilog;
 
 namespace ImmersingPicker.Views;
 
@@ -13,16 +14,23 @@ public partial class MainWindow : AppWindow
 {
     public MainWindow()
     {
+        Log.Information("主窗口初始化开始");
+        Log.Verbose("开始初始化MainWindow组件");
         InitializeComponent();
 
+        Log.Verbose("设置TitleBar属性");
         TitleBar.Height = 36;
         TitleBar.ExtendsContentIntoTitleBar = false;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 
+        Log.Verbose("初始化导航服务");
         MainWindowNavigationService.Initialize(ContentFrame);
+        Log.Information("主窗口导航服务初始化完成");
         
         // 添加关闭事件处理
+        Log.Verbose("添加窗口关闭事件处理");
         Closing += MainWindow_Closing;
+        Log.Information("主窗口初始化完成");
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
@@ -50,20 +58,27 @@ public partial class MainWindow : AppWindow
     
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        Log.Information("主窗口关闭事件触发");
         // 取消关闭操作
         e.Cancel = true;
+        Log.Warning("窗口关闭操作被取消，改为隐藏窗口");
         // 隐藏窗口
         Hide();
+        Log.Information("主窗口已隐藏");
         
         // 保存数据
         try
         {
+            Log.Information("开始保存班级数据");
             var storageService = new ImmersingPicker.Services.Services.Storage.ClassStorageService();
+            int classCount = ImmersingPicker.Core.Models.Clazz.Classes.Count;
+            Log.Verbose("班级数量: {ClassCount}", classCount);
             storageService.SaveClasses(ImmersingPicker.Core.Models.Clazz.Classes);
+            Log.Information("班级数据保存完成");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // 这里可以添加日志记录
+            Log.Error(ex, "保存班级数据失败");
         }
     }
 }

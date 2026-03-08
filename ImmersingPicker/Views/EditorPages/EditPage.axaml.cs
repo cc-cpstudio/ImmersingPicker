@@ -213,7 +213,7 @@ public partial class EditPage : UserControl
     {
         try
         {
-            var storageService = new ClassStorageService();
+            var storageService = ClassStorageService.Instance;
             storageService.SaveClasses(Clazz.Classes);
             IsModified = false;
             
