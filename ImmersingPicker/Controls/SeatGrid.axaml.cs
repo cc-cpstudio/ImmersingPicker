@@ -25,6 +25,18 @@ public partial class SeatGrid : UserControl
         InitializeComponent();
         RefreshClazz();
         Clazz.CurrentClassChanged += RefreshClazz;
+        AppSettings.Instance.SeatGridRowArrangementChanged += OnSeatGridRowArrangementChanged;
+        AppSettings.Instance.SeatGridColumnArrangementChanged += OnSeatGridColumnArrangementChanged;
+    }
+
+    private void OnSeatGridRowArrangementChanged(AppSettings.SeatGridRowArrangementMode mode)
+    {
+        RefreshStudents();
+    }
+
+    private void OnSeatGridColumnArrangementChanged(AppSettings.SeatGridColumnArrangementMode mode)
+    {
+        RefreshStudents();
     }
 
     public void RefreshClazz()
@@ -72,15 +84,20 @@ public partial class SeatGrid : UserControl
                 .ToList();
 
             // 为每个唯一的 SeatRow 和 SeatColumn 值分配一个连续的索引
+            var rowArrangement = AppSettings.Instance.SeatGridRowArrangement;
+            var columnArrangement = AppSettings.Instance.SeatGridColumnArrangement;
+
             for (int i = 0; i < uniqueRows.Count; i++)
             {
-                _rowIndexMap[uniqueRows[i]] = i;
+                int mappedIndex = rowArrangement == AppSettings.SeatGridRowArrangementMode.T2B ? i : uniqueRows.Count - 1 - i;
+                _rowIndexMap[uniqueRows[i]] = mappedIndex;
                 grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             }
 
             for (int i = 0; i < uniqueColumns.Count; i++)
             {
-                _columnIndexMap[uniqueColumns[i]] = i;
+                int mappedIndex = columnArrangement == AppSettings.SeatGridColumnArrangementMode.L2R ? i : uniqueColumns.Count - 1 - i;
+                _columnIndexMap[uniqueColumns[i]] = mappedIndex;
                 grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
             }
 

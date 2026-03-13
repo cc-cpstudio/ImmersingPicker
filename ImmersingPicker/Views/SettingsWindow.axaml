@@ -17,6 +17,7 @@
                 <fa:NavigationView.MenuItems>
                         <fa:NavigationViewItem x:Name="BasicSettingsItem" Content="基础设置" Tag="BasicSettings" IconSource="{ipicker:FluentIconSource &#xEF36;}"/>
                         <fa:NavigationViewItem x:Name="PickerSettingsItem" Content="抽选器设置" Tag="PickerSettings" IconSource="{ipicker:FluentIconSource &#xECC0;}"/>
+                        <fa:NavigationViewItem x:Name="HomePageSettingsItem" Content="主界面设置" Tag="HomePageSettings" IconSource="{ipicker:FluentIconSource &#xE34D;}"/>
                         <fa:NavigationViewItem x:Name="AboutItem" Content="关于" Tag="About" IconSource="{ipicker:FluentIconSource &#xE22B;}"/>
                 </fa:NavigationView.MenuItems>
                 <fa:Frame x:Name="ContentFrame" Margin="20"/>

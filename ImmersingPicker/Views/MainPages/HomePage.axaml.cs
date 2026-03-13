@@ -100,7 +100,7 @@ public partial class HomePage : UserControl
         _logger.Information("抽选完成，结果: {PickedStudents}", string.Join(", ", picked.Select(s => s.Name)));
 
         _logger.Verbose("开始动画效果");
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < AppSettings.Instance.HomeAnimationPlayAmount; i++)
         {
             Seats.DeselectAll();
             foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
@@ -108,7 +108,7 @@ public partial class HomePage : UserControl
                 Seats.Select(student);
             }
 
-            await Task.Delay(100);
+            await Task.Delay(AppSettings.Instance.HomeAnimationPlayDelay);
         }
 
         _logger.Verbose("显示最终结果");

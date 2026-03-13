@@ -25,7 +25,7 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
     {
         List<Student> tmpStudents = _clazz.Students;
         int availableRange = CalculateRange(tmpStudents);
-        while (availableRange > 1 && tmpStudents.Count >= 1)
+        while (availableRange > AppSettings.Instance.WeightCalculationParam9 && tmpStudents.Count >= AppSettings.Instance.WeightCalculationParam10)
         {
             tmpStudents.Remove(tmpStudents.MaxBy(s => s.SelectedAmount));
             availableRange = CalculateRange(tmpStudents);
@@ -47,22 +47,22 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
         foreach (Student student in _clazz.Students)
         {
             student.Weight += available.Contains(student)
-                ? Math.Pow(student.SelectedAmount - average, 1)
-                : 1;
+                ? Math.Pow(student.SelectedAmount - average, AppSettings.Instance.WeightCalculationParam1)
+                : AppSettings.Instance.WeightCalculationParam2;
 
             if (student.LastSelectedTime != null)
             {
                 TimeSpan? span = DateTime.Now - student.LastSelectedTime;
-                student.Weight += span.GetValueOrDefault().Days > 1
-                    ? Math.Pow(1, span.GetValueOrDefault().Days)
-                    : 1;
+                student.Weight += span.GetValueOrDefault().Days > AppSettings.Instance.WeightCalculationParam3
+                    ? Math.Pow(AppSettings.Instance.WeightCalculationParam4, span.GetValueOrDefault().Days)
+                    : AppSettings.Instance.WeightCalculationParam5;
             }
             else
             {
-                student.Weight += 1;
+                student.Weight += AppSettings.Instance.WeightCalculationParam6;
             }
 
-            student.Weight += Convert.ToDouble(_random.Next(1, 1)) + _random.NextDouble();
+            student.Weight += Convert.ToDouble(_random.Next(AppSettings.Instance.WeightCalculationParam7, AppSettings.Instance.WeightCalculationParam8)) + _random.NextDouble();
         }
     }
 

@@ -11,40 +11,39 @@
                 <StackPanel Orientation="Vertical" Margin="12" Spacing="12">
                         <TextBlock Text="基础设置"
                                    FontSize="32"
-                                   FontWeight="SemiBold"/>
-                        <StackPanel Orientation="Vertical" Spacing="8">
-                                <fa:SettingsExpanderItem Content="是否开机自启动" Description="选择“是”后，在电脑启动时，软件将自动启动" IconSource="{ipicker:FluentIconSource &#xEDE8;}">
+                                   FontWeight="SemiBold" />
+                        <StackPanel Orientation="Vertical">
+                                <fa:SettingsExpanderItem Content="是否开机自启动" Description="选择“是”后，在电脑启动时，软件将自动启动"
+                                                         IconSource="{ipicker:FluentIconSource &#xEDE8;}">
                                         <fa:SettingsExpanderItem.Footer>
-                                                <ToggleSwitch x:Name="LaunchOnSystemStart" OnContent="" OffContent="" IsCheckedChanged="LaunchOnSystemStart_OnIsCheckedChanged"/>
+                                                <ToggleSwitch x:Name="LaunchOnSystemStart" OnContent="" OffContent=""
+                                                              IsCheckedChanged="LaunchOnSystemStart_OnIsCheckedChanged" />
                                         </fa:SettingsExpanderItem.Footer>
                                 </fa:SettingsExpanderItem>
-                                <fa:SettingsExpanderItem Content="URL协议与IPC服务" Description="选择“是”后，将注册URL协议并开通IPC服务，允许其他软件调用本软件功能" IconSource="{ipicker:FluentIconSource &#xE908;}">
+                                <fa:SettingsExpanderItem Content="URL协议与IPC服务"
+                                                         Description="选择“是”后，将注册URL协议并开通IPC服务，允许其他软件调用本软件功能"
+                                                         IconSource="{ipicker:FluentIconSource &#xE908;}">
                                         <fa:SettingsExpanderItem.Footer>
-                                                <ToggleSwitch x:Name="OpenUrlAndIpc" OnContent="" OffContent="" IsCheckedChanged="OpenUrlAndIpc_OnIsCheckedChanged"/>
+                                                <ToggleSwitch x:Name="OpenUrlAndIpc" OnContent="" OffContent=""
+                                                              IsCheckedChanged="OpenUrlAndIpc_OnIsCheckedChanged" />
                                         </fa:SettingsExpanderItem.Footer>
                                 </fa:SettingsExpanderItem>
-                                <fa:SettingsExpanderItem Content="语言" Description="软件使用的语言" IconSource="{ipicker:FluentIconSource &#xEACD;}">
-                                        <fa:SettingsExpanderItem.Footer>
-                                                <fa:FAComboBox x:Name="Language" SelectionChanged="Language_OnSelectionChanged">
-                                                        <fa:FAComboBoxItem Content="跟随系统"/>
-                                                        <fa:FAComboBoxItem Content="简体中文"/>
-                                                        <fa:FAComboBoxItem Content="繁体中文"/>
-                                                        <fa:FAComboBoxItem Content="英语"/>
-                                                </fa:FAComboBox>
-                                        </fa:SettingsExpanderItem.Footer>
-                                </fa:SettingsExpanderItem>
-                                <fa:SettingsExpanderItem Content="软件主题" Description="软件使用的主题" IconSource="{ipicker:FluentIconSource &#xE5CA;}">
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                                <fa:SettingsExpanderItem Content="软件主题" Description="软件使用的主题"
+                                                         IconSource="{ipicker:FluentIconSource &#xE5CA;}">
                                         <fa:SettingsExpanderItem.Footer>
                                                 <fa:FAComboBox x:Name="AppTheme" SelectionChanged="AppTheme_OnSelectionChanged">
-                                                        <fa:FAComboBoxItem Content="亮色"/>
-                                                        <fa:FAComboBoxItem Content="暗色"/>
-                                                        <fa:FAComboBoxItem Content="跟随系统"/>
+                                                        <fa:FAComboBoxItem Content="亮色" />
+                                                        <fa:FAComboBoxItem Content="暗色" />
+                                                        <fa:FAComboBoxItem Content="跟随系统" />
                                                 </fa:FAComboBox>
                                         </fa:SettingsExpanderItem.Footer>
                                 </fa:SettingsExpanderItem>
-                                <fa:SettingsExpanderItem Content="软件主题颜色" Description="软件使用的主题色和强调色" IconSource="{ipicker:FluentIconSource &#xE51F;}">
+                                <fa:SettingsExpanderItem Content="软件主题颜色" Description="软件使用的主题色和强调色"
+                                                         IconSource="{ipicker:FluentIconSource &#xE51F;}">
                                         <fa:SettingsExpanderItem.Footer>
-                                                <ColorPicker x:Name="AppThemeColor" ColorChanged="AppThemeColor_OnColorChanged"/>
+                                                <ColorPicker x:Name="AppThemeColor" ColorChanged="AppThemeColor_OnColorChanged" />
                                         </fa:SettingsExpanderItem.Footer>
                                 </fa:SettingsExpanderItem>
                         </StackPanel>

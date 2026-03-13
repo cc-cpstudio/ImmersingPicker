@@ -56,6 +56,7 @@ public class SettingsWindowNavigationService
             {
                 ViewType.BasicSettings => typeof(Views.SettingsPages.BasicSettingsPage),
                 ViewType.PickerSettings => typeof(Views.SettingsPages.PickerSettingsPage),
+                ViewType.HomePageSettings => typeof(Views.SettingsPages.HomePageSettingsPage),
                 ViewType.About => typeof(Views.SettingsPages.AboutPage),
                 _ => throw new ArgumentException("Invalid view type")
             };
@@ -72,6 +73,7 @@ public class SettingsWindowNavigationService
     {
         BasicSettings,
         PickerSettings,
+        HomePageSettings,
         About
     }
 }

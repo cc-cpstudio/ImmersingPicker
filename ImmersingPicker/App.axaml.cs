@@ -9,11 +9,13 @@ using ImmersingPicker.Views;
 using ImmersingPicker.Core.Models;
 using ImmersingPicker.Services.Services.Picker;
 using ImmersingPicker.Services.Services.Storage;
+using ImmersingPicker.Services.Services;
 using System.Threading.Tasks;
 using System.Timers;
 using Avalonia.Controls.Primitives;
 using Avalonia.Platform.Storage;
 using ImmersingPicker.Services;
+using ImmersingPicker.Helpers;
 using Serilog;
 
 namespace ImmersingPicker;
@@ -76,6 +78,9 @@ public partial class App : Application
             }
         }
 
+        // 初始化平台服务
+        var platformServices = PlatformServices.Instance;
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             _mainWindow = new MainWindow();
@@ -83,6 +88,11 @@ public partial class App : Application
         }
 
         var a = AppSettings.Instance.AppTheme;
+
+        // 初始化主题管理器
+        Log.Information("初始化主题管理器");
+        ThemeManager.Instance.Initialize();
+        Log.Information("主题管理器初始化完成");
 
         // 初始化自动保存定时器
         InitializeAutoSaveTimer();
