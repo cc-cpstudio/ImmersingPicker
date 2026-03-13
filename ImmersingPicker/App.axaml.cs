@@ -23,7 +23,7 @@ namespace ImmersingPicker;
 public partial class App : Application
 {
     private Timer? _autoSaveTimer;
-    private MainWindow? _mainWindow;
+    private AppWindow? _mainWindow;
 
     public override void Initialize()
     {
@@ -83,7 +83,7 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            _mainWindow = new MainWindow();
+            _mainWindow = new WelcomeWindow();
             desktop.MainWindow = _mainWindow;
         }
 

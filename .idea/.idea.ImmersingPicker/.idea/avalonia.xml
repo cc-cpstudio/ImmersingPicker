@@ -24,6 +24,8 @@
         <entry key="ImmersingPicker/Views/SettingsWindow.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/SuspendingWindow.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/SuspendingWindow/MovingControlButton.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
+        <entry key="ImmersingPicker/Views/WelcomeWindow.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
+        <entry key="ImmersingPicker/Views/Window1.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
       </map>
     </option>
   </component>

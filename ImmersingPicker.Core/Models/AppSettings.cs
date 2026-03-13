@@ -2,11 +2,6 @@
 
 public class AppSettings
 {
-    public enum LanguageEnums
-    {
-        System, SimplifiedChinese, TraditionalChinese, English
-    }
-
     public enum ThemeEnums
     {
         System, Light, Dark
@@ -20,7 +15,7 @@ public class AppSettings
     public AppSettings()
     {
         AppTheme = ThemeEnums.System;
-        AppThemeColor = "#0078D4";
+        AppThemeColor = "#ffffb900";
 
         WeightCalculationParam1 = 0.49;
         WeightCalculationParam2 = 1.23;
