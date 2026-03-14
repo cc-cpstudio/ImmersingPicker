@@ -57,6 +57,7 @@ public class WelcomeWindowNavigationService
                 ViewType.Welcome => typeof(Views.WelcomePages.WelcomePage),
                 ViewType.License => typeof(Views.WelcomePages.LicensePage),
                 ViewType.ClazzInitialization => typeof(Views.WelcomePages.ClazzInitializationPage),
+                ViewType.Appearance => typeof(Views.WelcomePages.AppearancePage),
                 _ => throw new ArgumentException("Invalid view type")
             };
             Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
@@ -70,6 +71,6 @@ public class WelcomeWindowNavigationService
 
     public enum ViewType
     {
-        Welcome, License, ClazzInitialization
+        Welcome, License, ClazzInitialization, Appearance
     }
 }

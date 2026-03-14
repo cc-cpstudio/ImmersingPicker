@@ -2,6 +2,7 @@ using ImmersingPicker.Core;
 using ImmersingPicker.Core.Abstractions.Storage;
 using ImmersingPicker.Core.Models;
 using ImmersingPicker.Services.Helper;
+using ImmersingPicker.Services.Services.Picker;
 using System.IO;
 using System.Text.Json;
 using Serilog;
@@ -24,15 +25,16 @@ public class ClassStorageService : IClazzStorageService
         Log.Information("开始保存班级数据，共{Count}个班级", classes.Count);
         try
         {
-            // 创建一个临时列表，用于存储不包含Pickers的班级对象
+            // 创建一个临时列表，用于存储不包含 Pickers 的班级对象
             Log.Verbose("创建临时班级列表");
             var classesToSave = new List<Clazz>();
-            // 创建classes列表的副本，避免在遍历过程中集合被修改
+            // 创建 classes 列表的副本，避免在遍历过程中集合被修改
             Log.Verbose("创建班级列表副本");
             var classesCopy = classes.ToList();
             foreach (var clazz in classesCopy)
             {
-                Log.Verbose("处理班级: {ClassName}", clazz.Name);
+                Log.Verbose("处理班级：{ClassName}", clazz.Name);
+                // 直接创建新班级，不添加到 Classes 集合
                 var classToSave = new Clazz(clazz.Name, clazz.Students, clazz.Histories, false);
                 classesToSave.Add(classToSave);
             }
@@ -85,21 +87,16 @@ public class ClassStorageService : IClazzStorageService
                 Log.Verbose("清空现有班级列表");
                 Clazz.Classes.Clear();
                 
-                // 重新创建班级对象，并为每个班级添加Picker
+                // 重新创建班级对象，ClazzFactory.NewClazz 会自动添加 Picker
                 Log.Verbose("重新创建班级对象");
                 foreach (var clazz in deserialized.Classes)
                 {
-                    Log.Verbose("处理班级: {ClassName}", clazz.Name);
-                    var newClazz = new Clazz(
+                    Log.Verbose("处理班级：{ClassName}", clazz.Name);
+                    ClazzFactory.NewClazz(
                         clazz.Name, 
                         clazz.Students, 
                         clazz.Histories
                     );
-                    // 为新班级添加Picker
-                    Log.Verbose("为班级添加FairStudentPicker");
-                    new ImmersingPicker.Services.Services.Picker.FairStudentPicker(newClazz);
-                    Log.Verbose("为班级添加PlainStudentPicker");
-                    new ImmersingPicker.Services.Services.Picker.PlainStudentPicker(newClazz);
                 }
                 
                 Log.Verbose("设置当前班级索引: {Index}", deserialized.CurrentClassIndex);

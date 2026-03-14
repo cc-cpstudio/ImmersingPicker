@@ -1,4 +1,4 @@
-﻿using ImmersingPicker.Core.Abstractions.Picker;
+using ImmersingPicker.Core.Abstractions.Picker;
 
 namespace ImmersingPicker.Core.Models;
 
@@ -39,52 +39,6 @@ public class Clazz
 
     static Clazz()
     {
-        // Classes =
-        // [
-        //     new Clazz("Hello world!",
-        //         [
-        //             new Student("s1",
-        //                 1,
-        //                 1,
-        //                 1),
-        //             new Student("s2",
-        //                 2,
-        //                 1,
-        //                 2),
-        //             new Student("s3",
-        //                 3,
-        //                 2,
-        //                 1),
-        //             new Student("s4",
-        //                 4,
-        //                 2,
-        //                 2),
-        //             new Student("s5",
-        //                 5,
-        //                 3,
-        //                 1),
-        //             new Student("s6",
-        //                 6,
-        //                 3,
-        //                 2),
-        //             new Student("s7",
-        //                 7,
-        //                 4,
-        //                 1),
-        //             new Student("s8",
-        //                 8,
-        //                 4,
-        //                 2),
-        //             new Student("s9",
-        //                 9,
-        //                 5,
-        //                 1),
-        //             new Student("s10",
-        //                 10,
-        //                 5,
-        //                 2),
-        //         ],
-        //     [])];
         Classes = new List<Clazz>();
         _currentClassIndex = 0;
     }
@@ -135,28 +89,6 @@ public class Clazz
         {
             Classes.Add(this);
         }
-    }
-
-    public Clazz(string name, List<Student> students, List<History> histories, params KeyValuePair<string, PickerBase>[] pickers)
-    {
-        Name = name;
-        Students = students;
-        Histories = histories;
-        Pickers = new Dictionary<string, PickerBase>();
-
-        foreach (var picker in pickers)
-        {
-            Pickers.Add(picker.Key, picker.Value);
-            // 更新Picker的_clazz引用
-            var pickerType = picker.Value.GetType();
-            var fieldInfo = pickerType.BaseType?.GetField("_clazz", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (fieldInfo != null)
-            {
-                fieldInfo.SetValue(picker.Value, this);
-            }
-        }
-
-        Classes.Add(this);
     }
 
     public override string ToString()

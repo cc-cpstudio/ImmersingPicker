@@ -11,8 +11,8 @@ using FluentAvalonia.UI.Controls;
 using ImmersingPicker.Core;
 using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Core.Models;
-using ImmersingPicker.Services.Services.Storage;
 using ImmersingPicker.Services.Services.Picker;
+using ImmersingPicker.Services.Services.Storage;
 
 namespace ImmersingPicker.Views.EditorPages;
 
@@ -119,24 +119,8 @@ public partial class EditPage : UserControl
                 }
                 else
                 {
-                    // 创建Picker实例
-                    var fairPicker = new FairStudentPicker(null!);
-                    var plainPicker = new PlainStudentPicker(null!);
-                    
-                    // 使用新构造函数创建班级并添加Picker
-                    var newClazz = new Clazz(
-                        textBox.Text,
-                        new List<Student>(),
-                        new List<History>(),
-                        new KeyValuePair<string, PickerBase>(fairPicker.Name, fairPicker),
-                        new KeyValuePair<string, PickerBase>(plainPicker.Name, plainPicker)
-                    );
-                    
-                    // 如果之前没有班级，自动切换到新班级
-                    if (Clazz.Classes.Count == 1)
-                    {
-                        Clazz.CurrentClassIndex = 0;
-                    }
+                    // 使用 ClazzFactory.NewClazz 创建班级，自动创建抽选器并设置当前班级
+                    var newClazz = ClazzFactory.NewClazz(textBox.Text);
                     
                     InitializeClazzComboBox();
                     await AutoSave();
