@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -258,5 +258,10 @@ public partial class EditPage : UserControl
     private async void OnStudentTableDataChanged()
     {
         await AutoSave();
+    }
+
+    private void ImportButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+
     }
 }

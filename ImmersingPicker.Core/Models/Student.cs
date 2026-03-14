@@ -1,4 +1,4 @@
-﻿namespace ImmersingPicker.Core;
+﻿namespace ImmersingPicker.Core.Models;
 
 public class Student
 {

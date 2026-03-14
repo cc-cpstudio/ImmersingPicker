@@ -4,7 +4,9 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using FluentAvalonia.UI.Windowing;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Services;
 using ImmersingPicker.Services.Services;
+using ImmersingPicker.Views.WelcomePages;
 
 namespace ImmersingPicker.Views;
 
@@ -13,8 +15,11 @@ public partial class WelcomeWindow : AppWindow
     public WelcomeWindow()
     {
         InitializeComponent();
-        VersionText.Text = VersionServices.VersionString(VersionServices.CurrentVersion);
-        StartButton.Background = Brush.Parse(AppSettings.Instance.AppThemeColor);
-
+        WelcomeWindowNavigationService.Initialize(ContentFrame);
+        WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Welcome);
+        WelcomePage.Next += () =>
+        {
+            WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Welcome);
+        };
     }
 }

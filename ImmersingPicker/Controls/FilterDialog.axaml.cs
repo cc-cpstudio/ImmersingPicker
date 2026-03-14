@@ -4,6 +4,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ImmersingPicker.Core;
+using ImmersingPicker.Core.Models;
 
 namespace ImmersingPicker.Controls;
 
