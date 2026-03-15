@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -32,7 +32,7 @@
                         <Button x:Name="NextButton" Foreground="Black" CornerRadius="25" Width="100" Height="50" HorizontalAlignment="Center" Click="NextButton_OnClick">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                         <controls:FontIcon Glyph="&#xEBE7;" FontFamily="avares://ImmersingPicker/Assets/Fonts/#FluentSystemIcons"/>
-                                        <TextBlock Text="继续"/>
+                                        <TextBlock Text="完成"/>
                                 </StackPanel>
                         </Button>
                 </StackPanel>

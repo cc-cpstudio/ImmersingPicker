@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -16,7 +17,6 @@ public partial class AppearancePage : UserControl
 
     private void LoadSettings()
     {
-        // 加载主题设置
         AppTheme.SelectedIndex = AppSettings.Instance.AppTheme switch
         {
             AppSettings.ThemeEnums.System => 2,
@@ -25,7 +25,6 @@ public partial class AppearancePage : UserControl
             _ => 2
         };
 
-        // 加载主题颜色设置
         if (!string.IsNullOrEmpty(AppSettings.Instance.AppThemeColor))
             try
             {
@@ -55,6 +54,9 @@ public partial class AppearancePage : UserControl
 
     private void NextButton_OnClick(object? sender, RoutedEventArgs e)
     {
-
+        if (Application.Current is App app)
+        {
+            app.CompleteWelcomeSetup();
+        }
     }
 }

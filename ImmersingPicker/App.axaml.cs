@@ -25,6 +25,7 @@ public partial class App : Application
     private Timer? _autoSaveTimer;
     private AppWindow? _mainWindow;
     private FloatingWindow? _floatingWindow;
+    private WelcomeWindow? _welcomeWindow;
 
     public override void Initialize()
     {
@@ -85,24 +86,31 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            _mainWindow = new MainWindow();
-            desktop.MainWindow = _mainWindow;
+            if (AppSettings.Instance.IsFirstLaunch)
+            {
+                Log.Information("检测到首次启动，显示欢迎窗口");
+                _welcomeWindow = new WelcomeWindow();
+                desktop.MainWindow = _welcomeWindow;
+            }
+            else
+            {
+                Log.Information("非首次启动，显示主窗口");
+                _mainWindow = new MainWindow();
+                desktop.MainWindow = _mainWindow;
 
-            // 创建悬浮窗口实例
-            Log.Information("创建悬浮窗口实例");
-            _floatingWindow = new FloatingWindow();
-            _floatingWindow.FloatingWindowClicked += ShowMainWindow;
+                Log.Information("创建悬浮窗口实例");
+                _floatingWindow = new FloatingWindow();
+                _floatingWindow.FloatingWindowClicked += ShowMainWindow;
 
-            // 监听主窗口事件
-            _mainWindow.Closing += MainWindow_Closing;
-            _mainWindow.Deactivated += MainWindow_Deactivated;
-            _mainWindow.Activated += MainWindow_Activated;
-            
-            // 订阅浮窗设置变更事件
-            AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
-            AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
-            AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
-            Log.Information("悬浮窗口及事件监听初始化完成");
+                _mainWindow.Closing += MainWindow_Closing;
+                _mainWindow.Deactivated += MainWindow_Deactivated;
+                _mainWindow.Activated += MainWindow_Activated;
+
+                AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
+                AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
+                AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
+                Log.Information("悬浮窗口及事件监听初始化完成");
+            }
         }
 
         var a = AppSettings.Instance.AppTheme;
@@ -205,7 +213,6 @@ public partial class App : Application
         Log.Information("应用程序关闭清理操作完成");
     }
 
-    // 托盘图标事件处理方法
     public void ShowMainWindow(object? sender, EventArgs e)
     {
         Log.Information("显示主窗口");
@@ -216,8 +223,47 @@ public partial class App : Application
             _mainWindow.Focus();
         }
 
-        // 隐藏悬浮窗口
         _floatingWindow?.HideFloatingWindow();
+    }
+
+    public void CompleteWelcomeSetup()
+    {
+        Log.Information("欢迎向导完成，切换到主窗口");
+        
+        AppSettings.Instance.IsFirstLaunch = false;
+        
+        try
+        {
+            Log.Information("保存设置（标记非首次启动）");
+            SettingsStorageService.Instance.SaveSettings();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "保存设置失败");
+        }
+
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            _mainWindow = new MainWindow();
+            desktop.MainWindow = _mainWindow;
+
+            Log.Information("创建悬浮窗口实例");
+            _floatingWindow = new FloatingWindow();
+            _floatingWindow.FloatingWindowClicked += ShowMainWindow;
+
+            _mainWindow.Closing += MainWindow_Closing;
+            _mainWindow.Deactivated += MainWindow_Deactivated;
+            _mainWindow.Activated += MainWindow_Activated;
+
+            AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
+            AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
+            AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
+            Log.Information("主窗口和悬浮窗口初始化完成");
+
+            _welcomeWindow?.Close();
+            _mainWindow.Show();
+            _mainWindow.Activate();
+        }
     }
 
     /// <summary>

@@ -13,6 +13,8 @@ public class AppSettings
 
     public static AppSettings Instance { get; set;  } = new AppSettings();
 
+    private bool _isFirstLaunch = true;
+
     public AppSettings()
     {
         AppTheme = ThemeEnums.System;
@@ -77,6 +79,7 @@ public class AppSettings
 
     public event Action<bool> EnableClassIslandLinkageChanged;
     public event Action<bool> EnableDisablingAfterClassesChanged;
+    public event Action<bool> IsFirstLaunchChanged;
 
     public event Action AnyChanged;
 
@@ -405,6 +408,17 @@ public class AppSettings
         {
             _enableDisablingAfterClasses = value;
             EnableDisablingAfterClassesChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public bool IsFirstLaunch
+    {
+        get => _isFirstLaunch;
+        set
+        {
+            _isFirstLaunch = value;
+            IsFirstLaunchChanged?.Invoke(value);
             AnyChanged?.Invoke();
         }
     }

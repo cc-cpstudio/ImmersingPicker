@@ -21,7 +21,7 @@
                                         </fa:SettingsExpanderItem.Footer>
                                 </fa:SettingsExpanderItem>
                                 <fa:SettingsExpanderItem Content="URL协议与IPC服务"
-                                                         Description="选择“是”后，将注册URL协议并开通IPC服务，允许其他软件调用本软件功能"
+                                                         Description="选择“是”后，将注册URL协议并开通IPC服务，允许其他软件调用本软件功能（未完成）"
                                                          IconSource="{ipicker:FluentIconSource &#xE908;}">
                                         <fa:SettingsExpanderItem.Footer>
                                                 <ToggleSwitch x:Name="OpenUrlAndIpc" OnContent="" OffContent=""
