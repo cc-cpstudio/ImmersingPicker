@@ -96,6 +96,11 @@ public partial class App : Application
             _mainWindow.Closing += MainWindow_Closing;
             _mainWindow.Deactivated += MainWindow_Deactivated;
             _mainWindow.Activated += MainWindow_Activated;
+            
+            // 订阅浮窗设置变更事件
+            AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
+            AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
+            AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
             Log.Information("悬浮窗口及事件监听初始化完成");
         }
 
@@ -227,8 +232,11 @@ public partial class App : Application
         _mainWindow?.Hide();
         Log.Information("主窗口已隐藏");
         
-        // 显示悬浮窗口
-        _floatingWindow?.ShowFloatingWindow();
+        // 显示悬浮窗口（如果已启用）
+        if (AppSettings.Instance.FloatingWindowEnabled)
+        {
+            _floatingWindow?.ShowFloatingWindow();
+        }
         
         // 保存数据
         try
@@ -252,8 +260,11 @@ public partial class App : Application
     private void MainWindow_Deactivated(object? sender, EventArgs e)
     {
         Log.Information("主窗口失去焦点");
-        // 显示悬浮窗口
-        _floatingWindow?.ShowFloatingWindow();
+        // 显示悬浮窗口（如果已启用）
+        if (AppSettings.Instance.FloatingWindowEnabled)
+        {
+            _floatingWindow?.ShowFloatingWindow();
+        }
     }
 
     /// <summary>
@@ -264,6 +275,28 @@ public partial class App : Application
         Log.Information("主窗口获得焦点");
         // 隐藏悬浮窗口
         _floatingWindow?.HideFloatingWindow();
+    }
+
+    /// <summary>
+    /// 浮窗启用状态变更事件处理
+    /// </summary>
+    private void OnFloatingWindowEnabledChanged(bool enabled)
+    {
+        Log.Information("浮窗启用状态变更: {Enabled}", enabled);
+        if (!enabled)
+        {
+            // 禁用时隐藏浮窗
+            _floatingWindow?.HideFloatingWindow();
+        }
+    }
+
+    /// <summary>
+    /// 浮窗设置变更事件处理
+    /// </summary>
+    private void OnFloatingWindowSettingsChanged<T>(T _)
+    {
+        Log.Information("浮窗设置变更，更新位置");
+        _floatingWindow?.UpdatePosition();
     }
 
     private async void OpenEditor(object? sender, EventArgs e)

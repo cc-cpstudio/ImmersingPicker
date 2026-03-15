@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using FluentAvalonia.UI.Windowing;
+using ImmersingPicker.Core.Models;
 using Serilog;
 
 namespace ImmersingPicker.Views;
@@ -40,11 +41,27 @@ public partial class FloatingWindow : AppWindow
         var windowWidth = (int)Width;
         var windowHeight = (int)Height;
 
-        var x = screenBounds.Right - windowWidth - 10;
-        var y = (screenBounds.Height - windowHeight) / 2;
+        // 根据设置计算竖向位置（百分比转换为像素）
+        var verticalPercent = AppSettings.Instance.FloatingWindowVerticalPosition / 100.0;
+        var y = (int)((screenBounds.Height - windowHeight) * verticalPercent);
+
+        // 根据设置计算水平位置
+        int x, hiddenX;
+        if (AppSettings.Instance.FloatingWindowDockPosition == AppSettings.FloatingWindowDockPositionMode.Left)
+        {
+            // 停靠在左边缘
+            x = 10;
+            hiddenX = -windowWidth - 10;
+        }
+        else
+        {
+            // 停靠在右边缘
+            x = screenBounds.Right - windowWidth - 10;
+            hiddenX = screenBounds.Right + 10;
+        }
 
         _visiblePosition = new PixelPoint(x, y);
-        _hiddenPosition = new PixelPoint(screenBounds.Right + 10, y);
+        _hiddenPosition = new PixelPoint(hiddenX, y);
 
         Log.Verbose("悬浮窗口位置计算完成: 可见位置=({VX},{VY}), 隐藏位置=({HX},{HY})", 
             _visiblePosition.X, _visiblePosition.Y, _hiddenPosition.X, _hiddenPosition.Y);
@@ -55,6 +72,15 @@ public partial class FloatingWindow : AppWindow
         CalculatePositions();
         Position = _visiblePosition;
         Log.Verbose("悬浮窗口位置已设置: X={X}, Y={Y}", Position.X, Position.Y);
+    }
+
+    public void UpdatePosition()
+    {
+        CalculatePositions();
+        if (IsVisible)
+        {
+            Position = _visiblePosition;
+        }
     }
 
     public async void SlideIn()

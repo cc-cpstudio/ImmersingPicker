@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -29,6 +29,7 @@ public partial class SettingsWindow : AppWindow
             "PickerSettings" => Services.SettingsWindowNavigationService.ViewType.PickerSettings,
             "HomePageSettings" => Services.SettingsWindowNavigationService.ViewType.HomePageSettings,
             "SecurityAndPrivacySettings" => Services.SettingsWindowNavigationService.ViewType.SecurityAndPrivacy,
+            "FloatingWindowSettings" => Services.SettingsWindowNavigationService.ViewType.FloatingWindowSettings,
             "About" => Services.SettingsWindowNavigationService.ViewType.About,
             _ => throw new ArgumentException("Invalid view type")
         };

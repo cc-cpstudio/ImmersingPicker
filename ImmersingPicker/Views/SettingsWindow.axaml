@@ -1,4 +1,4 @@
-﻿<wnd:AppWindow xmlns="https://github.com/avaloniaui"
+<wnd:AppWindow xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,6 +19,7 @@
                         <fa:NavigationViewItem x:Name="PickerSettingsItem" Content="抽选器设置" Tag="PickerSettings" IconSource="{ipicker:FluentIconSource &#xECC0;}"/>
                         <fa:NavigationViewItem x:Name="HomePageSettingsItem" Content="主界面设置" Tag="HomePageSettings" IconSource="{ipicker:FluentIconSource &#xE34D;}"/>
                         <fa:NavigationViewItem x:Name="AdvancedSettingsItem" Content="安全与隐私设置" Tag="SecurityAndPrivacySettings" IconSource="{ipicker:FluentIconSource &#xEF60;}"/>
+                        <fa:NavigationViewItem x:Name="FloatingWindowSettingsItem" Content="浮窗设置" Tag="FloatingWindowSettings" IconSource="{ipicker:FluentIconSource &#xE9D9;}"/>
                         <fa:NavigationViewItem x:Name="AboutItem" Content="关于" Tag="About" IconSource="{ipicker:FluentIconSource &#xE22B;}"/>
                 </fa:NavigationView.MenuItems>
                 <fa:Frame x:Name="ContentFrame" Margin="20"/>

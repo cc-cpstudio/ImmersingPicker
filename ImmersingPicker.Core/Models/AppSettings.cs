@@ -9,6 +9,7 @@ public class AppSettings
 
     public enum SeatGridRowArrangementMode { T2B, B2T }
     public enum SeatGridColumnArrangementMode { L2R, R2L }
+    public enum FloatingWindowDockPositionMode { Left, Right }
 
     public static AppSettings Instance { get; set;  } = new AppSettings();
 
@@ -36,6 +37,10 @@ public class AppSettings
         OpenPassword = false;
         EnableUsbSecurityCheck = false;
         UsbSecurityDriveInfo = null;
+
+        FloatingWindowEnabled = true;
+        FloatingWindowDockPosition = FloatingWindowDockPositionMode.Right;
+        FloatingWindowVerticalPosition = 50;
     }
 
     public event Action<bool> LaunchOnSystemStartChanged;
@@ -62,6 +67,10 @@ public class AppSettings
     public event Action<bool> OpenPasswordChanged;
     public event Action<bool> EnableUsbSecurityCheckChanged;
     public event Action<UsbDriveInfo?> UsbSecurityDriveInfoChanged;
+
+    public event Action<bool> FloatingWindowEnabledChanged;
+    public event Action<FloatingWindowDockPositionMode> FloatingWindowDockPositionChanged;
+    public event Action<int> FloatingWindowVerticalPositionChanged;
 
     public event Action AnyChanged;
 
@@ -90,6 +99,10 @@ public class AppSettings
     private string _passwordHash = string.Empty;
     private bool _enableUsbSecurityCheck;
     private UsbDriveInfo? _usbSecurityDriveInfo;
+
+    private bool _floatingWindowEnabled;
+    private FloatingWindowDockPositionMode _floatingWindowDockPosition;
+    private int _floatingWindowVerticalPosition;
 
     public bool LaunchOnSystemStart
     {
@@ -328,6 +341,39 @@ public class AppSettings
         {
             _usbSecurityDriveInfo = value;
             UsbSecurityDriveInfoChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public bool FloatingWindowEnabled
+    {
+        get => _floatingWindowEnabled;
+        set
+        {
+            _floatingWindowEnabled = value;
+            FloatingWindowEnabledChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public FloatingWindowDockPositionMode FloatingWindowDockPosition
+    {
+        get => _floatingWindowDockPosition;
+        set
+        {
+            _floatingWindowDockPosition = value;
+            FloatingWindowDockPositionChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public int FloatingWindowVerticalPosition
+    {
+        get => _floatingWindowVerticalPosition;
+        set
+        {
+            _floatingWindowVerticalPosition = value;
+            FloatingWindowVerticalPositionChanged?.Invoke(value);
             AnyChanged?.Invoke();
         }
     }

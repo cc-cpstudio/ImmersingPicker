@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
 using Serilog;
@@ -59,6 +59,7 @@ public class SettingsWindowNavigationService
                 ViewType.HomePageSettings => typeof(Views.SettingsPages.HomePageSettingsPage),
                 ViewType.About => typeof(Views.SettingsPages.AboutPage),
                 ViewType.SecurityAndPrivacy => typeof(Views.SettingsPages.SecurityAndPrivacySettingsPage),
+                ViewType.FloatingWindowSettings => typeof(Views.SettingsPages.FloatingWindowSettingsPage),
                 _ => throw new ArgumentException("Invalid view type")
             };
             Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
@@ -76,6 +77,7 @@ public class SettingsWindowNavigationService
         PickerSettings,
         HomePageSettings,
         SecurityAndPrivacy,
+        FloatingWindowSettings,
         About
     }
 }
