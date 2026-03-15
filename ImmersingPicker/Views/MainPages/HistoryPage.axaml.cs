@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
-using ImmersingPicker.Core.Models;
-using ImmersingPicker.Controls;
 using FluentAvalonia.UI.Controls;
 using ImmersingPicker.Core;
+using ImmersingPicker.Controls;
+using ImmersingPicker.Core.Models;
+using ImmersingPicker.Helpers;
 using Serilog;
 
 namespace ImmersingPicker.Views.MainPages;
@@ -271,6 +272,22 @@ public partial class HistoryPage : UserControl
             result == ContentDialogResult.Secondary)
         {
             _logger.Information("用户选择了{Operation}操作", result == ContentDialogResult.Primary ? "清空历史记录" : "清空历史记录并重置权重");
+            
+            // 密码验证
+            var parentWindow = TopLevel.GetTopLevel(this) as Window;
+            if (parentWindow == null)
+            {
+                _logger.Error("无法获取父窗口");
+                return;
+            }
+            
+            bool verified = await PasswordVerifyHelper.VerifyPassword(parentWindow);
+            if (!verified)
+            {
+                _logger.Information("密码验证失败，取消操作");
+                return;
+            }
+            
             var confirmDialog = new ContentDialog
             {
                 Title = "确认操作",

@@ -1,4 +1,4 @@
-﻿namespace ImmersingPicker.Core.Models;
+namespace ImmersingPicker.Core.Models;
 
 public class AppSettings
 {
@@ -32,6 +32,8 @@ public class AppSettings
         HomeAnimationPlayDelay = 100;
         SeatGridRowArrangement = SeatGridRowArrangementMode.T2B;
         SeatGridColumnArrangement = SeatGridColumnArrangementMode.L2R;
+
+        OpenPassword = false;
     }
 
     public event Action<bool> LaunchOnSystemStartChanged;
@@ -55,6 +57,8 @@ public class AppSettings
     public event Action<SeatGridRowArrangementMode> SeatGridRowArrangementChanged;
     public event Action<SeatGridColumnArrangementMode> SeatGridColumnArrangementChanged;
 
+    public event Action<bool> OpenPasswordChanged;
+
     public event Action AnyChanged;
 
     private bool _launchOnSystemStart;
@@ -77,6 +81,9 @@ public class AppSettings
     private int _homeAnimationPlayDelay;
     private SeatGridRowArrangementMode _seatGridRowArrangement;
     private SeatGridColumnArrangementMode _seatGridColumnArrangement;
+
+    private bool _openPassword;
+    private string _passwordHash = string.Empty;
 
     public bool LaunchOnSystemStart
     {
@@ -272,6 +279,27 @@ public class AppSettings
         {
             _seatGridColumnArrangement = value;
             SeatGridColumnArrangementChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public bool OpenPassword
+    {
+        get => _openPassword;
+        set
+        {
+            _openPassword = value;
+            OpenPasswordChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public string PasswordHash
+    {
+        get => _passwordHash;
+        set
+        {
+            _passwordHash = value;
             AnyChanged?.Invoke();
         }
     }

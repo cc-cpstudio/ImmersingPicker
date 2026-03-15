@@ -28,6 +28,7 @@ public partial class SettingsWindow : AppWindow
             "BasicSettings" => Services.SettingsWindowNavigationService.ViewType.BasicSettings,
             "PickerSettings" => Services.SettingsWindowNavigationService.ViewType.PickerSettings,
             "HomePageSettings" => Services.SettingsWindowNavigationService.ViewType.HomePageSettings,
+            "SecurityAndPrivacySettings" => Services.SettingsWindowNavigationService.ViewType.SecurityAndPrivacy,
             "About" => Services.SettingsWindowNavigationService.ViewType.About,
             _ => throw new ArgumentException("Invalid view type")
         };

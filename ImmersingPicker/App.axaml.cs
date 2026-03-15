@@ -83,7 +83,7 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            _mainWindow = new WelcomeWindow();
+            _mainWindow = new MainWindow();
             desktop.MainWindow = _mainWindow;
         }
 
@@ -198,16 +198,16 @@ public partial class App : Application
         }
     }
 
-    private void OpenEditor(object? sender, EventArgs e)
+    private async void OpenEditor(object? sender, EventArgs e)
     {
         // 打开编辑器窗口
-        MainWindowNavigationService.OpenEditorWindow();
+        await MainWindowNavigationService.OpenEditorWindow();
     }
 
-    private void OpenSettings(object? sender, EventArgs e)
+    private async void OpenSettings(object? sender, EventArgs e)
     {
         // 打开设置窗口
-        MainWindowNavigationService.OpenSettingsWindow();
+        await MainWindowNavigationService.OpenSettingsWindow();
     }
 
     private void RestartApplication(object? sender, EventArgs e)

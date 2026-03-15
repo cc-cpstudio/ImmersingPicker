@@ -52,6 +52,9 @@
       <Compile Update="Controls\EditableSeatGrid.axaml.cs">
         <DependentUpon>EditableSeatGrid.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Controls\PasswordVerifyDialog.axaml.cs">
+        <DependentUpon>PasswordVerifyDialog.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

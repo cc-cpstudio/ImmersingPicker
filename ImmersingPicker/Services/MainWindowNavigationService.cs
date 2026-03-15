@@ -1,6 +1,10 @@
-﻿using System;
+using System;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
+using FluentAvalonia.UI.Windowing;
+using ImmersingPicker.Helpers;
 using ImmersingPicker.Views;
 using Serilog;
 
@@ -9,12 +13,14 @@ namespace ImmersingPicker.Services;
 public class MainWindowNavigationService
 {
     private static Frame? _mainContentFrame;
+    private static AppWindow? _mainWindow;
 
-    public static void Initialize(Frame mainFrame)
+    public static void Initialize(Frame mainFrame, AppWindow mainWindow)
     {
         Log.Information("初始化主窗口导航服务");
         Log.Verbose("设置主内容框架");
         _mainContentFrame = mainFrame;
+        _mainWindow = mainWindow;
         Log.Information("主窗口导航服务初始化完成");
     }
 
@@ -81,9 +87,22 @@ public class MainWindowNavigationService
         }
     }
 
-    public static void OpenSettingsWindow()
+    public static async Task OpenSettingsWindow()
     {
         Log.Information("打开设置窗口");
+        if (_mainWindow == null)
+        {
+            Log.Error("主窗口未初始化");
+            return;
+        }
+
+        bool verified = await PasswordVerifyHelper.VerifyPassword(_mainWindow);
+        if (!verified)
+        {
+            Log.Information("密码验证失败，取消打开设置窗口");
+            return;
+        }
+
         try
         {
             var settingsWindow = new SettingsWindow();
@@ -96,9 +115,22 @@ public class MainWindowNavigationService
         }
     }
 
-    public static void OpenEditorWindow()
+    public static async Task OpenEditorWindow()
     {
         Log.Information("打开编辑器窗口");
+        if (_mainWindow == null)
+        {
+            Log.Error("主窗口未初始化");
+            return;
+        }
+
+        bool verified = await PasswordVerifyHelper.VerifyPassword(_mainWindow);
+        if (!verified)
+        {
+            Log.Information("密码验证失败，取消打开编辑器窗口");
+            return;
+        }
+
         try
         {
             var editorWindow = new EditorWindow();

@@ -58,6 +58,7 @@ public class SettingsWindowNavigationService
                 ViewType.PickerSettings => typeof(Views.SettingsPages.PickerSettingsPage),
                 ViewType.HomePageSettings => typeof(Views.SettingsPages.HomePageSettingsPage),
                 ViewType.About => typeof(Views.SettingsPages.AboutPage),
+                ViewType.SecurityAndPrivacy => typeof(Views.SettingsPages.SecurityAndPrivacySettingsPage),
                 _ => throw new ArgumentException("Invalid view type")
             };
             Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
@@ -74,6 +75,7 @@ public class SettingsWindowNavigationService
         BasicSettings,
         PickerSettings,
         HomePageSettings,
+        SecurityAndPrivacy,
         About
     }
 }

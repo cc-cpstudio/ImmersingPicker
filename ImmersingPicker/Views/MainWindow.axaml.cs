@@ -15,16 +15,16 @@ public partial class MainWindow : AppWindow
     public MainWindow()
     {
         Log.Information("主窗口初始化开始");
-        Log.Verbose("开始初始化MainWindow组件");
+        Log.Verbose("开始初始化 MainWindow 组件");
         InitializeComponent();
 
-        Log.Verbose("设置TitleBar属性");
+        Log.Verbose("设置 TitleBar 属性");
         TitleBar.Height = 36;
         TitleBar.ExtendsContentIntoTitleBar = false;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 
         Log.Verbose("初始化导航服务");
-        MainWindowNavigationService.Initialize(ContentFrame);
+        MainWindowNavigationService.Initialize(ContentFrame, this);
         Log.Information("主窗口导航服务初始化完成");
         
         // 添加关闭事件处理
