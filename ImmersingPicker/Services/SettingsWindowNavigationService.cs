@@ -60,6 +60,7 @@ public class SettingsWindowNavigationService
                 ViewType.About => typeof(Views.SettingsPages.AboutPage),
                 ViewType.SecurityAndPrivacy => typeof(Views.SettingsPages.SecurityAndPrivacySettingsPage),
                 ViewType.FloatingWindowSettings => typeof(Views.SettingsPages.FloatingWindowSettingsPage),
+                ViewType.Linkage => typeof(Views.SettingsPages.LinkageSettingsPage),
                 _ => throw new ArgumentException("Invalid view type")
             };
             Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
@@ -78,6 +79,7 @@ public class SettingsWindowNavigationService
         HomePageSettings,
         SecurityAndPrivacy,
         FloatingWindowSettings,
+        Linkage,
         About
     }
 }

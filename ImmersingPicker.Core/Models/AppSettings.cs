@@ -41,6 +41,9 @@ public class AppSettings
         FloatingWindowEnabled = true;
         FloatingWindowDockPosition = FloatingWindowDockPositionMode.Right;
         FloatingWindowVerticalPosition = 50;
+
+        EnableClassIslandLinkage = false;
+        EnableDisablingAfterClasses = false;
     }
 
     public event Action<bool> LaunchOnSystemStartChanged;
@@ -71,6 +74,9 @@ public class AppSettings
     public event Action<bool> FloatingWindowEnabledChanged;
     public event Action<FloatingWindowDockPositionMode> FloatingWindowDockPositionChanged;
     public event Action<int> FloatingWindowVerticalPositionChanged;
+
+    public event Action<bool> EnableClassIslandLinkageChanged;
+    public event Action<bool> EnableDisablingAfterClassesChanged;
 
     public event Action AnyChanged;
 
@@ -103,6 +109,9 @@ public class AppSettings
     private bool _floatingWindowEnabled;
     private FloatingWindowDockPositionMode _floatingWindowDockPosition;
     private int _floatingWindowVerticalPosition;
+
+    private bool _enableClassIslandLinkage;
+    private bool _enableDisablingAfterClasses;
 
     public bool LaunchOnSystemStart
     {
@@ -374,6 +383,28 @@ public class AppSettings
         {
             _floatingWindowVerticalPosition = value;
             FloatingWindowVerticalPositionChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public bool EnableClassIslandLinkage
+    {
+        get => _enableClassIslandLinkage;
+        set
+        {
+            _enableClassIslandLinkage = value;
+            EnableClassIslandLinkageChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public bool EnableDisablingAfterClasses
+    {
+        get => _enableDisablingAfterClasses;
+        set
+        {
+            _enableDisablingAfterClasses = value;
+            EnableDisablingAfterClassesChanged?.Invoke(value);
             AnyChanged?.Invoke();
         }
     }

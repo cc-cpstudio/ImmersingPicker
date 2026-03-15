@@ -28,6 +28,7 @@ public partial class App : Application
 
     public override void Initialize()
     {
+        ClassIslandIPCService.Instance.Initialize();
         AvaloniaXamlLoader.Load(this);
     }
 
