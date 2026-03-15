@@ -55,6 +55,9 @@
       <Compile Update="Controls\PasswordVerifyDialog.axaml.cs">
         <DependentUpon>PasswordVerifyDialog.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Controls\UniversalVerifyDialog.axaml.cs">
+        <DependentUpon>UniversalVerifyDialog.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

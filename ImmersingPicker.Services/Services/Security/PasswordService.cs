@@ -1,10 +1,9 @@
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using ImmersingPicker.Core.Models;
 using Serilog;
 
-namespace ImmersingPicker.Services.Services;
+namespace ImmersingPicker.Services.Services.Security;
 
 public class PasswordService
 {

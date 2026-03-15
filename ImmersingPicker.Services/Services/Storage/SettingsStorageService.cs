@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using ImmersingPicker.Core.JsonConverters;
 using ImmersingPicker.Core.Models;
 using ImmersingPicker.Services.Helper;
 using Serilog;
@@ -15,7 +16,7 @@ public class SettingsStorageService
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() }
+        Converters = { new JsonStringEnumConverter(), new UsbDriveInfoNullableConverter() }
     };
 
     public void SaveSettings()

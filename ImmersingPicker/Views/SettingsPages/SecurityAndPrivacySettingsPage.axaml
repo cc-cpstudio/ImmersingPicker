@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,9 +18,20 @@
                                                       IsCheckedChanged="OpenPassword_OnIsCheckedChanged"/>
                                 </fa:SettingsExpanderItem.Footer>
                         </fa:SettingsExpanderItem>
-                        <fa:SettingsExpanderItem x:Name="SetPasswordItem" Content="密码设置" Description="设置密码校验是使用的密码" IconSource="{helpers:FluentIconSource &#xEC8A;}">
+                        <fa:SettingsExpanderItem x:Name="SetPasswordItem" Content="密码设置" Description="设置密码校验时使用的密码" IconSource="{helpers:FluentIconSource &#xEC8A;}">
                                 <fa:SettingsExpanderItem.Footer>
                                         <Button Content="开始设置" Click="SetPassword_OnClick"/>
+                                </fa:SettingsExpanderItem.Footer>
+                        </fa:SettingsExpanderItem>
+                        <fa:SettingsExpanderItem x:Name="EnableUsbSecurityCheckItem" Content="启动U盘辅助校验" Description="开启后将允许使用U盘代替密码校验" IconSource="">
+                                <fa:SettingsExpanderItem.Footer>
+                                        <ToggleSwitch x:Name="EnableUsbSecurityCheck" OnContent="" OffContent=""
+                                                      IsCheckedChanged="EnableUsbSecurityCheck_OnIsCheckedChanged"/>
+                                </fa:SettingsExpanderItem.Footer>
+                        </fa:SettingsExpanderItem>
+                        <fa:SettingsExpanderItem x:Name="SetUsbDriveItem" Content="校验U盘设置" Description="设置U盘校验时使用的U盘">
+                                <fa:SettingsExpanderItem.Footer>
+                                        <Button Content="开始设置" Click="SetUsbDrive_OnClick"/>
                                 </fa:SettingsExpanderItem.Footer>
                         </fa:SettingsExpanderItem>
                 </StackPanel>

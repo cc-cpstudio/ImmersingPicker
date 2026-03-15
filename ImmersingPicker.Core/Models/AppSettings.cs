@@ -34,6 +34,8 @@ public class AppSettings
         SeatGridColumnArrangement = SeatGridColumnArrangementMode.L2R;
 
         OpenPassword = false;
+        EnableUsbSecurityCheck = false;
+        UsbSecurityDriveInfo = null;
     }
 
     public event Action<bool> LaunchOnSystemStartChanged;
@@ -58,6 +60,8 @@ public class AppSettings
     public event Action<SeatGridColumnArrangementMode> SeatGridColumnArrangementChanged;
 
     public event Action<bool> OpenPasswordChanged;
+    public event Action<bool> EnableUsbSecurityCheckChanged;
+    public event Action<UsbDriveInfo?> UsbSecurityDriveInfoChanged;
 
     public event Action AnyChanged;
 
@@ -84,6 +88,8 @@ public class AppSettings
 
     private bool _openPassword;
     private string _passwordHash = string.Empty;
+    private bool _enableUsbSecurityCheck;
+    private UsbDriveInfo? _usbSecurityDriveInfo;
 
     public bool LaunchOnSystemStart
     {
@@ -300,6 +306,28 @@ public class AppSettings
         set
         {
             _passwordHash = value;
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public bool EnableUsbSecurityCheck
+    {
+        get => _enableUsbSecurityCheck;
+        set
+        {
+            _enableUsbSecurityCheck = value;
+            EnableUsbSecurityCheckChanged?.Invoke(value);
+            AnyChanged?.Invoke();
+        }
+    }
+
+    public UsbDriveInfo? UsbSecurityDriveInfo
+    {
+        get => _usbSecurityDriveInfo;
+        set
+        {
+            _usbSecurityDriveInfo = value;
+            UsbSecurityDriveInfoChanged?.Invoke(value);
             AnyChanged?.Invoke();
         }
     }
