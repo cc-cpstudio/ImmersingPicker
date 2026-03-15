@@ -1,6 +1,8 @@
-﻿using ClassIsland.Shared.IPC;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
+using ImmersingPicker.Core.Exceptions;
 using Serilog;
 
 namespace ImmersingPicker.Services.Services;
@@ -9,33 +11,28 @@ public class ClassIslandIPCService
 {
     public static ClassIslandIPCService Instance = new ClassIslandIPCService();
 
-    public event Action CI_OnClass;
-    public event Action CI_OnBreakingTimeOrAfterSchool;
-
+    private IpcClient _client = new IpcClient();
     private bool _initialized = false;
 
     public async void Initialize()
     {
         if (_initialized) return;
 
-        var client = new IpcClient();
+        try
+        {
+            await _client.Connect();
+            _initialized = true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "ClassIsland IPC 初始化失败");
+            throw new ClassIslandIPCInitializationFailed();
+        }
+    }
 
-        client.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnClassNotifyId, () =>
-        {
-            Log.Information("ClassIsland 通知：开始上课");
-            CI_OnClass?.Invoke();
-        });
-        client.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnBreakingTimeNotifyId, () =>
-        {
-            Log.Information("ClassIsland 通知：开始课间休息");
-            CI_OnBreakingTimeOrAfterSchool?.Invoke();
-        });
-        client.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnAfterSchoolNotifyId, () =>
-        {
-            Log.Information("ClassIsland 通知：放学");
-            CI_OnBreakingTimeOrAfterSchool?.Invoke();
-        });
-
-        await client.Connect();
+    public bool OnClass()
+    {
+        var lessonSc = _client.Provider.CreateIpcProxy<IPublicLessonsService>(_client.PeerProxy!);
+        return lessonSc.CurrentState is TimeState.OnClass or TimeState.PrepareOnClass or TimeState.None;
     }
 }

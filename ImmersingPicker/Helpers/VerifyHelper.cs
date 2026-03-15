@@ -9,7 +9,7 @@ using ImmersingPicker.Services.Services.Security;
 
 namespace ImmersingPicker.Helpers;
 
-public static class PasswordVerifyHelper
+public static class VerifyHelper
 {
     public static async Task<bool> VerifyAndExecute(Window parentWindow, Func<Task> action)
     {
@@ -148,54 +148,6 @@ public static class PasswordVerifyHelper
                 {
                     Title = "验证失败",
                     Content = "验证失败",
-                    CloseButtonText = "确定"
-                };
-                await errorDialog.ShowAsync(parentWindow);
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    [Obsolete("使用 VerifyPassword 或 VerifyAndExecute 代替，它们使用新的 UniversalVerifyDialog")]
-    public static async Task<bool> VerifyPasswordLegacy(Window parentWindow)
-    {
-        if (!AppSettings.Instance.OpenPassword)
-        {
-            return true;
-        }
-
-        if (!PasswordService.Instance.HasPassword)
-        {
-            return true;
-        }
-
-        var verifyDialog = new PasswordVerifyDialog();
-        
-        var dialog = new ContentDialog
-        {
-            Title = "密码验证",
-            Content = verifyDialog,
-            PrimaryButtonText = "确认",
-            CloseButtonText = "取消",
-            DefaultButton = ContentDialogButton.Primary
-        };
-
-        var result = await dialog.ShowAsync(parentWindow);
-
-        if (result == ContentDialogResult.Primary)
-        {
-            if (verifyDialog.Verify())
-            {
-                return true;
-            }
-            else
-            {
-                var errorDialog = new ContentDialog
-                {
-                    Title = "验证失败",
-                    Content = "密码错误",
                     CloseButtonText = "确定"
                 };
                 await errorDialog.ShowAsync(parentWindow);

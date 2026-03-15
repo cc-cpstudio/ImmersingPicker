@@ -400,7 +400,7 @@ public class AppSettings
 
     public bool EnableDisablingAfterClasses
     {
-        get => _enableDisablingAfterClasses;
+        get => _enableDisablingAfterClasses && _enableClassIslandLinkage;
         set
         {
             _enableDisablingAfterClasses = value;

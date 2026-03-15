@@ -7,6 +7,7 @@
         x:Class="ImmersingPicker.Views.FloatingWindow"
         Title="Immersing Picker"
         Width="32" Height="32"
+        CornerRadius="18"
         SystemDecorations="None"
         Topmost="True"
         Background="#00000000"

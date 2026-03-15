@@ -138,7 +138,7 @@ public partial class SecurityAndPrivacySettingsPage : UserControl
             return;
         }
 
-        var verified = await PasswordVerifyHelper.VerifyPassword(TopLevel.GetTopLevel(this) as Window ?? throw new InvalidOperationException());
+        var verified = await VerifyHelper.VerifyPassword(TopLevel.GetTopLevel(this) as Window ?? throw new InvalidOperationException());
         if (verified)
         {
             await ShowUsbDriveDialog();

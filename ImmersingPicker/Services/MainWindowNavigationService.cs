@@ -96,10 +96,10 @@ public class MainWindowNavigationService
             return;
         }
 
-        bool verified = await PasswordVerifyHelper.VerifyPassword(_mainWindow);
+        bool verified = await VerifyHelper.VerifyPassword(_mainWindow);
         if (!verified)
         {
-            Log.Information("密码验证失败，取消打开设置窗口");
+            Log.Information("验证失败，取消打开设置窗口");
             return;
         }
 
@@ -124,10 +124,10 @@ public class MainWindowNavigationService
             return;
         }
 
-        bool verified = await PasswordVerifyHelper.VerifyPassword(_mainWindow);
+        bool verified = await VerifyHelper.VerifyPassword(_mainWindow);
         if (!verified)
         {
-            Log.Information("密码验证失败，取消打开编辑器窗口");
+            Log.Information("验证失败，取消打开编辑器窗口");
             return;
         }
 

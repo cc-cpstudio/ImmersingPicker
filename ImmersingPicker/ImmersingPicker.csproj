@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
@@ -51,9 +51,6 @@
       </Compile>
       <Compile Update="Controls\EditableSeatGrid.axaml.cs">
         <DependentUpon>EditableSeatGrid.axaml</DependentUpon>
-      </Compile>
-      <Compile Update="Controls\PasswordVerifyDialog.axaml.cs">
-        <DependentUpon>PasswordVerifyDialog.axaml</DependentUpon>
       </Compile>
       <Compile Update="Controls\UniversalVerifyDialog.axaml.cs">
         <DependentUpon>UniversalVerifyDialog.axaml</DependentUpon>

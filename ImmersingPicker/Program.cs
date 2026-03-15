@@ -46,8 +46,15 @@ class Program
             .CreateLogger();
 
         var appBuilder = BuildAvaloniaApp();
-        
-        appBuilder.StartWithClassicDesktopLifetime(args);
+
+        try
+        {
+            appBuilder.StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "遇到了无法回退的错误。");
+        }
         
         // 应用程序退出时的处理
         if (appBuilder.Instance is App app)

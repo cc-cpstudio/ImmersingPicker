@@ -281,7 +281,7 @@ public partial class HistoryPage : UserControl
                 return;
             }
             
-            bool verified = await PasswordVerifyHelper.VerifyPassword(parentWindow);
+            bool verified = await VerifyHelper.VerifyPassword(parentWindow);
             if (!verified)
             {
                 _logger.Information("密码验证失败，取消操作");
