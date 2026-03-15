@@ -1,0 +1,160 @@
+using System;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using FluentAvalonia.UI.Windowing;
+using Serilog;
+
+namespace ImmersingPicker.Views;
+
+public partial class FloatingWindow : AppWindow
+{
+    private bool _isAnimating;
+    private PixelPoint _visiblePosition;
+    private PixelPoint _hiddenPosition;
+
+    public event EventHandler? FloatingWindowClicked;
+
+    public FloatingWindow()
+    {
+        Log.Information("悬浮窗口初始化开始");
+        InitializeComponent();
+        TitleBar.Height = -1;
+        CalculatePositions();
+        Log.Information("悬浮窗口初始化完成");
+    }
+
+    private void CalculatePositions()
+    {
+        var screen = Screens.Primary;
+        if (screen == null)
+        {
+            Log.Warning("无法获取主显示器信息，使用默认位置");
+            _visiblePosition = new PixelPoint(100, 100);
+            _hiddenPosition = new PixelPoint(200, 100);
+            return;
+        }
+
+        var screenBounds = screen.Bounds;
+        var windowWidth = (int)Width;
+        var windowHeight = (int)Height;
+
+        var x = screenBounds.Right - windowWidth - 10;
+        var y = (screenBounds.Height - windowHeight) / 2;
+
+        _visiblePosition = new PixelPoint(x, y);
+        _hiddenPosition = new PixelPoint(screenBounds.Right + 10, y);
+
+        Log.Verbose("悬浮窗口位置计算完成: 可见位置=({VX},{VY}), 隐藏位置=({HX},{HY})", 
+            _visiblePosition.X, _visiblePosition.Y, _hiddenPosition.X, _hiddenPosition.Y);
+    }
+
+    public void PositionToRightEdge()
+    {
+        CalculatePositions();
+        Position = _visiblePosition;
+        Log.Verbose("悬浮窗口位置已设置: X={X}, Y={Y}", Position.X, Position.Y);
+    }
+
+    public async void SlideIn()
+    {
+        if (_isAnimating)
+        {
+            Log.Verbose("动画正在进行中，跳过滑入操作");
+            return;
+        }
+
+        Log.Information("悬浮窗口滑入显示");
+        
+        CalculatePositions();
+        Position = _hiddenPosition;
+        Show();
+
+        _isAnimating = true;
+        try
+        {
+            var startX = _hiddenPosition.X;
+            var endX = _visiblePosition.X;
+            var distance = endX - startX;
+
+            for (int i = 0; i <= 10; i++)
+            {
+                var progress = i / 10.0;
+                var easedProgress = EaseOutCubic(progress);
+                var currentX = startX + (int)(distance * easedProgress);
+                Position = new PixelPoint(currentX, _visiblePosition.Y);
+                await Task.Delay(20);
+            }
+        }
+        finally
+        {
+            _isAnimating = false;
+        }
+
+        Position = _visiblePosition;
+        Log.Information("悬浮窗口滑入完成");
+    }
+
+    public async void SlideOut()
+    {
+        if (_isAnimating)
+        {
+            Log.Verbose("动画正在进行中，跳过滑出操作");
+            return;
+        }
+
+        Log.Information("悬浮窗口滑出隐藏");
+
+        _isAnimating = true;
+        try
+        {
+            CalculatePositions();
+            var startX = _visiblePosition.X;
+            var endX = _hiddenPosition.X;
+            var distance = endX - startX;
+
+            for (int i = 0; i <= 10; i++)
+            {
+                var progress = i / 10.0;
+                var easedProgress = EaseInCubic(progress);
+                var currentX = startX + (int)(distance * easedProgress);
+                Position = new PixelPoint(currentX, _visiblePosition.Y);
+                await Task.Delay(20);
+            }
+        }
+        finally
+        {
+            _isAnimating = false;
+        }
+
+        Hide();
+        Log.Information("悬浮窗口滑出完成");
+    }
+
+    private static double EaseOutCubic(double t)
+    {
+        return 1 - Math.Pow(1 - t, 3);
+    }
+
+    private static double EaseInCubic(double t)
+    {
+        return t * t * t;
+    }
+
+    public void ShowFloatingWindow()
+    {
+        SlideIn();
+    }
+
+    public void HideFloatingWindow()
+    {
+        SlideOut();
+    }
+
+    private void FloatingWindow_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        Log.Information("悬浮窗口被点击");
+        FloatingWindowClicked?.Invoke(this, EventArgs.Empty);
+    }
+}

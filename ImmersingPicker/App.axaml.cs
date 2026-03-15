@@ -24,6 +24,7 @@ public partial class App : Application
 {
     private Timer? _autoSaveTimer;
     private AppWindow? _mainWindow;
+    private FloatingWindow? _floatingWindow;
 
     public override void Initialize()
     {
@@ -85,6 +86,17 @@ public partial class App : Application
         {
             _mainWindow = new MainWindow();
             desktop.MainWindow = _mainWindow;
+
+            // 创建悬浮窗口实例
+            Log.Information("创建悬浮窗口实例");
+            _floatingWindow = new FloatingWindow();
+            _floatingWindow.FloatingWindowClicked += ShowMainWindow;
+
+            // 监听主窗口事件
+            _mainWindow.Closing += MainWindow_Closing;
+            _mainWindow.Deactivated += MainWindow_Deactivated;
+            _mainWindow.Activated += MainWindow_Activated;
+            Log.Information("悬浮窗口及事件监听初始化完成");
         }
 
         var a = AppSettings.Instance.AppTheme;
@@ -190,12 +202,68 @@ public partial class App : Application
     // 托盘图标事件处理方法
     public void ShowMainWindow(object? sender, EventArgs e)
     {
+        Log.Information("显示主窗口");
         if (_mainWindow != null)
         {
             _mainWindow.Show();
             _mainWindow.Activate();
             _mainWindow.Focus();
         }
+
+        // 隐藏悬浮窗口
+        _floatingWindow?.HideFloatingWindow();
+    }
+
+    /// <summary>
+    /// 主窗口关闭事件处理
+    /// </summary>
+    private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        Log.Information("主窗口关闭事件触发");
+        // 取消关闭操作
+        e.Cancel = true;
+        Log.Warning("窗口关闭操作被取消，改为隐藏窗口");
+        // 隐藏窗口
+        _mainWindow?.Hide();
+        Log.Information("主窗口已隐藏");
+        
+        // 显示悬浮窗口
+        _floatingWindow?.ShowFloatingWindow();
+        
+        // 保存数据
+        try
+        {
+            Log.Information("开始保存班级数据");
+            var storageService = ClassStorageService.Instance;
+            int classCount = Clazz.Classes.Count;
+            Log.Verbose("班级数量: {ClassCount}", classCount);
+            storageService.SaveClasses(Clazz.Classes);
+            Log.Information("班级数据保存完成");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "保存班级数据失败");
+        }
+    }
+
+    /// <summary>
+    /// 主窗口失去焦点事件处理
+    /// </summary>
+    private void MainWindow_Deactivated(object? sender, EventArgs e)
+    {
+        Log.Information("主窗口失去焦点");
+        // 显示悬浮窗口
+        _floatingWindow?.ShowFloatingWindow();
+    }
+
+    /// <summary>
+    /// 主窗口获得焦点事件处理
+    /// </summary>
+    private void MainWindow_Activated(object? sender, EventArgs e)
+    {
+        Log.Information("主窗口获得焦点");
+        // 隐藏悬浮窗口
+        _floatingWindow?.HideFloatingWindow();
     }
 
     private async void OpenEditor(object? sender, EventArgs e)
