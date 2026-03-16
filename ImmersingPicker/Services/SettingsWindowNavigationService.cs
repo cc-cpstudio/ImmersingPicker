@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
 using Serilog;
@@ -8,6 +9,9 @@ namespace ImmersingPicker.Services;
 public class SettingsWindowNavigationService
 {
     private static Frame? _mainContentFrame;
+
+    private static List<ViewType> _pastPages = new();
+    private static int _index = 0;
 
     public static void Initialize(Frame mainFrame)
     {
@@ -65,11 +69,24 @@ public class SettingsWindowNavigationService
             };
             Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
             NavigateTo(targetType);
+            _pastPages.Add(viewType);
         }
         catch (ArgumentException ex)
         {
             Log.Error(ex, "无效的视图类型: {ViewType}", viewType);
         }
+    }
+
+    public static bool CanBack()
+    {
+        return _index != 0;
+    }
+
+    public static ViewType Back()
+    {
+        _index--;
+        _pastPages.RemoveAt(_index + 1);
+        return _pastPages[_index];
     }
 
     public enum ViewType
