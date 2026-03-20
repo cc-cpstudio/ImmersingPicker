@@ -11,6 +11,8 @@ namespace ImmersingPicker.Views;
 
 public partial class FloatingWindow : AppWindow
 {
+    private static readonly ILogger _logger = Log.ForContext(typeof(FloatingWindow));
+    
     private bool _isAnimating;
     private PixelPoint _visiblePosition;
     private PixelPoint _hiddenPosition;
@@ -19,11 +21,11 @@ public partial class FloatingWindow : AppWindow
 
     public FloatingWindow()
     {
-        Log.Information("悬浮窗口初始化开始");
+        _logger.Information("悬浮窗口初始化开始");
         InitializeComponent();
         TitleBar.Height = -1;
         CalculatePositions();
-        Log.Information("悬浮窗口初始化完成");
+        _logger.Information("悬浮窗口初始化完成");
     }
 
     private void CalculatePositions()
@@ -31,7 +33,7 @@ public partial class FloatingWindow : AppWindow
         var screen = Screens.Primary;
         if (screen == null)
         {
-            Log.Warning("无法获取主显示器信息，使用默认位置");
+            _logger.Warning("无法获取主显示器信息，使用默认位置");
             _visiblePosition = new PixelPoint(100, 100);
             _hiddenPosition = new PixelPoint(200, 100);
             return;
@@ -63,7 +65,7 @@ public partial class FloatingWindow : AppWindow
         _visiblePosition = new PixelPoint(x, y);
         _hiddenPosition = new PixelPoint(hiddenX, y);
 
-        Log.Verbose("悬浮窗口位置计算完成: 可见位置=({VX},{VY}), 隐藏位置=({HX},{HY})", 
+        _logger.Verbose("悬浮窗口位置计算完成: 可见位置=({VX},{VY}), 隐藏位置=({HX},{HY})", 
             _visiblePosition.X, _visiblePosition.Y, _hiddenPosition.X, _hiddenPosition.Y);
     }
 
@@ -71,7 +73,7 @@ public partial class FloatingWindow : AppWindow
     {
         CalculatePositions();
         Position = _visiblePosition;
-        Log.Verbose("悬浮窗口位置已设置: X={X}, Y={Y}", Position.X, Position.Y);
+        _logger.Verbose("悬浮窗口位置已设置: X={X}, Y={Y}", Position.X, Position.Y);
     }
 
     public void UpdatePosition()
@@ -87,11 +89,11 @@ public partial class FloatingWindow : AppWindow
     {
         if (_isAnimating)
         {
-            Log.Verbose("动画正在进行中，跳过滑入操作");
+            _logger.Verbose("动画正在进行中，跳过滑入操作");
             return;
         }
 
-        Log.Information("悬浮窗口滑入显示");
+        _logger.Information("悬浮窗口滑入显示");
         
         CalculatePositions();
         Position = _hiddenPosition;
@@ -119,18 +121,18 @@ public partial class FloatingWindow : AppWindow
         }
 
         Position = _visiblePosition;
-        Log.Information("悬浮窗口滑入完成");
+        _logger.Information("悬浮窗口滑入完成");
     }
 
     public async void SlideOut()
     {
         if (_isAnimating)
         {
-            Log.Verbose("动画正在进行中，跳过滑出操作");
+            _logger.Verbose("动画正在进行中，跳过滑出操作");
             return;
         }
 
-        Log.Information("悬浮窗口滑出隐藏");
+        _logger.Information("悬浮窗口滑出隐藏");
 
         _isAnimating = true;
         try
@@ -155,7 +157,7 @@ public partial class FloatingWindow : AppWindow
         }
 
         Hide();
-        Log.Information("悬浮窗口滑出完成");
+        _logger.Information("悬浮窗口滑出完成");
     }
 
     private static double EaseOutCubic(double t)
@@ -180,7 +182,7 @@ public partial class FloatingWindow : AppWindow
 
     private void FloatingWindow_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        Log.Information("悬浮窗口被点击");
+        _logger.Information("悬浮窗口被点击");
         FloatingWindowClicked?.Invoke(this, EventArgs.Empty);
     }
 }

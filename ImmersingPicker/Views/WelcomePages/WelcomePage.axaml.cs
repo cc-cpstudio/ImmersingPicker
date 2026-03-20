@@ -14,8 +14,6 @@ namespace ImmersingPicker.Views.WelcomePages;
 
 public partial class WelcomePage : UserControl
 {
-    public static event Action Next;
-
     public WelcomePage()
     {
         InitializeComponent();

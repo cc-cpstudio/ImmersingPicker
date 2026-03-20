@@ -17,9 +17,5 @@ public partial class WelcomeWindow : AppWindow
         InitializeComponent();
         WelcomeWindowNavigationService.Initialize(ContentFrame);
         WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Welcome);
-        WelcomePage.Next += () =>
-        {
-            WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Welcome);
-        };
     }
 }

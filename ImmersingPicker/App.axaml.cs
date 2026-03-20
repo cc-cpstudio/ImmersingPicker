@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -22,6 +23,8 @@ namespace ImmersingPicker;
 
 public partial class App : Application
 {
+    private static readonly ILogger _logger = Log.ForContext<App>();
+
     private Timer? _autoSaveTimer;
     private AppWindow? _mainWindow;
     private FloatingWindow? _floatingWindow;
@@ -35,37 +38,37 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        Log.Information("应用程序框架初始化完成，开始加载数据");
+        _logger.Information("应用程序框架初始化完成，开始加载数据");
         // 加载班级数据
         try
         {
-            Log.Information("开始加载班级数据");
-            Log.Verbose("获取ClassStorageService实例");
+            _logger.Information("开始加载班级数据");
+            _logger.Verbose("获取ClassStorageService实例");
             var storageService = ClassStorageService.Instance;
             storageService.LoadClasses();
-            Log.Information("班级数据加载完成");
-            Log.Verbose("班级数量: {Count}", Clazz.Classes.Count);
+            _logger.Information("班级数据加载完成");
+            _logger.Verbose("班级数量: {Count}", Clazz.Classes.Count);
         }
         catch (Exception ex)
         {
             // 如果加载失败，使用默认数据
-            Log.Error(ex, "加载班级数据失败");
-            Log.Warning("使用默认班级数据");
+            _logger.Error(ex, "加载班级数据失败");
+            _logger.Warning("使用默认班级数据");
         }
 
         try
         {
-            Log.Information("开始加载应用设置");
-            Log.Verbose("获取SettingsStorageService实例");
+            _logger.Information("开始加载应用设置");
+            _logger.Verbose("获取SettingsStorageService实例");
             var storageService = SettingsStorageService.Instance;
             storageService.LoadSettings();
-            Log.Information("应用设置加载完成");
-            Log.Verbose("当前主题: {Theme}", AppSettings.Instance.AppTheme);
+            _logger.Information("应用设置加载完成");
+            _logger.Verbose("当前主题: {Theme}", AppSettings.Instance.AppTheme);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "加载应用设置失败");
-            Log.Warning("使用默认应用设置");
+            _logger.Error(ex, "加载应用设置失败");
+            _logger.Warning("使用默认应用设置");
         }
 
         // 为每个Clazz创建对应的Picker实例（如果还没有的话）
@@ -88,17 +91,17 @@ public partial class App : Application
         {
             if (AppSettings.Instance.IsFirstLaunch)
             {
-                Log.Information("检测到首次启动，显示欢迎窗口");
+                _logger.Information("检测到首次启动，显示欢迎窗口");
                 _welcomeWindow = new WelcomeWindow();
                 desktop.MainWindow = _welcomeWindow;
             }
             else
             {
-                Log.Information("非首次启动，显示主窗口");
+                _logger.Information("非首次启动，显示主窗口");
                 _mainWindow = new MainWindow();
                 desktop.MainWindow = _mainWindow;
 
-                Log.Information("创建悬浮窗口实例");
+                _logger.Information("创建悬浮窗口实例");
                 _floatingWindow = new FloatingWindow();
                 _floatingWindow.FloatingWindowClicked += ShowMainWindow;
 
@@ -109,16 +112,16 @@ public partial class App : Application
                 AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
                 AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
                 AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
-                Log.Information("悬浮窗口及事件监听初始化完成");
+                _logger.Information("悬浮窗口及事件监听初始化完成");
             }
         }
 
         var a = AppSettings.Instance.AppTheme;
 
         // 初始化主题管理器
-        Log.Information("初始化主题管理器");
+        _logger.Information("初始化主题管理器");
         ThemeManager.Instance.Initialize();
-        Log.Information("主题管理器初始化完成");
+        _logger.Information("主题管理器初始化完成");
 
         // 初始化自动保存定时器
         InitializeAutoSaveTimer();
@@ -128,94 +131,94 @@ public partial class App : Application
 
     private void InitializeAutoSaveTimer()
     {
-        Log.Information("初始化自动保存定时器");
-        Log.Verbose("设置定时器间隔为300秒");
+        _logger.Information("初始化自动保存定时器");
+        _logger.Verbose("设置定时器间隔为300秒");
         _autoSaveTimer = new Timer(300000); // 300秒
-        Log.Verbose("添加定时器事件处理");
+        _logger.Verbose("添加定时器事件处理");
         _autoSaveTimer.Elapsed += AutoSaveTimer_Elapsed;
-        Log.Verbose("设置定时器自动重置");
+        _logger.Verbose("设置定时器自动重置");
         _autoSaveTimer.AutoReset = true;
-        Log.Verbose("启动定时器");
+        _logger.Verbose("启动定时器");
         _autoSaveTimer.Start();
-        Log.Information("自动保存定时器初始化完成");
+        _logger.Information("自动保存定时器初始化完成");
     }
 
     private void AutoSaveTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         try
         {
-            Log.Information("开始自动保存班级数据");
+            _logger.Information("开始自动保存班级数据");
             var storageService = ClassStorageService.Instance;
             storageService.SaveClasses(Clazz.Classes);
-            Log.Information("班级数据自动保存完成");
+            _logger.Information("班级数据自动保存完成");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "自动保存班级数据失败");
+            _logger.Error(ex, "自动保存班级数据失败");
         }
 
         try
         {
-            Log.Information("开始自动保存应用设置");
+            _logger.Information("开始自动保存应用设置");
             var storageService = SettingsStorageService.Instance;
             storageService.SaveSettings();
-            Log.Information("应用设置自动保存完成");
+            _logger.Information("应用设置自动保存完成");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "自动保存应用设置失败");
+            _logger.Error(ex, "自动保存应用设置失败");
         }
     }
 
     // 应用程序关闭时的清理操作
     public void Shutdown()
     {
-        Log.Information("开始应用程序关闭清理操作");
+        _logger.Information("开始应用程序关闭清理操作");
         
         // 停止定时器
-        Log.Information("停止自动保存定时器");
+        _logger.Information("停止自动保存定时器");
         try
         {
             _autoSaveTimer?.Stop();
             _autoSaveTimer?.Dispose();
-            Log.Verbose("定时器已停止并释放");
+            _logger.Verbose("定时器已停止并释放");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "停止定时器失败");
+            _logger.Error(ex, "停止定时器失败");
         }
 
         // 退出时保存数据
         try
         {
-            Log.Information("开始保存班级数据");
+            _logger.Information("开始保存班级数据");
             var storageService = ClassStorageService.Instance;
             storageService.SaveClasses(Clazz.Classes);
-            Log.Information("班级数据保存完成");
+            _logger.Information("班级数据保存完成");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "保存班级数据失败，可能导致数据丢失");
+            _logger.Error(ex, "保存班级数据失败，可能导致数据丢失");
         }
 
         try
         {
-            Log.Information("开始保存应用设置");
+            _logger.Information("开始保存应用设置");
             var storageService = SettingsStorageService.Instance;
             storageService.SaveSettings();
-            Log.Information("应用设置保存完成");
+            _logger.Information("应用设置保存完成");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "保存应用设置失败，可能导致设置丢失");
+            _logger.Error(ex, "保存应用设置失败，可能导致设置丢失");
         }
         
-        Log.Information("应用程序关闭清理操作完成");
+        _logger.Information("应用程序关闭清理操作完成");
     }
 
     public void ShowMainWindow(object? sender, EventArgs e)
     {
-        Log.Information("显示主窗口");
+        _logger.Information("显示主窗口");
         if (_mainWindow != null)
         {
             _mainWindow.Show();
@@ -228,18 +231,18 @@ public partial class App : Application
 
     public void CompleteWelcomeSetup()
     {
-        Log.Information("欢迎向导完成，切换到主窗口");
+        _logger.Information("欢迎向导完成，切换到主窗口");
         
         AppSettings.Instance.IsFirstLaunch = false;
         
         try
         {
-            Log.Information("保存设置（标记非首次启动）");
+            _logger.Information("保存设置（标记非首次启动）");
             SettingsStorageService.Instance.SaveSettings();
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "保存设置失败");
+            _logger.Error(ex, "保存设置失败");
         }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -247,7 +250,7 @@ public partial class App : Application
             _mainWindow = new MainWindow();
             desktop.MainWindow = _mainWindow;
 
-            Log.Information("创建悬浮窗口实例");
+            _logger.Information("创建悬浮窗口实例");
             _floatingWindow = new FloatingWindow();
             _floatingWindow.FloatingWindowClicked += ShowMainWindow;
 
@@ -258,7 +261,7 @@ public partial class App : Application
             AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
             AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
             AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
-            Log.Information("主窗口和悬浮窗口初始化完成");
+            _logger.Information("主窗口和悬浮窗口初始化完成");
 
             _welcomeWindow?.Close();
             _mainWindow.Show();
@@ -271,13 +274,13 @@ public partial class App : Application
     /// </summary>
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        Log.Information("主窗口关闭事件触发");
+        _logger.Information("主窗口关闭事件触发");
         // 取消关闭操作
         e.Cancel = true;
-        Log.Warning("窗口关闭操作被取消，改为隐藏窗口");
+        _logger.Warning("窗口关闭操作被取消，改为隐藏窗口");
         // 隐藏窗口
         _mainWindow?.Hide();
-        Log.Information("主窗口已隐藏");
+        _logger.Information("主窗口已隐藏");
         
         // 显示悬浮窗口（如果已启用）
         if (AppSettings.Instance.FloatingWindowEnabled)
@@ -288,16 +291,16 @@ public partial class App : Application
         // 保存数据
         try
         {
-            Log.Information("开始保存班级数据");
+            _logger.Information("开始保存班级数据");
             var storageService = ClassStorageService.Instance;
             int classCount = Clazz.Classes.Count;
-            Log.Verbose("班级数量: {ClassCount}", classCount);
+            _logger.Verbose("班级数量: {ClassCount}", classCount);
             storageService.SaveClasses(Clazz.Classes);
-            Log.Information("班级数据保存完成");
+            _logger.Information("班级数据保存完成");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "保存班级数据失败");
+            _logger.Error(ex, "保存班级数据失败");
         }
     }
 
@@ -306,7 +309,7 @@ public partial class App : Application
     /// </summary>
     private void MainWindow_Deactivated(object? sender, EventArgs e)
     {
-        Log.Information("主窗口失去焦点");
+        _logger.Information("主窗口失去焦点");
         // 显示悬浮窗口（如果已启用）
         if (AppSettings.Instance.FloatingWindowEnabled)
         {
@@ -319,7 +322,7 @@ public partial class App : Application
     /// </summary>
     private void MainWindow_Activated(object? sender, EventArgs e)
     {
-        Log.Information("主窗口获得焦点");
+        _logger.Information("主窗口获得焦点");
         // 隐藏悬浮窗口
         _floatingWindow?.HideFloatingWindow();
     }
@@ -329,7 +332,7 @@ public partial class App : Application
     /// </summary>
     private void OnFloatingWindowEnabledChanged(bool enabled)
     {
-        Log.Information("浮窗启用状态变更: {Enabled}", enabled);
+        _logger.Information("浮窗启用状态变更: {Enabled}", enabled);
         if (!enabled)
         {
             // 禁用时隐藏浮窗
@@ -342,7 +345,7 @@ public partial class App : Application
     /// </summary>
     private void OnFloatingWindowSettingsChanged<T>(T _)
     {
-        Log.Information("浮窗设置变更，更新位置");
+        _logger.Information("浮窗设置变更，更新位置");
         _floatingWindow?.UpdatePosition();
     }
 
@@ -358,14 +361,52 @@ public partial class App : Application
         await MainWindowNavigationService.OpenSettingsWindow();
     }
 
-    private void RestartApplication(object? sender, EventArgs e)
+    public async void RestartApplication(object? sender, EventArgs e)
     {
-        // 这里可以实现重新启动应用程序的逻辑
-        // 暂时先显示主界面
-        ShowMainWindow(sender, e);
+        _logger.Information("开始应用程序重启流程");
+        
+        // 保存所有数据和设置
+        _logger.Information("保存所有数据和设置");
+        Shutdown();
+        
+        // 关闭所有窗口
+        _logger.Information("关闭所有窗口");
+        _floatingWindow?.Close();
+        _welcomeWindow?.Close();
+        _mainWindow?.Close();
+        
+        // 获取当前可执行文件路径
+        string executablePath = Process.GetCurrentProcess().MainModule?.FileName ?? 
+                               System.Reflection.Assembly.GetEntryAssembly()?.Location ?? 
+                               "ImmersingPicker.exe";
+        
+        _logger.Information("准备重新启动应用程序：{ExecutablePath}", executablePath);
+        
+        // 启动新实例
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = executablePath,
+                UseShellExecute = true,
+                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
+            });
+            _logger.Information("新应用程序实例已启动");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "启动新应用程序实例失败");
+        }
+        
+        // 退出当前实例
+        _logger.Information("退出当前应用程序实例");
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.Shutdown();
+        }
     }
 
-    private void ExitApplication(object? sender, EventArgs e)
+    public void ExitApplication(object? sender, EventArgs e)
     {
         // 执行清理操作
         Shutdown();

@@ -7,33 +7,35 @@ namespace ImmersingPicker.Services;
 
 public class WelcomeWindowNavigationService
 {
+    private static readonly ILogger _logger = Log.ForContext(typeof(WelcomeWindowNavigationService));
+    
     private static Frame? _mainContentFrame;
 
     public static void Initialize(Frame mainFrame)
     {
-        Log.Information("初始化欢迎窗口导航服务");
-        Log.Verbose("设置主内容框架");
+        _logger.Information("初始化欢迎窗口导航服务");
+        _logger.Verbose("设置主内容框架");
         _mainContentFrame = mainFrame;
-        Log.Information("设置窗口导航服务初始化完成");
+        _logger.Information("设置窗口导航服务初始化完成");
     }
 
     public static void NavigateTo(Type viewType)
     {
-        Log.Information("导航到欢迎视图: {ViewType}", viewType.Name);
+        _logger.Information("导航到欢迎视图: {ViewType}", viewType.Name);
         if (_mainContentFrame != null)
         {
             try
             {
-                Log.Verbose("创建视图实例");
+                _logger.Verbose("创建视图实例");
                 if (Activator.CreateInstance(viewType) is UserControl view)
                 {
-                    Log.Verbose("设置视图为框架内容");
+                    _logger.Verbose("设置视图为框架内容");
                     _mainContentFrame.Content = view;
-                    Log.Information("导航成功");
+                    _logger.Information("导航成功");
                 }
                 else
                 {
-                    Log.Warning("无法创建视图实例: {ViewType}", viewType.Name);
+                    _logger.Warning("无法创建视图实例: {ViewType}", viewType.Name);
                 }
             }
             catch (Exception ex)
@@ -43,13 +45,13 @@ public class WelcomeWindowNavigationService
         }
         else
         {
-            Log.Error("主内容框架未初始化");
+            _logger.Error("主内容框架未初始化");
         }
     }
 
     public static void NavigateTo(ViewType viewType)
     {
-        Log.Information("导航到欢迎视图类型: {ViewType}", viewType);
+        _logger.Information("导航到欢迎视图类型: {ViewType}", viewType);
         try
         {
             Type targetType = viewType switch
@@ -60,12 +62,12 @@ public class WelcomeWindowNavigationService
                 ViewType.Appearance => typeof(Views.WelcomePages.AppearancePage),
                 _ => throw new ArgumentException("Invalid view type")
             };
-            Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
+            _logger.Verbose("解析视图类型为: {TargetType}", targetType.Name);
             NavigateTo(targetType);
         }
         catch (ArgumentException ex)
         {
-            Log.Error(ex, "无效的视图类型: {ViewType}", viewType);
+            _logger.Error(ex, "无效的视图类型: {ViewType}", viewType);
         }
     }
 

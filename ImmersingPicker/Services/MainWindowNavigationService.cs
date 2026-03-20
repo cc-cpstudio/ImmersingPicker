@@ -12,60 +12,62 @@ namespace ImmersingPicker.Services;
 
 public class MainWindowNavigationService
 {
+    private static readonly ILogger _logger = Log.ForContext(typeof(MainWindowNavigationService));
+
     private static Frame? _mainContentFrame;
     private static AppWindow? _mainWindow;
 
     public static void Initialize(Frame mainFrame, AppWindow mainWindow)
     {
-        Log.Information("初始化主窗口导航服务");
-        Log.Verbose("设置主内容框架");
+        _logger.Information("初始化主窗口导航服务");
+        _logger.Verbose("设置主内容框架");
         _mainContentFrame = mainFrame;
         _mainWindow = mainWindow;
-        Log.Information("主窗口导航服务初始化完成");
+        _logger.Information("主窗口导航服务初始化完成");
     }
 
     public static void NavigateTo(Type viewType)
     {
-        Log.Information("导航到视图: {ViewType}", viewType.Name);
+        _logger.Information("导航到视图: {ViewType}", viewType.Name);
         if (_mainContentFrame != null)
         {
             try
             {
-                Log.Verbose("创建视图实例");
+                _logger.Verbose("创建视图实例");
                 if (Activator.CreateInstance(viewType) is UserControl view)
                 {
-                    Log.Verbose("设置视图为框架内容");
+                    _logger.Verbose("设置视图为框架内容");
                     _mainContentFrame.Content = view;
-                    Log.Information("导航成功");
+                    _logger.Information("导航成功");
                 }
                 else
                 {
-                    Log.Warning("无法创建视图实例: {ViewType}", viewType.Name);
+                    _logger.Warning("无法创建视图实例: {ViewType}", viewType.Name);
                 }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "导航失败");
+                _logger.Error(ex, "导航失败");
             }
         }
         else
         {
-            Log.Error("主内容框架未初始化");
+            _logger.Error("主内容框架未初始化");
         }
     }
 
     public static void NavigateTo(ViewType viewType)
     {
-        Log.Information("导航到视图类型: {ViewType}", viewType);
+        _logger.Information("导航到视图类型: {ViewType}", viewType);
         if (viewType == ViewType.Settings)
         {
-            Log.Verbose("打开设置窗口");
+            _logger.Verbose("打开设置窗口");
             OpenSettingsWindow();
             return;
         }
         if (viewType == ViewType.Editor)
         {
-            Log.Verbose("打开编辑器窗口");
+            _logger.Verbose("打开编辑器窗口");
             OpenEditorWindow();
             return;
         }
@@ -78,28 +80,28 @@ public class MainWindowNavigationService
                 ViewType.History => typeof(Views.MainPages.HistoryPage),
                 _ => throw new ArgumentException("Invalid view type")
             };
-            Log.Verbose("解析视图类型为: {TargetType}", targetType.Name);
+            _logger.Verbose("解析视图类型为: {TargetType}", targetType.Name);
             NavigateTo(targetType);
         }
         catch (ArgumentException ex)
         {
-            Log.Error(ex, "无效的视图类型: {ViewType}", viewType);
+            _logger.Error(ex, "无效的视图类型: {ViewType}", viewType);
         }
     }
 
     public static async Task OpenSettingsWindow()
     {
-        Log.Information("打开设置窗口");
+        _logger.Information("打开设置窗口");
         if (_mainWindow == null)
         {
-            Log.Error("主窗口未初始化");
+            _logger.Error("主窗口未初始化");
             return;
         }
 
         bool verified = await VerifyHelper.VerifyPassword(_mainWindow);
         if (!verified)
         {
-            Log.Information("验证失败，取消打开设置窗口");
+            _logger.Information("验证失败，取消打开设置窗口");
             return;
         }
 
@@ -107,27 +109,27 @@ public class MainWindowNavigationService
         {
             var settingsWindow = new SettingsWindow();
             settingsWindow.Show();
-            Log.Information("设置窗口打开成功");
+            _logger.Information("设置窗口打开成功");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "打开设置窗口失败");
+            _logger.Error(ex, "打开设置窗口失败");
         }
     }
 
     public static async Task OpenEditorWindow()
     {
-        Log.Information("打开编辑器窗口");
+        _logger.Information("打开编辑器窗口");
         if (_mainWindow == null)
         {
-            Log.Error("主窗口未初始化");
+            _logger.Error("主窗口未初始化");
             return;
         }
 
         bool verified = await VerifyHelper.VerifyPassword(_mainWindow);
         if (!verified)
         {
-            Log.Information("验证失败，取消打开编辑器窗口");
+            _logger.Information("验证失败，取消打开编辑器窗口");
             return;
         }
 
@@ -135,11 +137,11 @@ public class MainWindowNavigationService
         {
             var editorWindow = new EditorWindow();
             editorWindow.Show();
-            Log.Information("编辑器窗口打开成功");
+            _logger.Information("编辑器窗口打开成功");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "打开编辑器窗口失败");
+            _logger.Error(ex, "打开编辑器窗口失败");
         }
     }
 
