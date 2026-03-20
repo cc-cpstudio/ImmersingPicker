@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Timers;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -12,18 +14,19 @@ using ImmersingPicker.Services.Services.Picker;
 using ImmersingPicker.Services.Services.Storage;
 using ImmersingPicker.Services.Services;
 using System.Threading.Tasks;
-using System.Timers;
 using Avalonia.Controls.Primitives;
 using Avalonia.Platform.Storage;
 using ImmersingPicker.Services;
 using ImmersingPicker.Helpers;
 using Serilog;
+using Timer = System.Timers.Timer;
 
 namespace ImmersingPicker;
 
 public partial class App : Application
 {
     private static readonly ILogger _logger = Log.ForContext<App>();
+    private static Mutex? _mutex;
 
     private Timer? _autoSaveTimer;
     private AppWindow? _mainWindow;
@@ -32,6 +35,25 @@ public partial class App : Application
 
     public override void Initialize()
     {
+        const string mutexName = "ImmersingPicker-SingleInstance-Mutex";
+        
+        bool createdNew;
+        _mutex = new Mutex(true, mutexName, out createdNew);
+        
+        if (!createdNew)
+        {
+            _logger.Warning("检测到已有实例正在运行");
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var instanceExistsWindow = new InstanceExistsWindow();
+                desktop.MainWindow = instanceExistsWindow;
+                instanceExistsWindow.Show();
+            }
+            return;
+        }
+        
+        _logger.Information("当前为唯一实例，继续启动流程");
+        
         if (AppSettings.Instance.EnableClassIslandLinkage)
         {
             try
