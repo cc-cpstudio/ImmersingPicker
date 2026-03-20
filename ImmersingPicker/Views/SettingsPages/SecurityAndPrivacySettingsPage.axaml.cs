@@ -10,6 +10,7 @@ using ImmersingPicker.Core.Models;
 using ImmersingPicker.Helpers;
 using ImmersingPicker.Services.Services;
 using ImmersingPicker.Services.Services.Security;
+using ImmersingPicker.Services.Services.Storage;
 
 namespace ImmersingPicker.Views.SettingsPages;
 
@@ -74,6 +75,7 @@ public partial class SecurityAndPrivacySettingsPage : UserControl
             {
                 if (passwordDialog.SavePassword())
                 {
+                    SettingsStorageService.Instance.SaveSettings();
                     var successDialog = new ContentDialog
                     {
                         Title = "成功",

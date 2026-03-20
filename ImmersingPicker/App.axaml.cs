@@ -32,7 +32,23 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        // ClassIslandIPCService.Instance.Initialize();
+        if (AppSettings.Instance.EnableClassIslandLinkage)
+        {
+            try
+            {
+                _logger.Information("检测到 ClassIsland 联动功能已启用，开始初始化 IPC 服务");
+                ClassIslandIPCService.Instance.Initialize();
+                _logger.Information("ClassIsland IPC 服务初始化完成");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "ClassIsland IPC 服务初始化失败，联动功能将不可用");
+            }
+        }
+        else
+        {
+            _logger.Information("ClassIsland 联动功能未启用，跳过 IPC 服务初始化");
+        }
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -122,6 +138,9 @@ public partial class App : Application
         _logger.Information("初始化主题管理器");
         ThemeManager.Instance.Initialize();
         _logger.Information("主题管理器初始化完成");
+
+        // 监听 ClassIsland 联动设置变更
+        AppSettings.Instance.EnableClassIslandLinkageChanged += OnEnableClassIslandLinkageChanged;
 
         // 初始化自动保存定时器
         InitializeAutoSaveTimer();
@@ -347,6 +366,32 @@ public partial class App : Application
     {
         _logger.Information("浮窗设置变更，更新位置");
         _floatingWindow?.UpdatePosition();
+    }
+
+    /// <summary>
+    /// ClassIsland 联动功能启用状态变更事件处理
+    /// </summary>
+    private void OnEnableClassIslandLinkageChanged(bool enabled)
+    {
+        _logger.Information("ClassIsland 联动功能启用状态变更：{Enabled}", enabled);
+        if (enabled)
+        {
+            try
+            {
+                _logger.Information("开始初始化 ClassIsland IPC 服务");
+                ClassIslandIPCService.Instance.Initialize();
+                _logger.Information("ClassIsland IPC 服务初始化完成");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "ClassIsland IPC 服务初始化失败");
+            }
+        }
+        else
+        {
+            _logger.Information("ClassIsland 联动功能已禁用");
+            // TODO: 如果需要，可以在这里添加清理逻辑
+        }
     }
 
     private async void OpenEditor(object? sender, EventArgs e)
