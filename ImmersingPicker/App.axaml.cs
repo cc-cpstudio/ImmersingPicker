@@ -250,7 +250,7 @@ public partial class App : Application
 
     public void CompleteWelcomeSetup()
     {
-        _logger.Information("欢迎向导完成，切换到主窗口");
+        _logger.Information("欢迎向导完成，即将重启");
         
         AppSettings.Instance.IsFirstLaunch = false;
         
@@ -264,28 +264,7 @@ public partial class App : Application
             _logger.Error(ex, "保存设置失败");
         }
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            _mainWindow = new MainWindow();
-            desktop.MainWindow = _mainWindow;
-
-            _logger.Information("创建悬浮窗口实例");
-            _floatingWindow = new FloatingWindow();
-            _floatingWindow.FloatingWindowClicked += ShowMainWindow;
-
-            _mainWindow.Closing += MainWindow_Closing;
-            _mainWindow.Deactivated += MainWindow_Deactivated;
-            _mainWindow.Activated += MainWindow_Activated;
-
-            AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
-            AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
-            AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
-            _logger.Information("主窗口和悬浮窗口初始化完成");
-
-            _welcomeWindow?.Close();
-            _mainWindow.Show();
-            _mainWindow.Activate();
-        }
+        RestartApplication(null, null);
     }
 
     /// <summary>

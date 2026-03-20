@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Services;
 
 namespace ImmersingPicker.Views.WelcomePages;
 
@@ -54,9 +55,6 @@ public partial class AppearancePage : UserControl
 
     private void NextButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (Application.Current is App app)
-        {
-            app.CompleteWelcomeSetup();
-        }
+        WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Congratulation);
     }
 }
