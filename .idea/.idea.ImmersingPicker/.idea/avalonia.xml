@@ -37,6 +37,7 @@
         <entry key="ImmersingPicker/Views/WelcomePages/ClazzInitializationPage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/WelcomePages/CongratulationPage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/WelcomePages/LicensePage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
+        <entry key="ImmersingPicker/Views/WelcomePages/ShortcutPage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/WelcomePages/WelcomePage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/WelcomeWindow.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/Window1.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />

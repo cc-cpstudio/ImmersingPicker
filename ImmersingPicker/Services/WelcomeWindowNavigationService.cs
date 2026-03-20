@@ -60,6 +60,7 @@ public class WelcomeWindowNavigationService
                 ViewType.License => typeof(Views.WelcomePages.LicensePage),
                 ViewType.ClazzInitialization => typeof(Views.WelcomePages.ClazzInitializationPage),
                 ViewType.Appearance => typeof(Views.WelcomePages.AppearancePage),
+                ViewType.Shortcut => typeof(Views.WelcomePages.ShortcutPage),
                 ViewType.Congratulation => typeof(Views.WelcomePages.CongratulationPage),
                 _ => throw new ArgumentException("Invalid view type")
             };
@@ -74,6 +75,6 @@ public class WelcomeWindowNavigationService
 
     public enum ViewType
     {
-        Welcome, License, ClazzInitialization, Appearance, Congratulation
+        Welcome, License, ClazzInitialization, Appearance, Shortcut, Congratulation
     }
 }

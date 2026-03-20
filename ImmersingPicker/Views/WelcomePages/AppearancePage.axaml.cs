@@ -55,6 +55,6 @@ public partial class AppearancePage : UserControl
 
     private void NextButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Congratulation);
+        WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Shortcut);
     }
 }
