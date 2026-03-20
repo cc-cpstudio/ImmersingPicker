@@ -5,7 +5,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![Avalonia UI](https://img.shields.io/badge/Avalonia-11.3-0078D4?logo=nuget)](https://avaloniaui.net/)
-[![Version](https://img.shields.io/badge/version-0.1.0.2--Alpha-ff69b4)](https://github.com/yourusername/ImmersingPicker/releases)
+[![Version](https://img.shields.io/badge/version-0.1.0.2--Alpha-ff69b4)](https://github.com/ImmersingEducation/ImmersingPicker/releases)
 
 ---
 
@@ -38,7 +38,7 @@ ImmersingPicker 是一款专为课堂设计的**随机抽选软件**，通过可
 
 #### 方法一：下载预编译版本（推荐）
 
-1. 访问 [Releases 页面](https://github.com/yourusername/ImmersingPicker/releases)
+1. 访问 [Releases 页面](https://github.com/ImmersingEducation/ImmersingPicker/releases)
 2. 下载对应平台的安装包
 3. 运行安装程序，按照提示完成安装
 
@@ -52,7 +52,7 @@ ImmersingPicker 是一款专为课堂设计的**随机抽选软件**，通过可
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/ImmersingPicker.git
+git clone https://github.com/ImmersingEducation/ImmersingPicker.git
 cd ImmersingPicker
 
 # 还原依赖
@@ -246,7 +246,7 @@ ImmersingPicker/
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/ImmersingPicker.git
+git clone https://github.com/ImmersingEducation/ImmersingPicker.git
 cd ImmersingPicker
 
 # 还原 NuGet 包
@@ -304,8 +304,8 @@ dotnet run --project ImmersingPicker
 
 ## 📬 联系方式
 
-- **项目地址**: https://github.com/yourusername/ImmersingPicker
-- **问题反馈**: https://github.com/yourusername/ImmersingPicker/issues
+- **项目地址**: https://github.com/ImmersingEducation/ImmersingPicker
+- **问题反馈**: https://github.com/ImmersingEducation/ImmersingPicker/issues
 
 ---
 
