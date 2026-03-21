@@ -14,12 +14,16 @@ public partial class WelcomePage : WelcomePageBase
 {
     public WelcomePage()
     {
+        InitializeComponent();
         Loaded += OnLoaded;
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        VersionText.Text = VersionServices.VersionString(VersionServices.CurrentVersion);
+        if (VersionText is not null)
+        {
+            VersionText.Text = VersionServices.VersionString(VersionServices.CurrentVersion);
+        }
         if (StartButton != null && !string.IsNullOrEmpty(AppSettings.AppThemeColor))
         {
             try

@@ -10,8 +10,8 @@ public partial class FloatingWindowSettingsPage : SettingsPageBase
 {
     public FloatingWindowSettingsPage()
     {
-        PageTitle.Text = "浮窗设置";
         InitializeComponent();
+        PageTitle.Text = "浮窗设置";
         LoadSettings();
         UpdateControlsState();
     }

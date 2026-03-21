@@ -7,8 +7,7 @@
              xmlns:controls="clr-namespace:ImmersingPicker.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ImmersingPicker.Views.WelcomePages.AppearancePage"
-             Title="外观"
-             NextButtonTextValue="完成">
+             Title="外观">
     <controls:WelcomePageBase.PageContent>
         <StackPanel Orientation="Vertical" Spacing="0" Width="500" HorizontalAlignment="Center">
             <TextBlock Text="请选择您喜爱的外观。" HorizontalAlignment="Center" Margin="0,0,0,16"/>

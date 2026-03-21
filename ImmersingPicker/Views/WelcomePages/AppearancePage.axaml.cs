@@ -11,6 +11,7 @@ public partial class AppearancePage : WelcomePageBase
 {
     public AppearancePage()
     {
+        InitializeComponent();
         NextButtonClick += OnNextButtonClick;
         Loaded += OnLoaded;
     }

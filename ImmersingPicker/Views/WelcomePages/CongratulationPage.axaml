@@ -5,7 +5,8 @@
              xmlns:controls="clr-namespace:ImmersingPicker.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ImmersingPicker.Views.WelcomePages.CongratulationPage"
-             Title="🎉恭喜">
+             Title="🎉恭喜"
+             NextButtonTextValue="完成">
     <controls:WelcomePageBase.PageContent>
         <TextBlock Text="您已完成了 ImmersingPicker 的初始化！接下来，尽情使用吧！" HorizontalAlignment="Center"/>
     </controls:WelcomePageBase.PageContent>

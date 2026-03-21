@@ -10,8 +10,8 @@ public partial class AboutPage : SettingsPageBase
 {
     public AboutPage()
     {
-        PageTitle.Text = "关于";
         InitializeComponent();
+        PageTitle.Text = "关于";
         VersionText.Text = VersionServices.VersionString(VersionServices.CurrentVersion);
     }
 

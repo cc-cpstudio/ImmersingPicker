@@ -29,7 +29,7 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
     private List<Student> CalculateAvailablePickStudents()
     {
         _logger.Debug("开始计算可抽选学生列表");
-        List<Student> tmpStudents = _clazz.Students;
+        List<Student> tmpStudents = [.._clazz.Students];
         int availableRange = CalculateRange(tmpStudents);
         
         _logger.Verbose("初始范围：{Range}, 参数阈值：{Threshold}", availableRange, AppSettings.Instance.WeightCalculationParam9);

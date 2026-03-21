@@ -10,8 +10,8 @@ public partial class LinkageSettingsPage : SettingsPageBase
 {
     public LinkageSettingsPage()
     {
-        PageTitle.Text = "联动设置";
         InitializeComponent();
+        PageTitle.Text = "联动设置";
         LoadSettings();
         UpdateControlsState();
     }
@@ -19,13 +19,13 @@ public partial class LinkageSettingsPage : SettingsPageBase
     protected override void LoadSettings()
     {
         EnableClassIslandLinkage.IsChecked = AppSettings.EnableClassIslandLinkage;
-        EnableDisablingAfterClasses.IsChecked = AppSettings.EnableDisablingAfterClasses;
+        EnableDisablingAfterClass.IsChecked = AppSettings.EnableDisablingAfterClasses;
     }
 
     protected override void UpdateControlsState()
     {
         bool classIslandLinkageEnabled = EnableClassIslandLinkage.IsChecked ?? false;
-        EnableDisablingAfterClasses.IsEnabled = classIslandLinkageEnabled;
+        EnableDisablingAfterClassItem.IsEnabled = classIslandLinkageEnabled;
     }
 
     private void EnableClassIslandLinkage_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
@@ -36,6 +36,6 @@ public partial class LinkageSettingsPage : SettingsPageBase
 
     private void EnableDisablingAfterClasses_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
-        AppSettings.EnableDisablingAfterClasses = EnableDisablingAfterClasses.IsChecked ?? false;
+        AppSettings.EnableDisablingAfterClasses = EnableDisablingAfterClass.IsChecked ?? false;
     }
 }

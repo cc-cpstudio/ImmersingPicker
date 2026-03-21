@@ -5,8 +5,7 @@
              xmlns:controls="clr-namespace:ImmersingPicker.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ImmersingPicker.Views.WelcomePages.ShortcutPage"
-             Title="快捷方式"
-             NextButtonTextValue="完成">
+             Title="快捷方式">
     <controls:WelcomePageBase.PageContent>
         <StackPanel Orientation="Vertical" Spacing="8" HorizontalAlignment="Center">
             <TextBlock Text="请选择您需要创建快捷方式的区域" HorizontalAlignment="Center"/>

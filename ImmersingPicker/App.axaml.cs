@@ -59,20 +59,67 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         const string mutexName = "ImmersingPicker-SingleInstance-Mutex";
+        const string processName = "ImmersingPicker";
 
         bool createdNew;
         _mutex = new Mutex(true, mutexName, out createdNew);
 
         if (!createdNew)
         {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            var processes = Process.GetProcessesByName(processName);
+            bool realInstanceRunning = false;
+            
+            foreach (var process in processes)
             {
-                desktop.MainWindow = new InstanceExistsWindow();
+                if (process.Id != Environment.ProcessId)
+                {
+                    try
+                    {
+                        var mainModule = process.MainModule;
+                        if (mainModule != null && 
+                            mainModule.FileName == Process.GetCurrentProcess().MainModule?.FileName)
+                        {
+                            realInstanceRunning = true;
+                            break;
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
+            
+            if (realInstanceRunning)
+            {
+                _logger.Information("检测到已有实例在运行，显示提示窗口");
+                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+                {
+                    desktopLifetime.MainWindow = new InstanceExistsWindow();
+                }
+                return;
+            }
+            else
+            {
+                _logger.Information("检测到残留 Mutex，但无实际运行实例，释放旧 Mutex");
+                try
+                {
+                    _mutex?.ReleaseMutex();
+                }
+                catch
+                {
+                }
+                _mutex?.Close();
+                _mutex = new Mutex(true, mutexName, out createdNew);
+                
+                if (!createdNew)
+                {
+                    _logger.Warning("释放旧 Mutex 后仍无法创建新 Mutex，强制继续启动");
+                }
             }
         }
-        else
-        {
-            _logger.Information("应用程序框架初始化完成，开始加载数据");
+        
+        _logger.Information("应用程序框架初始化完成，开始加载数据");
             // 加载班级数据
             try
             {
@@ -163,7 +210,6 @@ public partial class App : Application
 
             // 初始化自动保存定时器
             InitializeAutoSaveTimer();
-        }
 
         base.OnFrameworkInitializationCompleted();
     }

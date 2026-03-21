@@ -9,7 +9,7 @@
     <controls:WelcomePageBase.PageContent>
         <StackPanel Orientation="Vertical" Spacing="8" HorizontalAlignment="Center">
             <TextBlock Text="在开始之前，您需要创建一个班级。稍后可在编辑窗口编辑班级信息。" HorizontalAlignment="Center"/>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="班级名称："/>
                 <TextBox x:Name="FirstClazzNameInput"/>
             </StackPanel>

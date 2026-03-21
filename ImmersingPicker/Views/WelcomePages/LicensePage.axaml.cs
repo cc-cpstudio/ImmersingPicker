@@ -9,6 +9,7 @@ public partial class LicensePage : WelcomePageBase
 {
     public LicensePage()
     {
+        InitializeComponent();
         NextButtonClick += OnNextButtonClick;
     }
 

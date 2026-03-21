@@ -9,6 +9,7 @@ public partial class ShortcutPage : WelcomePageBase
 {
     public ShortcutPage()
     {
+        InitializeComponent();
         NextButtonClick += OnNextButtonClick;
     }
 

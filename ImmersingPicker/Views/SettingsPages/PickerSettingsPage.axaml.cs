@@ -11,8 +11,8 @@ public partial class PickerSettingsPage : SettingsPageBase
 {
     public PickerSettingsPage()
     {
-        PageTitle.Text = "抽选器设置";
         InitializeComponent();
+        PageTitle.Text = "抽选器设置";
         LoadSettings();
     }
 

@@ -8,6 +8,7 @@ public partial class CongratulationPage : WelcomePageBase
 {
     public CongratulationPage()
     {
+        InitializeComponent();
         NextButtonClick += OnNextButtonClick;
     }
 

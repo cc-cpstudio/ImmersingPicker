@@ -10,6 +10,7 @@ public partial class ClazzInitializationPage : WelcomePageBase
 {
     public ClazzInitializationPage()
     {
+        InitializeComponent();
         NextButtonClick += OnNextButtonClick;
     }
 
