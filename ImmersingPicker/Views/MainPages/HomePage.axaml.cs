@@ -9,7 +9,9 @@ using Avalonia.Markup.Xaml;
 using FluentAvalonia.UI.Controls;
 using ImmersingPicker.Controls;
 using ImmersingPicker.Core;
+using ImmersingPicker.Core.Exceptions;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Services.Services;
 using Serilog;
 
 namespace ImmersingPicker.Views.MainPages;
@@ -59,7 +61,7 @@ public partial class HomePage : UserControl
     private void ClazzComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         _logger.Information("班级选择变更事件触发");
-        if (sender is ComboBox comboBox && comboBox.SelectedItem is Clazz selectedClazz)
+        if (sender is ComboBox { SelectedItem: Clazz selectedClazz })
         {
             _logger.Information("选择班级: {ClassName}", selectedClazz.Name);
             int index = Clazz.Classes.IndexOf(selectedClazz);
@@ -87,48 +89,113 @@ public partial class HomePage : UserControl
 
     private async void PickButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        _logger.Information("开始执行抽选操作");
-        Clazz? currentClazz = Clazz.GetCurrentClazz();
-        if (currentClazz == null)
+        try
         {
-            _logger.Warning("当前班级为null，无法执行抽选");
-            return;
-        }
-
-        _logger.Information("使用公平抽选器抽选{Amount}名学生", AmountForPicking);
-        List<Student> picked = currentClazz.Pickers["FairStudentPicker"].Pick(AmountForPicking).Students;
-        _logger.Information("抽选完成，结果: {PickedStudents}", string.Join(", ", picked.Select(s => s.Name)));
-
-        _logger.Verbose("开始动画效果");
-        for (int i = 0; i < AppSettings.Instance.HomeAnimationPlayAmount; i++)
-        {
-            Seats.DeselectAll();
-            foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
+            if (AppSettings.Instance.EnableClassIslandLinkage && AppSettings.Instance.EnableDisablingAfterClasses &&
+                ClassIslandIPCService.Instance.Initialized && !ClassIslandIPCService.Instance.OnClass())
             {
-                Seats.Select(student);
+                var disablementDialog = new ContentDialog
+                {
+                    Title = "课间禁用",
+                    Content = "当前为课间休息，无法使用抽选功能。",
+                    CloseButtonText = "确定"
+                };
+                await disablementDialog.ShowAsync();
+                return;
             }
 
-            await Task.Delay(AppSettings.Instance.HomeAnimationPlayDelay);
-        }
+            _logger.Information("开始执行抽选操作");
+            Clazz? currentClazz = Clazz.GetCurrentClazz();
+            if (currentClazz == null)
+            {
+                _logger.Warning("当前班级为null，无法执行抽选");
+                return;
+            }
 
-        _logger.Verbose("显示最终结果");
-        Seats.DeselectAll();
-        string dialogContent = "";
-        foreach (Student student in picked)
-        {
-            Seats.Select(student);
-            dialogContent += $"{student.Id} {student.Name}\n";
-        }
+            if (currentClazz.Students.Count == 0)
+            {
+                _logger.Warning("当前班级没有学生，无法执行抽选");
+                var noStudentDialog = new ContentDialog
+                {
+                    Title = "抽选失败",
+                    Content = "当前班级没有学生，无法执行抽选。",
+                    CloseButtonText = "确定"
+                };
+                await noStudentDialog.ShowAsync();
+                return;
+            }
 
-        _logger.Information("显示抽选结果对话框");
-        var dialog = new ContentDialog
+            if (!currentClazz.Pickers.ContainsKey("FairStudentPicker") || 
+                !currentClazz.Pickers.ContainsKey("PlainStudentPicker"))
+            {
+                _logger.Error("抽选器不存在");
+                var noPickerDialog = new ContentDialog
+                {
+                    Title = "抽选失败",
+                    Content = "抽选器初始化失败，请检查班级配置。",
+                    CloseButtonText = "确定"
+                };
+                await noPickerDialog.ShowAsync();
+                return;
+            }
+
+            _logger.Information("使用公平抽选器抽选{Amount}名学生", AmountForPicking);
+            List<Student> picked = currentClazz.Pickers["FairStudentPicker"].Pick(AmountForPicking).Students;
+            _logger.Information("抽选完成，结果: {PickedStudents}", string.Join(", ", picked.Select(s => s.Name)));
+
+            _logger.Verbose("开始动画效果");
+            for (int i = 0; i < AppSettings.Instance.HomeAnimationPlayAmount; i++)
+            {
+                Seats.DeselectAll();
+                foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
+                {
+                    Seats.Select(student);
+                }
+
+                await Task.Delay(AppSettings.Instance.HomeAnimationPlayDelay);
+            }
+
+            _logger.Verbose("显示最终结果");
+            Seats.DeselectAll();
+            string dialogContent = "";
+            foreach (Student student in picked)
+            {
+                Seats.Select(student);
+                dialogContent += $"{student.Id} {student.Name}\n";
+            }
+
+            _logger.Information("显示抽选结果对话框");
+            var dialog = new ContentDialog
+            {
+                Title = "抽选结果  恭喜以下幸运儿：",
+                Content = dialogContent,
+                CloseButtonText = "确定"
+            };
+            await dialog.ShowAsync();
+            _logger.Information("抽选操作完成");
+        }
+        catch (NoAvailableStudentException)
         {
-            Title = "抽选结果  恭喜以下幸运儿：",
-            Content = dialogContent,
-            CloseButtonText = "确定"
-        };
-        await dialog.ShowAsync();
-        _logger.Information("抽选操作完成");
+            _logger.Error("没有可用的学生进行抽选");
+            var errorDialog = new ContentDialog
+            {
+                Title = "抽选失败",
+                Content = "没有可用的学生进行抽选。",
+                CloseButtonText = "确定"
+            };
+            await errorDialog.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "抽选过程中发生错误");
+            var errorDialog = new ContentDialog
+            {
+                Title = "抽选错误",
+                Content = $"抽选过程中发生错误：{ex.Message}",
+                CloseButtonText = "确定"
+            };
+            await errorDialog.ShowAsync();
+        }
     }
 
     private void PlusButton_OnClick(object? sender, RoutedEventArgs e)
