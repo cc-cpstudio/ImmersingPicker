@@ -35,24 +35,6 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        const string mutexName = "ImmersingPicker-SingleInstance-Mutex";
-        
-        bool createdNew;
-        _mutex = new Mutex(true, mutexName, out createdNew);
-        
-        if (!createdNew)
-        {
-            _logger.Warning("检测到已有实例正在运行");
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                var instanceExistsWindow = new InstanceExistsWindow();
-                desktop.MainWindow = instanceExistsWindow;
-                instanceExistsWindow.Show();
-            }
-            return;
-        }
-        
-        _logger.Information("当前为唯一实例，继续启动流程");
         
         if (AppSettings.Instance.EnableClassIslandLinkage)
         {
@@ -76,96 +58,112 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        _logger.Information("应用程序框架初始化完成，开始加载数据");
-        // 加载班级数据
-        try
-        {
-            _logger.Information("开始加载班级数据");
-            _logger.Verbose("获取ClassStorageService实例");
-            var storageService = ClassStorageService.Instance;
-            storageService.LoadClasses();
-            _logger.Information("班级数据加载完成");
-            _logger.Verbose("班级数量: {Count}", Clazz.Classes.Count);
-        }
-        catch (Exception ex)
-        {
-            // 如果加载失败，使用默认数据
-            _logger.Error(ex, "加载班级数据失败");
-            _logger.Warning("使用默认班级数据");
-        }
+        const string mutexName = "ImmersingPicker-SingleInstance-Mutex";
 
-        try
-        {
-            _logger.Information("开始加载应用设置");
-            _logger.Verbose("获取SettingsStorageService实例");
-            var storageService = SettingsStorageService.Instance;
-            storageService.LoadSettings();
-            _logger.Information("应用设置加载完成");
-            _logger.Verbose("当前主题: {Theme}", AppSettings.Instance.AppTheme);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "加载应用设置失败");
-            _logger.Warning("使用默认应用设置");
-        }
+        bool createdNew;
+        _mutex = new Mutex(true, mutexName, out createdNew);
 
-        // 为每个Clazz创建对应的Picker实例（如果还没有的话）
-        foreach (var clazz in Clazz.Classes)
+        if (!createdNew)
         {
-            if (!clazz.Pickers.ContainsKey("FairStudentPicker"))
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                new FairStudentPicker(clazz);
-            }
-            if (!clazz.Pickers.ContainsKey("PlainStudentPicker"))
-            {
-                new PlainStudentPicker(clazz);
+                desktop.MainWindow = new InstanceExistsWindow();
             }
         }
-
-        // 初始化平台服务
-        var platformServices = PlatformServices.Instance;
-
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        else
         {
-            if (AppSettings.Instance.IsFirstLaunch)
+            _logger.Information("应用程序框架初始化完成，开始加载数据");
+            // 加载班级数据
+            try
             {
-                _logger.Information("检测到首次启动，显示欢迎窗口");
-                _welcomeWindow = new WelcomeWindow();
-                desktop.MainWindow = _welcomeWindow;
+                _logger.Information("开始加载班级数据");
+                _logger.Verbose("获取ClassStorageService实例");
+                var storageService = ClassStorageService.Instance;
+                storageService.LoadClasses();
+                _logger.Information("班级数据加载完成");
+                _logger.Verbose("班级数量: {Count}", Clazz.Classes.Count);
             }
-            else
+            catch (Exception ex)
             {
-                _logger.Information("非首次启动，显示主窗口");
-                _mainWindow = new MainWindow();
-                desktop.MainWindow = _mainWindow;
-
-                _logger.Information("创建悬浮窗口实例");
-                _floatingWindow = new FloatingWindow();
-                _floatingWindow.FloatingWindowClicked += ShowMainWindow;
-
-                _mainWindow.Closing += MainWindow_Closing;
-                _mainWindow.Deactivated += MainWindow_Deactivated;
-                _mainWindow.Activated += MainWindow_Activated;
-
-                AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
-                AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
-                AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
-                _logger.Information("悬浮窗口及事件监听初始化完成");
+                // 如果加载失败，使用默认数据
+                _logger.Error(ex, "加载班级数据失败");
+                _logger.Warning("使用默认班级数据");
             }
+
+            try
+            {
+                _logger.Information("开始加载应用设置");
+                _logger.Verbose("获取SettingsStorageService实例");
+                var storageService = SettingsStorageService.Instance;
+                storageService.LoadSettings();
+                _logger.Information("应用设置加载完成");
+                _logger.Verbose("当前主题: {Theme}", AppSettings.Instance.AppTheme);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "加载应用设置失败");
+                _logger.Warning("使用默认应用设置");
+            }
+
+            // 为每个Clazz创建对应的Picker实例（如果还没有的话）
+            foreach (var clazz in Clazz.Classes)
+            {
+                if (!clazz.Pickers.ContainsKey("FairStudentPicker"))
+                {
+                    new FairStudentPicker(clazz);
+                }
+
+                if (!clazz.Pickers.ContainsKey("PlainStudentPicker"))
+                {
+                    new PlainStudentPicker(clazz);
+                }
+            }
+
+            // 初始化平台服务
+            var platformServices = PlatformServices.Instance;
+
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                if (AppSettings.Instance.IsFirstLaunch)
+                {
+                    _logger.Information("检测到首次启动，显示欢迎窗口");
+                    _welcomeWindow = new WelcomeWindow();
+                    desktop.MainWindow = _welcomeWindow;
+                }
+                else
+                {
+                    _logger.Information("非首次启动，显示主窗口");
+                    _mainWindow = new MainWindow();
+                    desktop.MainWindow = _mainWindow;
+
+                    _logger.Information("创建悬浮窗口实例");
+                    _floatingWindow = new FloatingWindow();
+                    _floatingWindow.FloatingWindowClicked += ShowMainWindow;
+
+                    _mainWindow.Closing += MainWindow_Closing;
+                    _mainWindow.Deactivated += MainWindow_Deactivated;
+                    _mainWindow.Activated += MainWindow_Activated;
+
+                    AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
+                    AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
+                    AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
+                    _logger.Information("悬浮窗口及事件监听初始化完成");
+                }
+            }
+
+            var a = AppSettings.Instance.AppTheme;
+
+            // 初始化主题管理器
+            _logger.Information("初始化主题管理器");
+            ThemeManager.Instance.Initialize();
+            _logger.Information("主题管理器初始化完成");
+
+            // 监听 ClassIsland 联动设置变更
+            AppSettings.Instance.EnableClassIslandLinkageChanged += OnEnableClassIslandLinkageChanged;
+
+            // 初始化自动保存定时器
+            InitializeAutoSaveTimer();
         }
-
-        var a = AppSettings.Instance.AppTheme;
-
-        // 初始化主题管理器
-        _logger.Information("初始化主题管理器");
-        ThemeManager.Instance.Initialize();
-        _logger.Information("主题管理器初始化完成");
-
-        // 监听 ClassIsland 联动设置变更
-        AppSettings.Instance.EnableClassIslandLinkageChanged += OnEnableClassIslandLinkageChanged;
-
-        // 初始化自动保存定时器
-        InitializeAutoSaveTimer();
 
         base.OnFrameworkInitializationCompleted();
     }

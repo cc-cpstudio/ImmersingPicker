@@ -11,7 +11,7 @@
         CanResize="False"
         WindowStartupLocation="CenterScreen">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
-                <TextBlock Text="&#xE9CE;" FontFamily="avares://ImmersingPicker/Assets/Fonts/#FluentSystemIcons" FontSize="64" HorizontalAlignment="Center"/>
+                <TextBlock Text="&#xF430;" FontFamily="avares://ImmersingPicker/Assets/Fonts/#FluentSystemIcons" FontSize="64" HorizontalAlignment="Center" Foreground="DarkOrange"/>
                 <TextBlock Text="已有实例正在运行" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <TextBlock Text="ImmersingPicker 已经在运行中，请勿重复启动。" FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap"/>
                 <Button Content="确定" HorizontalAlignment="Center" Width="120" Click="OkButton_Click"/>
