@@ -1,21 +1,17 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+using Avalonia;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media;
-using ImmersingPicker.Core.Models;
+using ImmersingPicker.Controls;
 
 namespace ImmersingPicker.Views.WelcomePages;
 
-public partial class CongratulationPage : UserControl
+public partial class CongratulationPage : WelcomePageBase
 {
     public CongratulationPage()
     {
-        InitializeComponent();
-        NextButton.Background = Brush.Parse(AppSettings.Instance.AppThemeColor);
+        NextButtonClick += OnNextButtonClick;
     }
 
-    private void NextButton_OnClick(object? sender, RoutedEventArgs e)
+    private void OnNextButtonClick(object? sender, RoutedEventArgs e)
     {
         if (Application.Current is App app)
         {

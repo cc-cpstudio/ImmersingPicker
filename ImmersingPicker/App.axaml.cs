@@ -398,13 +398,13 @@ public partial class App : Application
     private async void OpenEditor(object? sender, EventArgs e)
     {
         // 打开编辑器窗口
-        await MainWindowNavigationService.OpenEditorWindow();
+        await MainWindowNavigationService.Instance.OpenEditorWindow();
     }
 
     private async void OpenSettings(object? sender, EventArgs e)
     {
         // 打开设置窗口
-        await MainWindowNavigationService.OpenSettingsWindow();
+        await MainWindowNavigationService.Instance.OpenSettingsWindow();
     }
 
     public async void RestartApplication(object? sender, EventArgs e)

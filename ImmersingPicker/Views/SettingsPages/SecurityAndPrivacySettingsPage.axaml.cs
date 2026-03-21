@@ -14,24 +14,25 @@ using ImmersingPicker.Services.Services.Storage;
 
 namespace ImmersingPicker.Views.SettingsPages;
 
-public partial class SecurityAndPrivacySettingsPage : UserControl
+public partial class SecurityAndPrivacySettingsPage : SettingsPageBase
 {
     private readonly PasswordService _passwordService = PasswordService.Instance;
 
     public SecurityAndPrivacySettingsPage()
     {
+        PageTitle.Text = "安全与隐私设置";
         InitializeComponent();
         LoadSettings();
-        CheckEnabled();
+        UpdateControlsState();
     }
 
-    private void LoadSettings()
+    protected override void LoadSettings()
     {
-        OpenPassword.IsChecked = AppSettings.Instance.OpenPassword;
-        EnableUsbSecurityCheck.IsChecked = AppSettings.Instance.EnableUsbSecurityCheck;
+        OpenPassword.IsChecked = AppSettings.OpenPassword;
+        EnableUsbSecurityCheck.IsChecked = AppSettings.EnableUsbSecurityCheck;
     }
 
-    private void CheckEnabled()
+    protected override void UpdateControlsState()
     {
         SetPasswordItem.IsEnabled = OpenPassword.IsChecked ?? false;
         EnableUsbSecurityCheckItem.IsEnabled = OpenPassword.IsChecked ?? false;
@@ -40,8 +41,8 @@ public partial class SecurityAndPrivacySettingsPage : UserControl
 
     private void OpenPassword_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
-        AppSettings.Instance.OpenPassword = OpenPassword.IsChecked ?? false;
-        CheckEnabled();
+        AppSettings.OpenPassword = OpenPassword.IsChecked ?? false;
+        UpdateControlsState();
     }
 
     private async void SetPassword_OnClick(object? sender, RoutedEventArgs e)
@@ -104,13 +105,13 @@ public partial class SecurityAndPrivacySettingsPage : UserControl
 
     private void EnableUsbSecurityCheck_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
-        AppSettings.Instance.EnableUsbSecurityCheck = EnableUsbSecurityCheck.IsChecked ?? false;
-        CheckEnabled();
+        AppSettings.EnableUsbSecurityCheck = EnableUsbSecurityCheck.IsChecked ?? false;
+        UpdateControlsState();
     }
 
     private async void SetUsbDrive_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (!AppSettings.Instance.OpenPassword)
+        if (!AppSettings.OpenPassword)
         {
             var parentWindow = TopLevel.GetTopLevel(this) as Window;
             if (parentWindow == null) return;
@@ -151,7 +152,7 @@ public partial class SecurityAndPrivacySettingsPage : UserControl
     {
         var usbDriveDialog = new UsbDriveDialog();
         usbDriveDialog.Clear();
-        usbDriveDialog.SetCurrentDrive(AppSettings.Instance.UsbSecurityDriveInfo);
+        usbDriveDialog.SetCurrentDrive(AppSettings.UsbSecurityDriveInfo);
 
         var parentWindow = TopLevel.GetTopLevel(this) as Window;
         if (parentWindow == null) return;
@@ -174,7 +175,7 @@ public partial class SecurityAndPrivacySettingsPage : UserControl
                 var selectedDrive = usbDriveDialog.GetSelectedDrive();
                 if (selectedDrive.HasValue)
                 {
-                    AppSettings.Instance.UsbSecurityDriveInfo = selectedDrive.Value;
+                    AppSettings.UsbSecurityDriveInfo = selectedDrive.Value;
                     var successDialog = new ContentDialog
                     {
                         Title = "成功",

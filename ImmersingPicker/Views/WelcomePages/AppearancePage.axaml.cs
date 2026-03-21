@@ -1,24 +1,28 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using ImmersingPicker.Controls;
 using ImmersingPicker.Core.Models;
 using ImmersingPicker.Services;
 
 namespace ImmersingPicker.Views.WelcomePages;
 
-public partial class AppearancePage : UserControl
+public partial class AppearancePage : WelcomePageBase
 {
     public AppearancePage()
     {
-        InitializeComponent();
-        NextButton.Background = Brush.Parse(AppSettings.Instance.AppThemeColor);
+        NextButtonClick += OnNextButtonClick;
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+    {
         LoadSettings();
     }
 
-    private void LoadSettings()
+    protected override void LoadSettings()
     {
-        AppTheme.SelectedIndex = AppSettings.Instance.AppTheme switch
+        AppTheme.SelectedIndex = AppSettings.AppTheme switch
         {
             AppSettings.ThemeEnums.System => 2,
             AppSettings.ThemeEnums.Light => 0,
@@ -26,10 +30,10 @@ public partial class AppearancePage : UserControl
             _ => 2
         };
 
-        if (!string.IsNullOrEmpty(AppSettings.Instance.AppThemeColor))
+        if (!string.IsNullOrEmpty(AppSettings.AppThemeColor))
             try
             {
-                AppThemeColor.Color = Color.Parse(AppSettings.Instance.AppThemeColor);
+                AppThemeColor.Color = Color.Parse(AppSettings.AppThemeColor);
             }
             catch
             {
@@ -38,7 +42,7 @@ public partial class AppearancePage : UserControl
 
     private void AppTheme_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        AppSettings.Instance.AppTheme = AppTheme.SelectedIndex switch
+        AppSettings.AppTheme = AppTheme.SelectedIndex switch
         {
             0 => AppSettings.ThemeEnums.Light,
             1 => AppSettings.ThemeEnums.Dark,
@@ -49,12 +53,12 @@ public partial class AppearancePage : UserControl
 
     private void AppThemeColor_OnColorChanged(object? sender, ColorChangedEventArgs e)
     {
-        AppSettings.Instance.AppThemeColor = AppThemeColor.Color.ToString();
-        NextButton.Background = Brush.Parse(AppSettings.Instance.AppThemeColor);
+        AppSettings.AppThemeColor = AppThemeColor.Color.ToString();
+        InitializeButtonTheme();
     }
 
-    private void NextButton_OnClick(object? sender, RoutedEventArgs e)
+    private void OnNextButtonClick(object? sender, RoutedEventArgs e)
     {
-        WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Shortcut);
+        WelcomeWindowNavigationService.Instance.NavigateTo(WelcomeWindowNavigationService.ViewType.Shortcut);
     }
 }

@@ -1,21 +1,18 @@
-using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
-using ImmersingPicker.Core.Models;
+using ImmersingPicker.Controls;
 using ImmersingPicker.Services;
 using ImmersingPicker.Services.Services;
 
 namespace ImmersingPicker.Views.WelcomePages;
 
-public partial class ShortcutPage : UserControl
+public partial class ShortcutPage : WelcomePageBase
 {
     public ShortcutPage()
     {
-        InitializeComponent();
-        NextButton.Background = Brush.Parse(AppSettings.Instance.AppThemeColor);
+        NextButtonClick += OnNextButtonClick;
     }
 
-    private void NextButton_OnClick(object? sender, RoutedEventArgs e)
+    private void OnNextButtonClick(object? sender, RoutedEventArgs e)
     {
         var platformServices = PlatformServices.Instance;
 
@@ -29,6 +26,6 @@ public partial class ShortcutPage : UserControl
             platformServices.CreateStartMenuShortcut();
         }
 
-        WelcomeWindowNavigationService.NavigateTo(WelcomeWindowNavigationService.ViewType.Congratulation);
+        WelcomeWindowNavigationService.Instance.NavigateTo(WelcomeWindowNavigationService.ViewType.Congratulation);
     }
 }
