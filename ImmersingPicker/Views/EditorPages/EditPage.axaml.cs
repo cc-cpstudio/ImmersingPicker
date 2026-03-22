@@ -248,4 +248,63 @@ public partial class EditPage : UserControl
     {
 
     }
+
+    private async void BatchEditSeatButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ClazzComboBox.SelectedIndex < 0 || ClazzComboBox.SelectedIndex >= Clazz.Classes.Count)
+            return;
+        
+        var selectedClazz = Clazz.Classes[ClazzComboBox.SelectedIndex];
+        
+        if (selectedClazz.Students.Count == 0)
+        {
+            var tipDialog = new ContentDialog
+            {
+                Title = "提示",
+                Content = "当前班级没有学生，无法批量设置座位。",
+                CloseButtonText = "确定"
+            };
+            
+            var parentWindow = TopLevel.GetTopLevel(this) as Window;
+            if (parentWindow != null)
+            {
+                await tipDialog.ShowAsync(parentWindow);
+            }
+            return;
+        }
+        
+        var batchDialog = new Controls.BatchSeatEditDialog(selectedClazz);
+        
+        var parentWindow2 = TopLevel.GetTopLevel(this) as Window;
+        if (parentWindow2 != null)
+        {
+            var contentDialog = new ContentDialog
+            {
+                Title = "批量设置座位",
+                Content = batchDialog,
+                PrimaryButtonText = "保存",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary
+            };
+            
+            var result = await contentDialog.ShowAsync(parentWindow2);
+            
+            if (result == ContentDialogResult.Primary)
+            {
+                if (batchDialog.SaveClicked)
+                {
+                    StudentTableView.UpdateStudentList();
+                    await AutoSave();
+                    
+                    var successDialog = new ContentDialog
+                    {
+                        Title = "保存成功",
+                        Content = "所有学生的座位信息已更新。",
+                        CloseButtonText = "确定"
+                    };
+                    await successDialog.ShowAsync(parentWindow2);
+                }
+            }
+        }
+    }
 }

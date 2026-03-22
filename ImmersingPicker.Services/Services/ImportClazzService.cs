@@ -1,5 +1,6 @@
 ﻿using ImmersingPicker.Core;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Services.Services.Picker;
 using OfficeOpenXml;
 
 namespace ImmersingPicker.Services.Services;
@@ -28,5 +29,15 @@ public class ImportClazzService
             id ++;
         }
         return students;
+    }
+
+    public static Clazz FromSecRandom(string path)
+    {
+        string clazzName = Path.GetFileNameWithoutExtension(path);
+        string data = File.ReadAllText(path);
+
+        Clazz clazz = ClazzFactory.NewClazz(clazzName);
+
+        return clazz;
     }
 }

@@ -5,6 +5,7 @@
       <map>
         <entry key="ImmersingPicker/App.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Components/Seat.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
+        <entry key="ImmersingPicker/Controls/BatchSeatEditDialog.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/FilterDialog.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/HistoryItem.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/PasswordVerifyDialog.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
