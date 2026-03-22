@@ -33,6 +33,7 @@ public class ClassIslandIPCService
     public bool OnClass()
     {
         var lessonSc = _client.Provider.CreateIpcProxy<IPublicLessonsService>(_client.PeerProxy!);
-        return lessonSc.CurrentState is TimeState.OnClass or TimeState.PrepareOnClass or TimeState.None;
+        return lessonSc.CurrentState is TimeState.OnClass or TimeState.PrepareOnClass or TimeState.None
+               && lessonSc.IsLessonConfirmed;
     }
 }

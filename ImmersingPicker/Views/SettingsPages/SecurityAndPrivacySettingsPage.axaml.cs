@@ -34,7 +34,8 @@ public partial class SecurityAndPrivacySettingsPage : SettingsPageBase
 
     protected override void UpdateControlsState()
     {
-        SetPasswordItem.IsEnabled = OpenPassword.IsChecked ?? false;
+        SetPasswordItem.IsEnabled = true;
+        OpenPassword.IsEnabled = _passwordService.HasPassword;
         EnableUsbSecurityCheckItem.IsEnabled = OpenPassword.IsChecked ?? false;
         SetUsbDriveItem.IsEnabled = (OpenPassword.IsChecked ?? false) && (EnableUsbSecurityCheck.IsChecked ?? false);
     }
@@ -77,6 +78,7 @@ public partial class SecurityAndPrivacySettingsPage : SettingsPageBase
                 if (passwordDialog.SavePassword())
                 {
                     SettingsStorageService.Instance.SaveSettings();
+                    UpdateControlsState();
                     var successDialog = new ContentDialog
                     {
                         Title = "成功",

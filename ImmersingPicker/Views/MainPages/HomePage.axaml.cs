@@ -6,11 +6,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using FluentAvalonia.UI.Controls;
+using FluentAvalonia.UI.Windowing;
 using ImmersingPicker.Controls;
 using ImmersingPicker.Core;
 using ImmersingPicker.Core.Exceptions;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Helpers;
 using ImmersingPicker.Services.Services;
 using Serilog;
 
@@ -100,8 +103,27 @@ public partial class HomePage : UserControl
                     Content = "当前为课间休息，无法使用抽选功能。",
                     CloseButtonText = "确定"
                 };
-                await disablementDialog.ShowAsync();
-                return;
+
+                if (AppSettings.Instance.OpenPassword && AppSettings.Instance.PasswordHash != string.Empty)
+                {
+                    disablementDialog.PrimaryButtonText = "验证以使用";
+                }
+
+                var result = await disablementDialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    var parentWindow = this.GetVisualRoot() as AppWindow;
+                    if (parentWindow == null)
+                    {
+                        _logger.Warning("无法获取父窗口");
+                        return;
+                    }
+
+                    bool verified = await VerifyHelper.VerifyPassword(parentWindow);
+
+                    if (!verified) return;
+                }
             }
 
             _logger.Information("开始执行抽选操作");
