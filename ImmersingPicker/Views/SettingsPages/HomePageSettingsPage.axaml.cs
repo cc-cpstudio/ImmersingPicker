@@ -18,10 +18,25 @@ public partial class HomePageSettingsPage : SettingsPageBase
 
     protected override void LoadSettings()
     {
+        PickAnimationPlayMode.SelectedIndex = (int)AppSettings.PickAnimationPlayMode;
         HomeAnimationPlayAmount.Value = Convert.ToDecimal(AppSettings.HomeAnimationPlayAmount);
         HomeAnimationPlayDelay.Value = Convert.ToDecimal(AppSettings.HomeAnimationPlayDelay);
         SeatGridRowArrangement.SelectedIndex = (int)AppSettings.SeatGridRowArrangement;
         SeatGridColumnArrangement.SelectedIndex = (int)AppSettings.SeatGridColumnArrangement;
+    }
+
+    private void UpdateControlsState()
+    {
+        if (PickAnimationPlayMode.SelectedIndex == 2)
+        {
+            HomeAnimationPlayAmountItem.IsEnabled = false;
+            HomeAnimationPlayDelayItem.IsEnabled = false;
+        }
+        else
+        {
+            HomeAnimationPlayAmountItem.IsEnabled = true;
+            HomeAnimationPlayDelayItem.IsEnabled = true;
+        }
     }
 
     private void HomeAnimationPlayAmount_OnValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
@@ -42,5 +57,11 @@ public partial class HomePageSettingsPage : SettingsPageBase
     private void SeatGridColumnArrangement_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         AppSettings.SeatGridColumnArrangement = (AppSettings.SeatGridColumnArrangementMode)SeatGridColumnArrangement.SelectedIndex;
+    }
+
+    private void PickAnimationPlayMode_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        AppSettings.PickAnimationPlayMode = (AppSettings.PickAnimationPlayModeEnum)PickAnimationPlayMode.SelectedIndex;
+        UpdateControlsState();
     }
 }

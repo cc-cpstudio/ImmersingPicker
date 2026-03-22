@@ -24,6 +24,8 @@ public partial class HomePage : UserControl
     private static readonly ILogger _logger = Log.ForContext<HomePage>();
     private int _amountForPicking;
 
+    private bool _isPicking = false;
+
     private Clazz? _clazz;
 
     private int AmountForPicking
@@ -37,7 +39,10 @@ public partial class HomePage : UserControl
                 if (value > 0 && (_clazz.Students.Count <= 0 || value <= _clazz.Students.Count))
                 {
                     _amountForPicking = value;
-                    PickButton.Content = $"共{_amountForPicking}人  开始抽选！";
+                    if (!_isPicking)
+                    {
+                        PickButton.Content = $"共{_amountForPicking}人  开始抽选！";
+                    }
                 }
             }
             catch (NullReferenceException)
@@ -126,6 +131,13 @@ public partial class HomePage : UserControl
                 }
             }
 
+            if (_isPicking && AppSettings.Instance.PickAnimationPlayMode ==
+                AppSettings.PickAnimationPlayModeEnum.Manual)
+            {
+                _isPicking = false;
+                return;
+            }
+
             _logger.Information("开始执行抽选操作");
             Clazz? currentClazz = Clazz.GetCurrentClazz();
             if (currentClazz == null)
@@ -161,21 +173,51 @@ public partial class HomePage : UserControl
                 return;
             }
 
+            switch (AppSettings.Instance.PickAnimationPlayMode)
+            {
+                case AppSettings.PickAnimationPlayModeEnum.Auto:
+                    _logger.Verbose("当前为自动模式，开始动画效果");
+                    _isPicking = true;
+                    PickButton.IsEnabled = false;
+                    ClearButton.IsEnabled = false;
+                    for (int i = 0; i < AppSettings.Instance.HomeAnimationPlayAmount; i++)
+                    {
+                        Seats.DeselectAll();
+                        foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
+                        {
+                            Seats.Select(student);
+                        }
+                        await Task.Delay(AppSettings.Instance.HomeAnimationPlayDelay);
+                    }
+                    _isPicking = false;
+                    PickButton.IsEnabled = true;
+                    ClearButton.IsEnabled = true;
+                    break;
+                case AppSettings.PickAnimationPlayModeEnum.Manual:
+                    _logger.Verbose("当前为手动模式，开始动画效果");
+                    _isPicking = true;
+                    PickButton.Content = "点击结束";
+                    ClearButton.IsEnabled = false;
+                    while (_isPicking)
+                    {
+                        Seats.DeselectAll();
+                        foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
+                        {
+                            Seats.Select(student);
+                        }
+                        await Task.Delay(AppSettings.Instance.HomeAnimationPlayDelay);
+                    }
+                    PickButton.Content = $"共{_amountForPicking}人  开始抽选！";
+                    ClearButton.IsEnabled = true;
+                    break;
+                case AppSettings.PickAnimationPlayModeEnum.Direct:
+                    _logger.Verbose("当前为直接显示结果模式");
+                    break;
+            }
+
             _logger.Information("使用公平抽选器抽选{Amount}名学生", AmountForPicking);
             List<Student> picked = currentClazz.Pickers["FairStudentPicker"].Pick(AmountForPicking).Students;
             _logger.Information("抽选完成，结果: {PickedStudents}", string.Join(", ", picked.Select(s => s.Name)));
-
-            _logger.Verbose("开始动画效果");
-            for (int i = 0; i < AppSettings.Instance.HomeAnimationPlayAmount; i++)
-            {
-                Seats.DeselectAll();
-                foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
-                {
-                    Seats.Select(student);
-                }
-
-                await Task.Delay(AppSettings.Instance.HomeAnimationPlayDelay);
-            }
 
             _logger.Verbose("显示最终结果");
             Seats.DeselectAll();

@@ -9,12 +9,21 @@
              x:Class="ImmersingPicker.Views.SettingsPages.HomePageSettingsPage">
         <StackPanel Orientation="Vertical" Spacing="12">
                 <StackPanel Orientation="Vertical">
-                        <fa:SettingsExpanderItem Content="抽选动画播放次数" Description="次数越多，动画播放时长越久" IconSource="{ipicker:FluentIconSource &#xEDBC;}">
+                        <fa:SettingsExpanderItem Content="抽选动画播放模式" Description="设置抽选动画播放模式，包括自动、手动和直接显示" IconSource="{ipicker:FluentIconSource &#xF400;}">
+                                <fa:SettingsExpanderItem.Footer>
+                                        <fa:FAComboBox x:Name="PickAnimationPlayMode" SelectionChanged="PickAnimationPlayMode_OnSelectionChanged">
+                                                <fa:FAComboBoxItem Content="自动播放"/>
+                                                <fa:FAComboBoxItem Content="手动播放"/>
+                                                <fa:FAComboBoxItem Content="直接显示结果"/>
+                                        </fa:FAComboBox>
+                                </fa:SettingsExpanderItem.Footer>
+                        </fa:SettingsExpanderItem>
+                        <fa:SettingsExpanderItem x:Name="HomeAnimationPlayAmountItem" Content="抽选动画播放次数" Description="次数越多，动画播放时长越久" IconSource="{ipicker:FluentIconSource &#xEDBC;}">
                                 <fa:SettingsExpanderItem.Footer>
                                         <NumericUpDown x:Name="HomeAnimationPlayAmount" Minimum="0" FormatString="0" Increment="1" ValueChanged="HomeAnimationPlayAmount_OnValueChanged"/>
                                 </fa:SettingsExpanderItem.Footer>
                         </fa:SettingsExpanderItem>
-                        <fa:SettingsExpanderItem Content="抽选动画播放间隔" Description="次数越多，动画播放时长越久" IconSource="{ipicker:FluentIconSource &#xF360;}">
+                        <fa:SettingsExpanderItem x:Name="HomeAnimationPlayDelayItem" Content="抽选动画播放间隔" Description="次数越多，动画播放时长越久" IconSource="{ipicker:FluentIconSource &#xF360;}">
                                 <fa:SettingsExpanderItem.Footer>
                                         <NumericUpDown x:Name="HomeAnimationPlayDelay" Minimum="20" FormatString="0" Increment="20" ValueChanged="HomeAnimationPlayDelay_OnValueChanged"/>
                                 </fa:SettingsExpanderItem.Footer>
