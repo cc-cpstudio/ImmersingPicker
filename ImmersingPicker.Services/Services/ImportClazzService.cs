@@ -1,5 +1,7 @@
-﻿using ImmersingPicker.Core;
+﻿using System.Text.Json;
+using ImmersingPicker.Core;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Core.Models.SecRandom;
 using ImmersingPicker.Services.Services.Picker;
 using OfficeOpenXml;
 
@@ -31,13 +33,24 @@ public class ImportClazzService
         return students;
     }
 
-    public static Clazz FromSecRandom(string path)
+    public static List<StudentWithoutSeat> FromSecRandom(string path)
     {
         string clazzName = Path.GetFileNameWithoutExtension(path);
         string data = File.ReadAllText(path);
 
-        Clazz clazz = ClazzFactory.NewClazz(clazzName);
+        Dictionary<string, SecRandomStudentWithoutName> studentWithoutNames =
+            JsonSerializer.Deserialize<Dictionary<string, SecRandomStudentWithoutName>>(data) ?? new();
 
-        return clazz;
+        List<SecRandomStudent> secRandomStudents = new();
+
+        foreach (var pair in studentWithoutNames)
+        {
+            secRandomStudents.Add(new SecRandomStudent(pair.Key, pair.Value));
+        }
+
+        List<StudentWithoutSeat> studentWithoutSeats = secRandomStudents
+            .Select(srStudent => new StudentWithoutSeat { Name = srStudent.Name, Id = srStudent.Id })
+            .ToList();
+        return studentWithoutSeats;
     }
 }
