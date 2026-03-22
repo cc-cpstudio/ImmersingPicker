@@ -129,6 +129,7 @@ public partial class HomePage : UserControl
 
                     if (!verified) return;
                 }
+                else return;
             }
 
             if (_isPicking && AppSettings.Instance.PickAnimationPlayMode ==

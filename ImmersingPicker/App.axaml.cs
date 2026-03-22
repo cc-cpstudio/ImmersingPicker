@@ -124,11 +124,11 @@ public partial class App : Application
             try
             {
                 _logger.Information("开始加载班级数据");
-                _logger.Verbose("获取ClassStorageService实例");
+                _logger.Verbose("获取 ClassStorageService 实例");
                 var storageService = ClassStorageService.Instance;
                 storageService.LoadClasses();
                 _logger.Information("班级数据加载完成");
-                _logger.Verbose("班级数量: {Count}", Clazz.Classes.Count);
+                _logger.Verbose("班级数量：{Count}", Clazz.Classes.Count);
             }
             catch (Exception ex)
             {
@@ -140,11 +140,19 @@ public partial class App : Application
             try
             {
                 _logger.Information("开始加载应用设置");
-                _logger.Verbose("获取SettingsStorageService实例");
+                _logger.Verbose("获取 SettingsStorageService 实例");
                 var storageService = SettingsStorageService.Instance;
                 storageService.LoadSettings();
                 _logger.Information("应用设置加载完成");
-                _logger.Verbose("当前主题: {Theme}", AppSettings.Instance.AppTheme);
+                _logger.Verbose("当前主题：{Theme}", AppSettings.Instance.AppTheme);
+                
+                // 设置加载完成后，检查是否需要初始化 ClassIsland IPC 服务
+                if (AppSettings.Instance.EnableClassIslandLinkage && !ClassIslandIPCService.Instance.Initialized)
+                {
+                    _logger.Information("设置加载完成，检测到 ClassIsland 联动功能已启用，开始初始化 IPC 服务");
+                    ClassIslandIPCService.Instance.Initialize();
+                    _logger.Information("ClassIsland IPC 服务初始化完成");
+                }
             }
             catch (Exception ex)
             {
@@ -152,7 +160,7 @@ public partial class App : Application
                 _logger.Warning("使用默认应用设置");
             }
 
-            // 为每个Clazz创建对应的Picker实例（如果还没有的话）
+            // 为每个 Clazz 创建对应的 Picker 实例（如果还没有的话）
             foreach (var clazz in Clazz.Classes)
             {
                 if (!clazz.Pickers.ContainsKey("FairStudentPicker"))
