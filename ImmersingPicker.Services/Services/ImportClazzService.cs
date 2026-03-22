@@ -49,7 +49,8 @@ public class ImportClazzService
         }
 
         List<StudentWithoutSeat> studentWithoutSeats = secRandomStudents
-            .Select(srStudent => new StudentWithoutSeat { Name = srStudent.Name, Id = srStudent.Id })
+            .Where(s => s.Exists)
+            .Select(s => new StudentWithoutSeat { Name = s.Name, Id = s.Id })
             .ToList();
         return studentWithoutSeats;
     }

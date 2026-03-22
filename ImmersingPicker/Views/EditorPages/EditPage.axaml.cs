@@ -244,9 +244,126 @@ public partial class EditPage : UserControl
         await AutoSave();
     }
 
-    private void ImportButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void ImportButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        var importDialog = new Controls.ImportClazzDialog();
+        importDialog.ImportCompleted += async (_, result) =>
+        {
+            await ProcessImportResult(result);
+        };
 
+        var dialog = new ContentDialog
+        {
+            Title = "选择数据源",
+            Content = importDialog,
+            CloseButtonText = "取消"
+        };
+
+        var parentWindow = TopLevel.GetTopLevel(this) as Window;
+        if (parentWindow != null)
+        {
+            await dialog.ShowAsync(parentWindow);
+        }
+    }
+
+    private async Task ProcessImportResult(Controls.ImportClazzDialog.ImportResult result)
+    {
+        var parentWindow = TopLevel.GetTopLevel(this) as Window;
+        if (parentWindow == null) return;
+
+        if (!result.Success)
+        {
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "导入失败",
+                    Content = result.ErrorMessage,
+                    CloseButtonText = "确定"
+                };
+                await errorDialog.ShowAsync(parentWindow);
+            }
+            return;
+        }
+
+        if (result.Students == null || result.Students.Count == 0)
+        {
+            var emptyDialog = new ContentDialog
+            {
+                Title = "导入失败",
+                Content = "文件中没有找到有效的学生数据。",
+                CloseButtonText = "确定"
+            };
+            await emptyDialog.ShowAsync(parentWindow);
+            return;
+        }
+
+        if (result.NewClazz != null)
+        {
+            InitializeClazzComboBox();
+            await AutoSave();
+
+            var successDialog = new ContentDialog
+            {
+                Title = "导入成功",
+                Content = $"已创建新班级\"{result.NewClazz.Name}\"并导入 {result.Students.Count} 名学生。",
+                CloseButtonText = "确定"
+            };
+            await successDialog.ShowAsync(parentWindow);
+
+            if (result.ShowBatchEditDialog && result.Students.Count > 0)
+            {
+                await ShowBatchEditSeatDialog(result.NewClazz);
+            }
+        }
+        else
+        {
+            var selectedClazz = Clazz.Classes[ClazzComboBox.SelectedIndex];
+            selectedClazz.Students.AddRange(result.Students);
+            StudentTableView.UpdateStudentList();
+            await AutoSave();
+
+            var successDialog = new ContentDialog
+            {
+                Title = "导入成功",
+                Content = $"已成功导入 {result.Students.Count} 名学生。",
+                CloseButtonText = "确定"
+            };
+            await successDialog.ShowAsync(parentWindow);
+        }
+    }
+
+    private async Task ShowBatchEditSeatDialog(Clazz clazz)
+    {
+        var parentWindow = TopLevel.GetTopLevel(this) as Window;
+        if (parentWindow == null || clazz.Students.Count == 0) return;
+
+        var batchDialog = new Controls.BatchSeatEditDialog(clazz);
+
+        var contentDialog = new ContentDialog
+        {
+            Title = "批量设置座位",
+            Content = batchDialog,
+            PrimaryButtonText = "保存",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        };
+
+        var result = await contentDialog.ShowAsync(parentWindow);
+
+        if (result == ContentDialogResult.Primary && batchDialog.SaveClicked)
+        {
+            StudentTableView.UpdateStudentList();
+            await AutoSave();
+
+            var successDialog = new ContentDialog
+            {
+                Title = "保存成功",
+                Content = "所有学生的座位信息已更新。",
+                CloseButtonText = "确定"
+            };
+            await successDialog.ShowAsync(parentWindow);
+        }
     }
 
     private async void BatchEditSeatButton_OnClick(object? sender, RoutedEventArgs e)

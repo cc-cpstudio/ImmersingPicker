@@ -8,6 +8,7 @@
         <entry key="ImmersingPicker/Controls/BatchSeatEditDialog.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/FilterDialog.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/HistoryItem.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
+        <entry key="ImmersingPicker/Controls/ImportClazzDialog.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/PasswordVerifyDialog.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/Seat.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Controls/SeatGrid.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
