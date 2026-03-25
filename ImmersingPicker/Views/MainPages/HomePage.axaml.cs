@@ -69,20 +69,15 @@ public partial class HomePage : UserControl
     private void ClazzComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         _logger.Information("班级选择变更事件触发");
-        if (sender is ComboBox { SelectedItem: Clazz selectedClazz })
+        if (sender is FAComboBox { SelectedItem: string selectedClazzName })
         {
-            _logger.Information("选择班级: {ClassName}", selectedClazz.Name);
-            int index = Clazz.Classes.IndexOf(selectedClazz);
-            if (index != -1)
+            var currentClazz = Clazz.GetCurrentClazz();
+            if (currentClazz != null && currentClazz.Name == selectedClazzName)
             {
-                _logger.Verbose("设置当前班级索引: {Index}", index);
-                Clazz.CurrentClassIndex = index;
-                _logger.Information("班级切换成功");
+                _logger.Verbose("选择的班级已经是当前班级，无需切换");
+                return;
             }
-            else
-            {
-                _logger.Warning("无法找到选中班级的索引");
-            }
+            Clazz.SetCurrentClazz(selectedClazzName);
         }
         else
         {
@@ -284,23 +279,26 @@ public partial class HomePage : UserControl
         
         // 更新班级下拉框
         _logger.Verbose("更新班级下拉框");
+        ClazzComboBox.SelectionChanged -= ClazzComboBox_OnSelectionChanged;
+        ClazzComboBox.SelectedItem = null;
         ClazzComboBox.Items.Clear();
         foreach (var clazz in Clazz.Classes)
         {
             _logger.Debug("添加班级到下拉框: {ClassName}", clazz.Name);
-            ClazzComboBox.Items.Add(clazz);
+            ClazzComboBox.Items.Add(clazz.Name);
         }
         
         // 选择当前班级
         if (_clazz != null)
         {
             _logger.Information("选择当前班级: {ClassName}", _clazz.Name);
-            ClazzComboBox.SelectedItem = _clazz;
+            ClazzComboBox.SelectedItem = _clazz.Name;
         }
         else
         {
             _logger.Warning("当前班级为null");
         }
+        ClazzComboBox.SelectionChanged += ClazzComboBox_OnSelectionChanged;
         _logger.Information("重置完成");
     }
 }
