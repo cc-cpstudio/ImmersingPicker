@@ -11,7 +11,7 @@
                 HorizontalContentAlignment="Center"
                 Click="OnTxtButtonClick"/>
         <Button x:Name="SecRandomButton" 
-                Content="SecRandom格式（JSON）"
+                Content="SecRandom格式（JSON）（未完成）"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 Click="OnSecRandomButtonClick"/>
