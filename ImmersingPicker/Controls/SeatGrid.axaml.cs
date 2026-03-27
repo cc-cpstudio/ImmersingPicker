@@ -19,6 +19,18 @@ public partial class SeatGrid : UserControl
     private Dictionary<int, int> _rowIndexMap = new();
     private Dictionary<int, int> _columnIndexMap = new();
 
+    private double _magnifyLens = 1;
+    public double MagnifyingLens
+    {
+        get => _magnifyLens;
+        set
+        {
+            if (value < 1) return;
+            _magnifyLens = value;
+            RefreshStudents();
+        }
+    }
+
     private Clazz? _clazz;
 
     private Dictionary<int, Button> _seats = new();
@@ -143,8 +155,8 @@ public partial class SeatGrid : UserControl
                 var button = new Button
                 {
                     Content = $"{student.Id} {student.Name}",
-                    Width = 80,
-                    Height = 48,
+                    Width = 80*MagnifyingLens,
+                    Height = 48*MagnifyingLens,
                     Margin = new Thickness(5),
                     BorderThickness = new Thickness(2),
                     BorderBrush = Avalonia.Media.Brushes.Gray,

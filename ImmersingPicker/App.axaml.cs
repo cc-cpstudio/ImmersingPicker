@@ -189,7 +189,7 @@ public partial class App : Application
                 {
                     _logger.Information("非首次启动，显示主窗口");
                     _mainWindow = new MainWindow();
-                    desktop.MainWindow = _mainWindow;
+                    desktop.MainWindow = new ImmersivePickingWindow();
 
                     _logger.Information("创建悬浮窗口实例");
                     _floatingWindow = new FloatingWindow();
