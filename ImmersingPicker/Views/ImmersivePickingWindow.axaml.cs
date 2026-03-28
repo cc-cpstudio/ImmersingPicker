@@ -15,7 +15,7 @@ using Serilog;
 
 namespace ImmersingPicker.Views;
 
-public partial class ImmersivePickingWindow: Window
+public partial class ImmersivePickingWindow: AppWindow
 {
     private static readonly ILogger _logger = Log.ForContext<ImmersivePickingWindow>();
     private int _amountForPicking;
@@ -23,6 +23,9 @@ public partial class ImmersivePickingWindow: Window
     private bool _isPicking = false;
 
     private Clazz? _clazz;
+
+    public event EventHandler? WindowActivated;
+    public event EventHandler? WindowDeactivated;
 
     private int AmountForPicking
     {
@@ -62,6 +65,10 @@ public partial class ImmersivePickingWindow: Window
         Reset();
         _logger.Information("HomePage初始化完成");
         WindowState = WindowState.FullScreen;
+        Topmost = true;
+        
+        Activated += (s, e) => WindowActivated?.Invoke(this, EventArgs.Empty);
+        Deactivated += (s, e) => WindowDeactivated?.Invoke(this, EventArgs.Empty);
     }
 
     private void ClazzComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -295,6 +302,6 @@ public partial class ImmersivePickingWindow: Window
 
     private void MinimizeButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        // TODO
+        this.Close();
     }
 }

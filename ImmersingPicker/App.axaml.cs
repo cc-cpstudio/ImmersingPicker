@@ -30,8 +30,13 @@ public partial class App : Application
 
     private Timer? _autoSaveTimer;
     private AppWindow? _mainWindow;
+    private ImmersivePickingWindow? _immersivePickingWindow;
     private FloatingWindow? _floatingWindow;
     private WelcomeWindow? _welcomeWindow;
+
+    private bool _isMainWindowActive;
+    private bool _isImmersivePickingWindowActive;
+    private bool _isImmersivePickingWindowClosed;
 
     public override void Initialize()
     {
@@ -189,15 +194,20 @@ public partial class App : Application
                 {
                     _logger.Information("非首次启动，显示主窗口");
                     _mainWindow = new MainWindow();
-                    desktop.MainWindow = new ImmersivePickingWindow();
+                    _immersivePickingWindow = new ImmersivePickingWindow();
+                    desktop.MainWindow = _mainWindow;
 
                     _logger.Information("创建悬浮窗口实例");
                     _floatingWindow = new FloatingWindow();
-                    _floatingWindow.FloatingWindowClicked += ShowMainWindow;
+                    _floatingWindow.FloatingWindowClicked += ShowImmersivePickingWindow;
 
                     _mainWindow.Closing += MainWindow_Closing;
                     _mainWindow.Deactivated += MainWindow_Deactivated;
                     _mainWindow.Activated += MainWindow_Activated;
+
+                    _immersivePickingWindow.WindowActivated += ImmersivePickingWindow_Activated;
+                    _immersivePickingWindow.WindowDeactivated += ImmersivePickingWindow_Deactivated;
+                    _immersivePickingWindow.Closing += ImmersivePickingWindow_Closing;
 
                     AppSettings.Instance.FloatingWindowEnabledChanged += OnFloatingWindowEnabledChanged;
                     AppSettings.Instance.FloatingWindowDockPositionChanged += OnFloatingWindowSettingsChanged;
@@ -312,13 +322,33 @@ public partial class App : Application
     public void ShowMainWindow(object? sender, EventArgs e)
     {
         _logger.Information("显示主窗口");
-        if (_mainWindow != null)
+        if (_mainWindow is not null)
         {
             _mainWindow.Show();
             _mainWindow.Activate();
             _mainWindow.Focus();
         }
 
+        _floatingWindow?.HideFloatingWindow();
+    }
+
+    public void ShowImmersivePickingWindow(object? sender, EventArgs e)
+    {
+        if (_immersivePickingWindow is not null)
+        {
+            if (_isImmersivePickingWindowClosed)
+            {
+                _logger.Information("沉浸式抽选窗口已关闭，重新创建窗口");
+                _immersivePickingWindow = new ImmersivePickingWindow();
+                _immersivePickingWindow.WindowActivated += ImmersivePickingWindow_Activated;
+                _immersivePickingWindow.WindowDeactivated += ImmersivePickingWindow_Deactivated;
+                _immersivePickingWindow.Closing += ImmersivePickingWindow_Closing;
+                _isImmersivePickingWindowClosed = false;
+            }
+            _immersivePickingWindow.Show();
+            _immersivePickingWindow.Activate();
+            _immersivePickingWindow.Focus();
+        }
         _floatingWindow?.HideFloatingWindow();
     }
 
@@ -382,11 +412,8 @@ public partial class App : Application
     private void MainWindow_Deactivated(object? sender, EventArgs e)
     {
         _logger.Information("主窗口失去焦点");
-        // 显示悬浮窗口（如果已启用）
-        if (AppSettings.Instance.FloatingWindowEnabled)
-        {
-            _floatingWindow?.ShowFloatingWindow();
-        }
+        _isMainWindowActive = false;
+        CheckFloatingWindowVisibility();
     }
 
     /// <summary>
@@ -395,8 +422,53 @@ public partial class App : Application
     private void MainWindow_Activated(object? sender, EventArgs e)
     {
         _logger.Information("主窗口获得焦点");
-        // 隐藏悬浮窗口
+        _isMainWindowActive = true;
         _floatingWindow?.HideFloatingWindow();
+    }
+
+    /// <summary>
+    /// 沉浸式抽选窗口失去焦点事件处理
+    /// </summary>
+    private void ImmersivePickingWindow_Deactivated(object? sender, EventArgs e)
+    {
+        _logger.Information("沉浸式抽选窗口失去焦点");
+        _isImmersivePickingWindowActive = false;
+        CheckFloatingWindowVisibility();
+    }
+
+    /// <summary>
+    /// 沉浸式抽选窗口获得焦点事件处理
+    /// </summary>
+    private void ImmersivePickingWindow_Activated(object? sender, EventArgs e)
+    {
+        _logger.Information("沉浸式抽选窗口获得焦点");
+        _isImmersivePickingWindowActive = true;
+        _floatingWindow?.HideFloatingWindow();
+    }
+
+    /// <summary>
+    /// 沉浸式抽选窗口关闭事件处理
+    /// </summary>
+    private void ImmersivePickingWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        _logger.Information("沉浸式抽选窗口正在关闭");
+        _isImmersivePickingWindowActive = false;
+        _isImmersivePickingWindowClosed = true;
+    }
+
+    /// <summary>
+    /// 检查是否应该显示悬浮窗口
+    /// </summary>
+    private void CheckFloatingWindowVisibility()
+    {
+        if (AppSettings.Instance.FloatingWindowEnabled)
+        {
+            if (!_isMainWindowActive && !_isImmersivePickingWindowActive)
+            {
+                _logger.Information("两个窗口都不在前台，显示悬浮窗口");
+                _floatingWindow?.ShowFloatingWindow();
+            }
+        }
     }
 
     /// <summary>
@@ -443,7 +515,6 @@ public partial class App : Application
         else
         {
             _logger.Information("ClassIsland 联动功能已禁用");
-            // TODO: 如果需要，可以在这里添加清理逻辑
         }
     }
 
