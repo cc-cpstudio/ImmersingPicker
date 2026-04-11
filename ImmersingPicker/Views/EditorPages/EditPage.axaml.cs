@@ -186,7 +186,7 @@ public partial class EditPage : UserControl
                 int.TryParse(idTextBox.Text, out int id) && int.TryParse(rowTextBox.Text, out int row) && 
                 int.TryParse(columnTextBox.Text, out int column))
             {
-                var student = new Student(nameTextBox.Text, id, row, column);
+                var student = new Student(nameTextBox.Text, id, row, column, new HashSet<Tag>());
                 StudentTableView.AddStudent(student);
                 await AutoSave();
             }

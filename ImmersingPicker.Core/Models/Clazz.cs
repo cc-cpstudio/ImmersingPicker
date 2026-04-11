@@ -172,12 +172,12 @@ public class Clazz
         return student;
     }
 
-    public void AddStudent(string name, int id, ValueTuple<int, int> seat)
+    public void AddStudent(string name, int id, ValueTuple<int, int> seat, HashSet<Tag> tags)
     {
         _logger.Information("添加学生：{Name}, ID: {Id}, 座位：{Seat}", name, id, seat);
         if (!CheckIfIdExists(id))
         {
-            Student s = new Student(name, id, seat.Item1, seat.Item2);
+            Student s = new Student(name, id, seat.Item1, seat.Item2, tags);
             Students.Add(s);
             _logger.Debug("学生添加成功，当前学生数：{Count}", Students.Count);
             OnStudentListChanged();
