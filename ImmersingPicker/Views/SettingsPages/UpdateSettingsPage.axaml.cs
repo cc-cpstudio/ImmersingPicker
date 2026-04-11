@@ -90,14 +90,18 @@ public partial class UpdateSettingsPage : SettingsPageBase
 
                 case UpdateCheckResult.CheckFailed:
                     _logger.Warning("检查更新失败");
-                    await ShowErrorDialogAsync("检查失败", "无法检查更新,请检查网络连接");
+                    await ShowErrorDialogAsync(
+                        "检查失败", 
+                        "无法检查更新，请检查：\n1. 网络连接是否正常\n2. GitHub 是否可访问\n3. 防火墙设置");
                     break;
             }
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "检查更新时发生错误");
-            await ShowErrorDialogAsync("错误", $"检查更新失败: {ex.Message}");
+            await ShowErrorDialogAsync(
+                "错误", 
+                $"检查更新失败:\n{ex.Message}\n\n详细信息请查看日志文件。");
         }
         finally
         {

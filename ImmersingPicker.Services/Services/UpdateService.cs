@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
@@ -24,14 +25,19 @@ public class UpdateService
     private readonly HttpClient _httpClient;
 
     // GitHub API 端点
-    private const string GitHubApiUrl = "https://api.github.com/repos/ImmersingEducation/ImmersingPicker/releases";
-    private const string LatestReleaseUrl = GitHubApiUrl + "/latest";
-    private const string AllReleasesUrl = GitHubApiUrl;
+    private const string GitHubOwner = "ImmersingEducation";
+    private const string GitHubRepo = "ImmersingPicker";
+    private const string GitHubApiBaseUrl = "https://api.github.com";
 
     private UpdateService()
     {
         _httpClient = new HttpClient();
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("ImmersingPicker-UpdateChecker");
+        
+        // 设置 User-Agent (GitHub API 要求)
+        _httpClient.DefaultRequestHeaders.UserAgent.Clear();
+        _httpClient.DefaultRequestHeaders.UserAgent.Add(
+            new ProductInfoHeaderValue("ImmersingPicker", VersionHelper.GetCurrentVersion()?.ToString() ?? "0.0.0.0"));
+        
         _httpClient.Timeout = TimeSpan.FromSeconds(30);
     }
 
@@ -118,18 +124,48 @@ public class UpdateService
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<GitHubReleaseResponse>(
-                LatestReleaseUrl, 
-                GetJsonSerializerOptions(),
-                cancellationToken);
+            var url = $"{GitHubApiBaseUrl}/repos/{GitHubOwner}/{GitHubRepo}/releases/latest";
+            _logger.Debug("请求 GitHub API: {Url}", url);
+            
+            var response = await _httpClient.GetAsync(url, cancellationToken);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.Warning("GitHub API 请求失败: {StatusCode} - {ReasonPhrase}", 
+                    response.StatusCode, response.ReasonPhrase);
+                
+                // 如果是 404，可能是仓库不存在或没有 release
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    _logger.Warning("GitHub 仓库或 Release 不存在");
+                    return null;
+                }
+                
+                return null;
+            }
 
-            if (response == null)
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.Debug("GitHub API 响应: {Content}", content);
+            
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            
+            var release = JsonSerializer.Deserialize<GitHubReleaseResponse>(content, options);
+            
+            if (release == null)
             {
                 _logger.Warning("GitHub API 返回空响应");
                 return null;
             }
 
-            return ParseGitHubRelease(response);
+            return ParseGitHubRelease(release);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.Error(ex, "网络请求失败");
+            return null;
         }
         catch (Exception ex)
         {
@@ -145,20 +181,42 @@ public class UpdateService
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<GitHubReleaseResponse>>(
-                AllReleasesUrl,
-                GetJsonSerializerOptions(),
-                cancellationToken);
+            var url = $"{GitHubApiBaseUrl}/repos/{GitHubOwner}/{GitHubRepo}/releases?per_page=1";
+            _logger.Debug("请求 GitHub API: {Url}", url);
+            
+            var response = await _httpClient.GetAsync(url, cancellationToken);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.Warning("GitHub API 请求失败: {StatusCode} - {ReasonPhrase}",
+                    response.StatusCode, response.ReasonPhrase);
+                return null;
+            }
 
-            if (response == null || response.Count == 0)
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.Debug("GitHub API 响应: {Content}", content);
+            
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            
+            var releases = JsonSerializer.Deserialize<List<GitHubReleaseResponse>>(content, options);
+
+            if (releases == null || releases.Count == 0)
             {
                 _logger.Warning("GitHub API 返回空响应");
                 return null;
             }
 
-            // 找到最新版本 (包括 prerelease)
-            var latestRelease = response.First();
+            // 找到最新版本
+            var latestRelease = releases.First();
             return ParseGitHubRelease(latestRelease);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.Error(ex, "网络请求失败");
+            return null;
         }
         catch (Exception ex)
         {
@@ -179,10 +237,10 @@ public class UpdateService
             ReleaseDate = response.PublishedAt,
             IsPrerelease = response.Prerelease,
             ReleaseNotes = response.Body ?? string.Empty,
-            IsMandatory = false // 可以从 release 标签中解析,如 [!mandatory]
+            IsMandatory = false
         };
 
-        // 查找合适的下载资产 (优先查找 Windows 安装包或便携版)
+        // 查找合适的下载资产
         var asset = response.Assets
             .FirstOrDefault(a => a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ||
                                  a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
@@ -192,6 +250,8 @@ public class UpdateService
             updateInfo.DownloadUrl = asset.BrowserDownloadUrl;
             updateInfo.FileSize = asset.Size;
             updateInfo.AssetName = asset.Name;
+            _logger.Debug("找到下载资产: {Name}, URL: {Url}, Size: {Size}", 
+                asset.Name, asset.BrowserDownloadUrl, asset.Size);
         }
         else
         {
@@ -205,28 +265,16 @@ public class UpdateService
     }
 
     /// <summary>
-    /// 清理标签前缀 (如 "v1.2.3" -> "1.2.3")
+    /// 清理标签前缀
     /// </summary>
     private static string CleanTagName(string tagName)
     {
         if (string.IsNullOrEmpty(tagName))
             return string.Empty;
 
-        return tagName.StartsWith("v", StringComparison.OrdinalIgnoreCase) 
-            ? tagName[1..] 
+        return tagName.StartsWith("v", StringComparison.OrdinalIgnoreCase)
+            ? tagName[1..]
             : tagName;
-    }
-
-    /// <summary>
-    /// 获取 JSON 序列化配置
-    /// </summary>
-    private static JsonSerializerOptions GetJsonSerializerOptions()
-    {
-        return new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
     }
 
     /// <summary>
