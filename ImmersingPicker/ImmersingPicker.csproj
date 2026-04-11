@@ -35,9 +35,6 @@
       <Compile Update="Views\SettingsPages\AboutPage.axaml.cs">
         <DependentUpon>AboutPage.axaml</DependentUpon>
       </Compile>
-      <Compile Update="Controls\StudentEditTableView.axaml.cs">
-        <DependentUpon>StudentEditTableView.axaml</DependentUpon>
-      </Compile>
       <Compile Update="Views\SuspendingWindow.axaml.cs">
         <DependentUpon>SuspendingWindow.axaml</DependentUpon>
       </Compile>
