@@ -643,6 +643,12 @@ public partial class App : Application
         }
     }
 
+    private async void OpenEditor(object? sender, EventArgs e)
+    {
+        // 打开编辑器窗口
+        await MainWindowNavigationService.Instance.OpenEditorWindow();
+    }
+
     private async void OpenSettings(object? sender, EventArgs e)
     {
         // 打开设置窗口

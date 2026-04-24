@@ -10,6 +10,7 @@
                                 <TrayIcon.Menu>
                                         <NativeMenu>
                                                 <NativeMenuItem Header="显示主界面" Click="ShowMainWindow"/>
+                                                <NativeMenuItem Header="编辑" Click="OpenEditor"/>
                                                 <NativeMenuItem Header="设置" Click="OpenSettings"/>
                                                 <NativeMenuItemSeparator/>
                                                 <NativeMenuItem Header="重新启动" Click="RestartApplication"/>
