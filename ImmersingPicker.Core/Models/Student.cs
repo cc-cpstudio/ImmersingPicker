@@ -11,6 +11,7 @@ public class Student
     public DateTime? LastSelectedTime { get; set; } = null;
     public int SelectedAmount { get; set; } = 0;
     public double Weight { get; set; } = 0.0;
+    public int VisitingCount { get; set; } = 0;
 
     public Student()
     {

@@ -29,6 +29,12 @@ public class FairStudentPicker : PickerBase
     {
         _logger.Debug("开始计算可抽选学生列表");
         List<Student> tmpStudents = [..clazz.Students];
+
+        if (AppSettings.Instance.FairPickerMode == AppSettings.FairPickerModeEnum.Nonredundant)
+        {
+            tmpStudents.RemoveAll(s => s.VisitingCount > 0);
+        }
+        
         int availableRange = CalculateRange(tmpStudents);
         
         _logger.Verbose("初始范围：{Range}, 参数阈值：{Threshold}", availableRange, AppSettings.Instance.WeightCalculationParam9);
@@ -158,6 +164,16 @@ public class FairStudentPicker : PickerBase
                 var student = pq.Dequeue();
                 picked.Add(student);
                 _logger.Verbose("抽取第 {Index} 个学生：{Name}, 权重：{Weight}", i + 1, student.Name, student.Weight);
+            }
+
+            if (AppSettings.Instance.FairPickerMode == AppSettings.FairPickerModeEnum.Nonredundant)
+            {
+                _logger.Debug("对抽取学生增加访问次数");
+                foreach (Student s in picked)
+                {
+                    var student = clazz.FindStudentById(s.Id);
+                    if (student != null) student.VisitingCount++;
+                }
             }
 
             _logger.Debug("对抽取结果按 ID 排序");
