@@ -28,12 +28,6 @@ public class MainWindowNavigationService : NavigationServiceBase
             OpenSettingsWindow();
             return;
         }
-        if (viewType == ViewType.Editor)
-        {
-            _logger.Verbose("打开编辑器窗口");
-            OpenEditorWindow();
-            return;
-        }
 
         try
         {
@@ -80,36 +74,8 @@ public class MainWindowNavigationService : NavigationServiceBase
         }
     }
 
-    public async Task OpenEditorWindow()
-    {
-        _logger.Information("打开编辑器窗口");
-        if (_mainWindow == null)
-        {
-            _logger.Error("主窗口未初始化");
-            return;
-        }
-
-        bool verified = await VerifyHelper.VerifyPassword(_mainWindow);
-        if (!verified)
-        {
-            _logger.Information("验证失败，取消打开编辑器窗口");
-            return;
-        }
-
-        try
-        {
-            var editorWindow = new EditorWindow();
-            editorWindow.Show();
-            _logger.Information("编辑器窗口打开成功");
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "打开编辑器窗口失败");
-        }
-    }
-
     public enum ViewType
     {
-        Home, History, Editor, Settings
+        Home, History, Settings
     }
 }

@@ -252,7 +252,7 @@ public partial class SeatGrid : UserControl
         for (int i = 0; i < 10; i++)
         {
             DeselectAll();
-            foreach (Student student in _clazz.Pickers["PlainStudentPicker"].Pick(amount).Students)
+            foreach (Student student in _clazz.Pickers["PlainStudentPicker"].Pick(_clazz, amount).Students)
             {
                 Select(student);
             }
@@ -260,10 +260,9 @@ public partial class SeatGrid : UserControl
             await Task.Delay(100);
         }
 
-        // 最终抽选结果
         _logger.Information("执行最终抽选");
         DeselectAll();
-        var picked = _clazz.Pickers["FairStudentPicker"].Pick(amount).Students;
+        var picked = _clazz.Pickers["FairStudentPicker"].Pick(_clazz, amount).Students;
         _logger.Information("抽选完成，结果：{Students}", string.Join(", ", picked.Select(s => s.Name)));
         
         foreach (Student student in picked)

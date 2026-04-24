@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Threading;
 using System.Timers;
 using Avalonia;
@@ -10,6 +12,7 @@ using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Windowing;
 using ImmersingPicker.Views;
 using ImmersingPicker.Core.Models;
+using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Services.Services.Picker;
 using ImmersingPicker.Services.Services.Storage;
 using ImmersingPicker.Services.Services;
@@ -38,6 +41,8 @@ public partial class App : Application
     private bool _isImmersivePickingWindowActive;
     private bool _isImmersivePickingWindowClosed;
     private bool _hasCheckedForUpdates = false;
+
+    public static readonly HttpClient HttpClient = new();
 
     public override void Initialize()
     {
@@ -166,17 +171,13 @@ public partial class App : Application
                 _logger.Warning("使用默认应用设置");
             }
 
-            // 为每个 Clazz 创建对应的 Picker 实例（如果还没有的话）
+            // 为每个 Clazz 设置对应的 Picker 实例（如果还没有的话）
             foreach (var clazz in Clazz.Classes)
             {
-                if (!clazz.Pickers.ContainsKey("FairStudentPicker"))
+                if (!clazz.Pickers.ContainsKey("FairStudentPicker") || 
+                    !clazz.Pickers.ContainsKey("PlainStudentPicker"))
                 {
-                    new FairStudentPicker(clazz);
-                }
-
-                if (!clazz.Pickers.ContainsKey("PlainStudentPicker"))
-                {
-                    new PlainStudentPicker(clazz);
+                    clazz.Pickers = new Dictionary<string, PickerBase>(Services.Services.Picker.ClazzFactory.Pickers);
                 }
             }
 
@@ -318,6 +319,29 @@ public partial class App : Application
         catch (Exception ex)
         {
             _logger.Error(ex, "保存应用设置失败，可能导致设置丢失");
+        }
+        
+        try
+        {
+            _logger.Verbose("清理事件订阅");
+            AppSettings.Instance.EnableClassIslandLinkageChanged -= OnEnableClassIslandLinkageChanged;
+            AppSettings.Instance.FloatingWindowEnabledChanged -= OnFloatingWindowEnabledChanged;
+            AppSettings.Instance.FloatingWindowDockPositionChanged -= OnFloatingWindowSettingsChanged;
+            AppSettings.Instance.FloatingWindowVerticalPositionChanged -= OnFloatingWindowSettingsChanged;
+            _floatingWindow.FloatingWindowClicked -= ShowImmersivePickingWindow;
+            _mainWindow.Closing -= MainWindow_Closing;
+            _mainWindow.Deactivated -= MainWindow_Deactivated;
+            _mainWindow.Activated -= MainWindow_Activated;
+            if (_immersivePickingWindow != null)
+            {
+                _immersivePickingWindow.WindowActivated -= ImmersivePickingWindow_Activated;
+                _immersivePickingWindow.WindowDeactivated -= ImmersivePickingWindow_Deactivated;
+                _immersivePickingWindow.Closing -= ImmersivePickingWindow_Closing;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "清理事件订阅时发生错误，可忽略");
         }
         
         _logger.Information("应用程序关闭清理操作完成");
@@ -617,12 +641,6 @@ public partial class App : Application
         {
             _logger.Error(ex, "显示更新对话框失败");
         }
-    }
-
-    private async void OpenEditor(object? sender, EventArgs e)
-    {
-        // 打开编辑器窗口
-        await MainWindowNavigationService.Instance.OpenEditorWindow();
     }
 
     private async void OpenSettings(object? sender, EventArgs e)

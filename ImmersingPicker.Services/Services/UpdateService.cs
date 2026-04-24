@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,14 +34,71 @@ public class UpdateService
 
     private UpdateService()
     {
-        _httpClient = new HttpClient();
+        var handler = new HttpClientHandler
+        {
+            SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
+            ServerCertificateCustomValidationCallback = CertificateValidationCallback
+        };
         
-        // 设置 User-Agent (GitHub API 要求)
+        _httpClient = new HttpClient(handler);
+        
         _httpClient.DefaultRequestHeaders.UserAgent.Clear();
         _httpClient.DefaultRequestHeaders.UserAgent.Add(
             new ProductInfoHeaderValue("ImmersingPicker", VersionHelper.GetCurrentVersion()?.ToString() ?? "0.0.0.0"));
         
         _httpClient.Timeout = TimeSpan.FromSeconds(30);
+    }
+
+    private bool CertificateValidationCallback(
+        HttpRequestMessage request,
+        X509Certificate2? certificate,
+        X509Chain? chain,
+        SslPolicyErrors sslPolicyErrors)
+    {
+        if (sslPolicyErrors == SslPolicyErrors.None)
+        {
+            return true;
+        }
+
+        if (certificate == null)
+        {
+            _logger.Warning("SSL证书验证失败: 证书为空");
+            return false;
+        }
+
+        var targetHost = request.RequestUri?.Host ?? "unknown";
+        
+        if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors))
+        {
+            _logger.Warning("SSL证书链验证失败，尝试手动验证证书链");
+            
+            var chainPolicy = new X509ChainPolicy
+            {
+                VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority,
+                RevocationMode = X509RevocationMode.NoCheck
+            };
+            
+            var newChain = new X509Chain();
+            newChain.ChainPolicy = chainPolicy;
+            
+            if (newChain.Build(certificate))
+            {
+                _logger.Information("证书链手动验证成功: {Subject}", certificate.Subject);
+                return true;
+            }
+            
+            _logger.Warning("证书链手动验证失败");
+        }
+
+        if (targetHost.EndsWith("github.com", StringComparison.OrdinalIgnoreCase) ||
+            targetHost.EndsWith("githubusercontent.com", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.Information("允许GitHub域名的证书: {Host}", targetHost);
+            return true;
+        }
+
+        _logger.Warning("SSL证书验证失败: {Errors}, Host: {Host}", sslPolicyErrors, targetHost);
+        return false;
     }
 
     /// <summary>

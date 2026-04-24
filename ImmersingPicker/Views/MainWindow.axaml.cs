@@ -45,12 +45,11 @@ public partial class MainWindow : AppWindow
         {
             "Home" => MainWindowNavigationService.ViewType.Home,
             "History" => MainWindowNavigationService.ViewType.History,
-            "Editor" => MainWindowNavigationService.ViewType.Editor,
             "Settings" => MainWindowNavigationService.ViewType.Settings,
             _ => throw new ArgumentException("Invalid view type")
         };
         MainWindowNavigationService.Instance.NavigateTo(viewType);
-        if (viewType is MainWindowNavigationService.ViewType.Settings or MainWindowNavigationService.ViewType.Editor)
+        if (viewType is MainWindowNavigationService.ViewType.Settings)
         {
             MainNavView.SelectedItem = HomePageItem;
         }

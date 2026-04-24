@@ -177,7 +177,7 @@ public partial class ImmersivePickingWindow: AppWindow
                     for (int i = 0; i < AppSettings.Instance.HomeAnimationPlayAmount; i++)
                     {
                         Seats.DeselectAll();
-                        foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
+                        foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(currentClazz, AmountForPicking).Students)
                         {
                             Seats.Select(student);
                         }
@@ -195,7 +195,7 @@ public partial class ImmersivePickingWindow: AppWindow
                     while (_isPicking)
                     {
                         Seats.DeselectAll();
-                        foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(AmountForPicking).Students)
+                        foreach (Student student in currentClazz.Pickers["PlainStudentPicker"].Pick(currentClazz, AmountForPicking).Students)
                         {
                             Seats.Select(student);
                         }
@@ -210,7 +210,7 @@ public partial class ImmersivePickingWindow: AppWindow
             }
 
             _logger.Information("使用公平抽选器抽选{Amount}名学生", AmountForPicking);
-            List<Student> picked = currentClazz.Pickers["FairStudentPicker"].Pick(AmountForPicking).Students;
+            List<Student> picked = currentClazz.Pickers["FairStudentPicker"].Pick(currentClazz, AmountForPicking).Students;
             _logger.Information("抽选完成，结果: {PickedStudents}", string.Join(", ", picked.Select(s => s.Name)));
 
             _logger.Verbose("显示最终结果");

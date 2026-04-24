@@ -26,7 +26,7 @@
 &lt;/AssemblyExplorer&gt;</s:String>
 	
 	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f543c394_002D6784_002D4d39_002D8178_002Db6846f0f53c9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="FairStudentPickerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Project Location="D:\MyCode\RiderProjects\ImmersingPicker\ImmersingPicker.Test" Presentation="&amp;lt;ImmersingPicker.Test&amp;gt;" /&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f543c394_002D6784_002D4d39_002D8178_002Db6846f0f53c9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="FairStudentPickerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="D:\MyCode\RiderProjects\ImmersingPicker\ImmersingPicker.Test" Presentation="&amp;lt;ImmersingPicker.Test&amp;gt;" /&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=ipicker/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

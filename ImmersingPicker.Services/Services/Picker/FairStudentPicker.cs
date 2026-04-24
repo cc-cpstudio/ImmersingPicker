@@ -1,5 +1,4 @@
 using ImmersingPicker.Core;
-using ImmersingPicker.Core.Abstractions;
 using ImmersingPicker.Core.Abstractions.Picker;
 using ImmersingPicker.Core.Exceptions;
 using ImmersingPicker.Core.Models;
@@ -7,7 +6,7 @@ using Serilog;
 
 namespace ImmersingPicker.Services.Services.Picker;
 
-public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
+public class FairStudentPicker : PickerBase
 {
     private static readonly ILogger _logger = Log.ForContext<FairStudentPicker>();
     
@@ -26,10 +25,10 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
         return range;
     }
 
-    private List<Student> CalculateAvailablePickStudents()
+    private List<Student> CalculateAvailablePickStudents(Clazz clazz)
     {
         _logger.Debug("开始计算可抽选学生列表");
-        List<Student> tmpStudents = [.._clazz.Students];
+        List<Student> tmpStudents = [..clazz.Students];
         int availableRange = CalculateRange(tmpStudents);
         
         _logger.Verbose("初始范围：{Range}, 参数阈值：{Threshold}", availableRange, AppSettings.Instance.WeightCalculationParam9);
@@ -41,7 +40,7 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
             availableRange = CalculateRange(tmpStudents);
         }
 
-        double average = _clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(_clazz.Students.Count);
+        double average = clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(clazz.Students.Count);
         _logger.Verbose("平均选中次数：{Average}", average);
         
         int removedCount = tmpStudents.RemoveAll(s => s.SelectedAmount > average);
@@ -50,14 +49,14 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
         return tmpStudents;
     }
 
-    private void CalculateWeight()
+    private void CalculateWeight(Clazz clazz)
     {
         _logger.Debug("开始计算学生权重");
-        List<Student> available = CalculateAvailablePickStudents();
-        double average = _clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(_clazz.Students.Count);
+        List<Student> available = CalculateAvailablePickStudents(clazz);
+        double average = clazz.Students.Sum(s => s.SelectedAmount) / Convert.ToDouble(clazz.Students.Count);
         
         _logger.Verbose("第一轮：重置权重");
-        foreach (Student student in _clazz.Students)
+        foreach (Student student in clazz.Students)
         {
             double oldWeight = student.Weight;
             if (student.Weight <= student.InitialWeight || student.Weight <= 0)
@@ -75,11 +74,10 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
         }
         
         _logger.Verbose("第二轮：计算综合权重");
-        foreach (Student student in _clazz.Students)
+        foreach (Student student in clazz.Students)
         {
             double weightChange = 0;
             
-            // 历史次数惩罚
             if (available.Contains(student))
             {
                 var change = Math.Pow(Math.Abs(student.SelectedAmount - average), AppSettings.Instance.WeightCalculationParam1);
@@ -98,7 +96,6 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
                 _logger.Verbose("学生 {Name} 未选中惩罚：{Change}", student.Name, AppSettings.Instance.WeightCalculationParam2);
             }
 
-            // 时间衰减
             if (student.LastSelectedTime != null)
             {
                 TimeSpan? span = DateTime.Now - student.LastSelectedTime;
@@ -123,7 +120,6 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
                 _logger.Verbose("学生 {Name} 从未被选中奖励：{Bonus}", student.Name, AppSettings.Instance.WeightCalculationParam6);
             }
 
-            // 随机因子
             var randomInt = _random.Next(AppSettings.Instance.WeightCalculationParam7, AppSettings.Instance.WeightCalculationParam8);
             var randomDouble = _random.NextDouble();
             var randomFactor = Convert.ToDouble(randomInt) + randomDouble;
@@ -134,14 +130,14 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
         }
     }
 
-    protected override History PickLogic(int amount)
+    protected override History PickLogic(Clazz clazz, int amount)
     {
-        _logger.Information("开始执行公平抽选，班级：{ClassName}, 抽取数量：{Amount}", _clazz.Name, amount);
+        _logger.Information("开始执行公平抽选，班级：{ClassName}, 抽取数量：{Amount}", clazz.Name, amount);
         
         try
         {
             _logger.Debug("计算学生权重");
-            CalculateWeight();
+            CalculateWeight(clazz);
             
             _logger.Debug("创建优先级队列");
             PriorityQueue<Student, double> pq = new(
@@ -149,7 +145,7 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
             );
             
             _logger.Verbose("打乱学生顺序并入队");
-            foreach (Student student in _clazz.Students.OrderBy(_ => _random.Next()).ToList())
+            foreach (Student student in clazz.Students.OrderBy(_ => _random.Next()).ToList())
             {
                 pq.Enqueue(student, student.Weight);
             }
@@ -169,14 +165,6 @@ public class FairStudentPicker(Clazz clazz) : PickerBase(clazz)
 
             _logger.Information("抽选完成，结果：{PickedStudents}", string.Join(", ", picked.Select(s => s.Name)));
             
-            // 更新被选中学生的统计信息
-            foreach (var student in picked)
-            {
-                student.LastSelectedTime = DateTime.Now;
-                student.SelectedAmount++;
-                _logger.Verbose("更新学生 {Name} 统计：选中次数 -> {Count}", student.Name, student.SelectedAmount);
-            }
-
             var history = new History(DateTime.Now, Name, picked);
             _logger.Information("创建历史记录成功");
             return history;

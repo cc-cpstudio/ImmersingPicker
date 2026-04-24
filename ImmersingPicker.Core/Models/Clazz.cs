@@ -222,21 +222,6 @@ public class Clazz
         }
     }
 
-    public History? Pick(string picker, int amount)
-    {
-        _logger.Information("执行抽选：抽选器：{Picker}, 人数：{Amount}", picker, amount);
-        if (!Pickers.ContainsKey(picker))
-        {
-            _logger.Error("抽选器不存在：{Picker}", picker);
-            return null;
-        }
-        
-        History history = Pickers[picker].Pick(amount);
-        _logger.Debug("抽选完成，选中学生：{Students}", string.Join(", ", history.Students.Select(s => s.Name)));
-        AddHistory(history);
-        return history;
-    }
-
     public void AddHistory(History history)
     {
         _logger.Verbose("添加历史记录：时间：{Time}, 抽选器：{Selector}, 学生数：{Count}", 
