@@ -8,6 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Windowing;
 using ImmersingPicker.Views;
@@ -22,6 +23,10 @@ using Avalonia.Platform.Storage;
 using ImmersingPicker.Services;
 using ImmersingPicker.Helpers;
 using Serilog;
+using NetSparkleUpdater;
+using NetSparkleUpdater.UI.Avalonia;
+using NetSparkleUpdater.SignatureVerifiers;
+using NetSparkleUpdater.Enums;
 using Timer = System.Timers.Timer;
 
 namespace ImmersingPicker;
@@ -41,6 +46,8 @@ public partial class App : Application
     private bool _isImmersivePickingWindowActive;
     private bool _isImmersivePickingWindowClosed;
     private bool _hasCheckedForUpdates = false;
+    
+    private SparkleUpdater? _sparkleUpdater;
 
     public static readonly HttpClient HttpClient = new();
 
@@ -216,6 +223,9 @@ public partial class App : Application
                     AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
                     _logger.Information("悬浮窗口及事件监听初始化完成");
 
+                    // 初始化 NetSparkleUpdater
+                    InitializeSparkleUpdater();
+                    
                     // 启动时自动检查更新 (延迟 5 秒,避免阻塞启动)
                     StartUpdateCheckOnStartup();
                 }
@@ -249,6 +259,40 @@ public partial class App : Application
         _logger.Verbose("启动定时器");
         _autoSaveTimer.Start();
         _logger.Information("自动保存定时器初始化完成");
+    }
+    
+    private void InitializeSparkleUpdater()
+    {
+        try
+        {
+            _logger.Information("初始化 NetSparkleUpdater");
+            
+            string appcastUrl = "https://github.com/ImmersingEducation/ImmersingPicker/releases/download/appcast/appcast.xml";
+            
+            var uiFactory = new UIFactory()
+            {
+                HideSkipButton = false,
+                HideRemindMeLaterButton = false,
+                HideReleaseNotes = false
+            };
+            
+            _sparkleUpdater = new SparkleUpdater(
+                appcastUrl,
+                new Ed25519Checker(SecurityMode.Unsafe)
+            )
+            {
+                UIFactory = uiFactory,
+                RelaunchAfterUpdate = true
+            };
+            
+            SparkleUpdaterService.Instance.SetSparkleUpdater(_sparkleUpdater);
+            
+            _logger.Information("NetSparkleUpdater 初始化完成");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "NetSparkleUpdater 初始化失败");
+        }
     }
 
     private void AutoSaveTimer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -558,6 +602,13 @@ public partial class App : Application
             return;
         }
 
+        // 如果 SparkleUpdater 没有初始化，就跳过
+        if (!SparkleUpdaterService.Instance.IsInitialized)
+        {
+            _logger.Warning("SparkleUpdater 未初始化，跳过启动时更新检查");
+            return;
+        }
+
         // 避免重复检查
         if (_hasCheckedForUpdates)
         {
@@ -574,74 +625,35 @@ public partial class App : Application
         try
         {
             _logger.Information("开始启动时更新检查...");
-
-            var (result, updateInfo) = await UpdateService.Instance.CheckForUpdatesAsync(
-                AppSettings.Instance.AllowPrereleaseUpdates);
-
-            // 更新最后检查时间
-            AppSettings.Instance.LastUpdateCheckTime = DateTime.Now;
-
-            // 处理检查结果
-            if (result == UpdateCheckResult.UpdateAvailable && updateInfo != null)
+            
+            // 启动 NetSparkleUpdater 的更新循环
+            // 这会处理所有自动更新逻辑
+            SparkleUpdaterService.Instance.StartUpdateLoop(false);
+            
+            // 手动触发一次更新检查（这个需要在 UI 线程上运行）
+            // 使用 Dispatcher.UIThread 确保在正确的线程上执行
+            if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
             {
-                _logger.Information("启动时发现新版本: {Version}", updateInfo.Version);
-                
-                // 如果主窗口不在前台，发送系统通知
-                if (!_isMainWindowActive)
-                {
-                    SystemNotificationService.Instance.ShowUpdateAvailableNotification(
-                        updateInfo.Version,
-                        updateInfo.ReleaseNotes);
-                }
-                
-                await ShowUpdateDialogForAppAsync(updateInfo);
-            }
-            else if (result == UpdateCheckResult.NoUpdate)
-            {
-                _logger.Information("启动时检查: 当前已是最新版本");
-            }
-            else if (result == UpdateCheckResult.Cancelled)
-            {
-                _logger.Information("启动时检查: 用户已跳过此版本");
+                SparkleUpdaterService.Instance.CheckForUpdatesAtUserRequest();
             }
             else
             {
-                _logger.Warning("启动时检查: 检查更新失败或出错");
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    SparkleUpdaterService.Instance.CheckForUpdatesAtUserRequest();
+                });
             }
+            
+            // 更新最后检查时间
+            AppSettings.Instance.LastUpdateCheckTime = DateTime.Now;
         }
         catch (Exception ex)
         {
             _logger.Error(ex, "启动时检查更新发生错误");
         }
     }
+    
 
-    /// <summary>
-    /// 显示更新对话框 (从 App 调用)
-    /// </summary>
-    private async Task ShowUpdateDialogForAppAsync(ImmersingPicker.Core.Models.UpdateInfo updateInfo)
-    {
-        if (_mainWindow == null)
-        {
-            _logger.Warning("主窗口为空,无法显示更新对话框");
-            return;
-        }
-
-        try
-        {
-            var dialog = new FluentAvalonia.UI.Controls.ContentDialog
-            {
-                Title = null,
-                Content = new Views.Dialogs.UpdateDialog(updateInfo),
-                FullSizeDesired = false
-            };
-            
-            await dialog.ShowAsync(_mainWindow);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "显示更新对话框失败");
-        }
-    }
 
     private async void OpenEditor(object? sender, EventArgs e)
     {

@@ -3,13 +3,13 @@ using Serilog;
 
 namespace ImmersingPicker.Services.Services;
 
-public class VersionServices
+public class VersionService
 {
-    private static readonly ILogger _logger = Log.ForContext(typeof(VersionServices));
+    private static readonly ILogger _logger = Log.ForContext(typeof(VersionService));
     
     public static VersionInfo CurrentVersion = new VersionInfo(Assembly.GetExecutingAssembly().GetName().Version);
 
-    static VersionServices()
+    static VersionService()
     {
         _logger.Information("初始化版本服务，当前版本：{Version}", VersionString(CurrentVersion));
     }
