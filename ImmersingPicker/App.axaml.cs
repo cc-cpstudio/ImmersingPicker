@@ -23,10 +23,6 @@ using Avalonia.Platform.Storage;
 using ImmersingPicker.Services;
 using ImmersingPicker.Helpers;
 using Serilog;
-using NetSparkleUpdater;
-using NetSparkleUpdater.UI.Avalonia;
-using NetSparkleUpdater.SignatureVerifiers;
-using NetSparkleUpdater.Enums;
 using Timer = System.Timers.Timer;
 
 namespace ImmersingPicker;
@@ -45,9 +41,7 @@ public partial class App : Application
     private bool _isMainWindowActive;
     private bool _isImmersivePickingWindowActive;
     private bool _isImmersivePickingWindowClosed;
-    private bool _hasCheckedForUpdates = false;
-    
-    private SparkleUpdater? _sparkleUpdater;
+
 
     public static readonly HttpClient HttpClient = new();
 
@@ -223,11 +217,6 @@ public partial class App : Application
                     AppSettings.Instance.FloatingWindowVerticalPositionChanged += OnFloatingWindowSettingsChanged;
                     _logger.Information("悬浮窗口及事件监听初始化完成");
 
-                    // 初始化 NetSparkleUpdater
-                    InitializeSparkleUpdater();
-                    
-                    // 启动时自动检查更新 (延迟 5 秒,避免阻塞启动)
-                    StartUpdateCheckOnStartup();
                 }
             }
 
@@ -261,40 +250,6 @@ public partial class App : Application
         _logger.Information("自动保存定时器初始化完成");
     }
     
-    private void InitializeSparkleUpdater()
-    {
-        try
-        {
-            _logger.Information("初始化 NetSparkleUpdater");
-            
-            string appcastUrl = "https://github.com/ImmersingEducation/ImmersingPicker/releases/download/appcast/appcast.xml";
-            
-            var uiFactory = new UIFactory()
-            {
-                HideSkipButton = false,
-                HideRemindMeLaterButton = false,
-                HideReleaseNotes = false
-            };
-            
-            _sparkleUpdater = new SparkleUpdater(
-                appcastUrl,
-                new Ed25519Checker(SecurityMode.Unsafe)
-            )
-            {
-                UIFactory = uiFactory,
-                RelaunchAfterUpdate = true
-            };
-            
-            SparkleUpdaterService.Instance.SetSparkleUpdater(_sparkleUpdater);
-            
-            _logger.Information("NetSparkleUpdater 初始化完成");
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "NetSparkleUpdater 初始化失败");
-        }
-    }
-
     private void AutoSaveTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         try
@@ -589,72 +544,6 @@ public partial class App : Application
             _logger.Information("ClassIsland 联动功能已禁用");
         }
     }
-
-    /// <summary>
-    /// 启动时自动检查更新
-    /// </summary>
-    private async void StartUpdateCheckOnStartup()
-    {
-        // 如果禁用自动检查更新,则跳过
-        if (!AppSettings.Instance.AutoCheckUpdateEnabled)
-        {
-            _logger.Information("自动检查更新已禁用,跳过启动时检查");
-            return;
-        }
-
-        // 如果 SparkleUpdater 没有初始化，就跳过
-        if (!SparkleUpdaterService.Instance.IsInitialized)
-        {
-            _logger.Warning("SparkleUpdater 未初始化，跳过启动时更新检查");
-            return;
-        }
-
-        // 避免重复检查
-        if (_hasCheckedForUpdates)
-        {
-            return;
-        }
-
-        _logger.Information("等待 5 秒后开始启动时更新检查...");
-
-        // 延迟 5 秒,避免阻塞启动
-        await Task.Delay(5000);
-
-        _hasCheckedForUpdates = true;
-
-        try
-        {
-            _logger.Information("开始启动时更新检查...");
-            
-            // 启动 NetSparkleUpdater 的更新循环
-            // 这会处理所有自动更新逻辑
-            SparkleUpdaterService.Instance.StartUpdateLoop(false);
-            
-            // 手动触发一次更新检查（这个需要在 UI 线程上运行）
-            // 使用 Dispatcher.UIThread 确保在正确的线程上执行
-            if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
-            {
-                SparkleUpdaterService.Instance.CheckForUpdatesAtUserRequest();
-            }
-            else
-            {
-                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    SparkleUpdaterService.Instance.CheckForUpdatesAtUserRequest();
-                });
-            }
-            
-            // 更新最后检查时间
-            AppSettings.Instance.LastUpdateCheckTime = DateTime.Now;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "启动时检查更新发生错误");
-        }
-    }
-    
-
-
     private async void OpenEditor(object? sender, EventArgs e)
     {
         // 打开编辑器窗口
