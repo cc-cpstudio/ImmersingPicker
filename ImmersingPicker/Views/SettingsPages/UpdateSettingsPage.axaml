@@ -7,11 +7,10 @@
              xmlns:controls="clr-namespace:ImmersingPicker.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ImmersingPicker.Views.SettingsPages.UpdateSettingsPage">
-        <StackPanel Orientation="Vertical" Spacing="12">
-                <!-- 当前版本信息 -->
-                <fa:SettingsExpanderItem Content="当前版本" Description="检查并安装更新"
+        <StackPanel Orientation="Vertical" Spacing="8">
+                <fa:SettingsExpander Header="当前版本" Description="检查并安装更新"
                                          IconSource="{ipicker:FluentIconSource &#xE896;}">
-                        <fa:SettingsExpanderItem.Footer>
+                        <fa:SettingsExpander.Footer>
                                 <StackPanel Orientation="Horizontal" Spacing="12">
                                         <TextBlock x:Name="CurrentVersionText" VerticalAlignment="Center"/>
                                         <Button x:Name="CheckUpdateButton" Content="检查更新"
@@ -21,26 +20,23 @@
                                                         Click="UpdateInfoButton_OnClick"
                                                         Padding="16,8"/>
                                 </StackPanel>
-                        </fa:SettingsExpanderItem.Footer>
-                </fa:SettingsExpanderItem>
-
-                <!-- 更新设置 -->
-                <fa:SettingsExpanderItem Content="自动检查更新"
+                        </fa:SettingsExpander.Footer>
+                </fa:SettingsExpander>
+                <fa:SettingsExpander Header="自动检查更新"
                                          Description="启动时自动检查是否有新版本可用"
                                          IconSource="{ipicker:FluentIconSource &#xE917;}">
-                        <fa:SettingsExpanderItem.Footer>
+                        <fa:SettingsExpander.Footer>
                                 <ToggleSwitch x:Name="AutoCheckUpdateToggle"
                                               IsCheckedChanged="AutoCheckUpdateToggle_OnIsCheckedChanged"/>
-                        </fa:SettingsExpanderItem.Footer>
-                </fa:SettingsExpanderItem>
-
-                <fa:SettingsExpanderItem Content="允许预发布版本"
+                        </fa:SettingsExpander.Footer>
+                </fa:SettingsExpander>
+                <fa:SettingsExpander Header="允许预发布版本"
                                          Description="检查更新时包括 Alpha/Beta 等预发布版本"
                                          IconSource="{ipicker:FluentIconSource &#xE946;}">
-                        <fa:SettingsExpanderItem.Footer>
+                        <fa:SettingsExpander.Footer>
                                 <ToggleSwitch x:Name="AllowPrereleaseToggle"
                                               IsCheckedChanged="AllowPrereleaseToggle_OnIsCheckedChanged"/>
-                        </fa:SettingsExpanderItem.Footer>
-                </fa:SettingsExpanderItem>
+                        </fa:SettingsExpander.Footer>
+                </fa:SettingsExpander>
         </StackPanel>
 </controls:SettingsPageBase>

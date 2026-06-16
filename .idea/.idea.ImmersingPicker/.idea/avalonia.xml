@@ -37,6 +37,7 @@
         <entry key="ImmersingPicker/Views/SettingsPages/LinkageSettingsPage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/SettingsPages/PickerSettingsPage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/SettingsPages/SecurityAndPrivacySettingsPage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
+        <entry key="ImmersingPicker/Views/SettingsPages/UpdateSettingsPage.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/SettingsWindow.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/SuspendingWindow.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />
         <entry key="ImmersingPicker/Views/SuspendingWindow/MovingControlButton.axaml" value="ImmersingPicker/ImmersingPicker.csproj" />

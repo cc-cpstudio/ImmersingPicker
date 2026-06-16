@@ -9,13 +9,13 @@
              x:Class="ImmersingPicker.Views.SettingsPages.AboutPage">
         <StackPanel Orientation="Vertical" Spacing="12">
                 <Image Source="avares://ImmersingPicker/Assets/banner.png"/>
-                <fa:SettingsExpanderItem Content="软件版本" IconSource="{ipicker:FluentIconSource &#xE668;}">
-                        <fa:SettingsExpanderItem.Footer>
+                <fa:SettingsExpander Header="软件版本" IconSource="{ipicker:FluentIconSource &#xE668;}">
+                        <fa:SettingsExpander.Footer>
                                 <TextBlock x:Name="VersionText"/>
-                        </fa:SettingsExpanderItem.Footer>
-                </fa:SettingsExpanderItem>
-                <fa:SettingsExpanderItem Content="应用程序" Description="重新启动或退出应用程序" IconSource="{ipicker:FluentIconSource &#xE9E3;}">
-                        <fa:SettingsExpanderItem.Footer>
+                        </fa:SettingsExpander.Footer>
+                </fa:SettingsExpander>
+                <fa:SettingsExpander Header="应用程序" Description="重新启动或退出应用程序" IconSource="{ipicker:FluentIconSource &#xE9E3;}">
+                        <fa:SettingsExpander.Footer>
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                         <Button x:Name="RestartButton" Content="重新启动" 
                                                         Click="RestartButton_OnClick"
@@ -24,7 +24,7 @@
                                                         Click="ExitButton_OnClick"
                                                         Padding="16,8"/>
                                 </StackPanel>
-                        </fa:SettingsExpanderItem.Footer>
-                </fa:SettingsExpanderItem>
+                        </fa:SettingsExpander.Footer>
+                </fa:SettingsExpander>
         </StackPanel>
 </controls:SettingsPageBase>
