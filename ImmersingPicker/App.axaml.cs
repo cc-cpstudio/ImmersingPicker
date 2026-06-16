@@ -18,6 +18,7 @@ using ImmersingPicker.Services.Services.Picker;
 using ImmersingPicker.Services.Services.Storage;
 using ImmersingPicker.Services.Services;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using Avalonia.Controls.Primitives;
 using Avalonia.Platform.Storage;
 using ImmersingPicker.Services;
@@ -70,6 +71,9 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Resources["ContentControlThemeFontFamily"] = new FontFamily("avares://ImmersingPicker/Assets/Fonts/HarmonyOS_SansSC_Regular.ttf#HarmonyOS Sans SC");
+        Resources["FontFamily"] = new FontFamily("avares://ImmersingPicker/Assets/Fonts/HarmonyOS_SansSC_Regular.ttf#HarmonyOS Sans SC");
+
         const string mutexName = "ImmersingPicker-SingleInstance-Mutex";
         const string processName = "ImmersingPicker";
 
