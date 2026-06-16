@@ -11,7 +11,6 @@ public partial class AboutPage : SettingsPageBase
     public AboutPage()
     {
         InitializeComponent();
-        PageTitle.Text = "关于";
         VersionText.Text = VersionService.VersionString(VersionService.CurrentVersion);
     }
 
