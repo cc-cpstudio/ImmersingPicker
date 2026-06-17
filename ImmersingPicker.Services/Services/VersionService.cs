@@ -11,14 +11,13 @@ public class VersionService
 
     static VersionService()
     {
-        _logger.Information("初始化版本服务，当前版本：{Version}", VersionString(CurrentVersion));
+        _logger.Information("初始化版本服务，当前版本：{Version}", GetVersionString(CurrentVersion));
     }
 
-    public static string VersionString(VersionInfo info)
+    public static string GetVersionString(VersionInfo info)
     {
-        var version = $"{info.Major}.{info.Minor}.{info.Build}" +
-                     $"{info.Revision}" +
-                     $"codename {info.Codename}";
+        var version = $"{info.Major}.{info.Minor}.{info.Build}.{info.Revision}" +
+                     $" codename {info.Codename}";
         _logger.Verbose("版本字符串：{Version}", version);
         return version;
     }

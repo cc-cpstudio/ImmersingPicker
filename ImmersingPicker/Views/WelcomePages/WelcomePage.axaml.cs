@@ -22,7 +22,7 @@ public partial class WelcomePage : WelcomePageBase
     {
         if (VersionText is not null)
         {
-            VersionText.Text = VersionService.VersionString(VersionService.CurrentVersion);
+            VersionText.Text = VersionService.GetVersionString(VersionService.CurrentVersion);
         }
         if (StartButton != null && !string.IsNullOrEmpty(AppSettings.AppThemeColor))
         {
