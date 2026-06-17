@@ -34,6 +34,16 @@ public class FairStudentPicker : PickerBase
         {
             tmpStudents.RemoveAll(s => s.VisitingCount > 0);
         }
+
+        if (tmpStudents.Count == 0)
+        {
+            foreach (var student in clazz.Students)
+            {
+                student.VisitingCount = 0;
+            }
+
+            tmpStudents = [..clazz.Students];
+        }
         
         int availableRange = CalculateRange(tmpStudents);
         
@@ -151,7 +161,11 @@ public class FairStudentPicker : PickerBase
             );
             
             _logger.Verbose("打乱学生顺序并入队");
-            foreach (Student student in clazz.Students.OrderBy(_ => _random.Next()).ToList())
+            var candidates = AppSettings.Instance.FairPickerMode == AppSettings.FairPickerModeEnum.Nonredundant
+                ? clazz.Students.Where(s => s.VisitingCount == 0).OrderBy(_ => _random.Next()).ToList()
+                : clazz.Students.OrderBy(_ => _random.Next()).ToList();
+
+            foreach (Student student in candidates)
             {
                 pq.Enqueue(student, student.Weight);
             }
