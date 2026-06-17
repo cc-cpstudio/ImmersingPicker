@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -15,28 +14,11 @@ public class ClassIslandIPCService
 
     private IpcClient? _client;
     public bool Initialized = false;
-    private bool _isSupportedPlatform = false;
     private readonly object _lock = new object();
-
-    public ClassIslandIPCService()
-    {
-        _isSupportedPlatform = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        if (!_isSupportedPlatform)
-        {
-            Log.Information("ClassIsland IPC 仅支持 Windows 平台，当前平台: {OSPlatform}", 
-                RuntimeInformation.OSDescription);
-        }
-    }
 
     public async Task InitializeAsync()
     {
         if (Initialized) return;
-        
-        if (!_isSupportedPlatform)
-        {
-            Log.Debug("跳过 ClassIsland IPC 初始化：不支持的平台");
-            return;
-        }
 
         lock (_lock)
         {
@@ -69,7 +51,7 @@ public class ClassIslandIPCService
 
     public bool OnClass()
     {
-        if (!_isSupportedPlatform || !Initialized || _client == null)
+        if (!Initialized || _client == null)
         {
             return false;
         }
